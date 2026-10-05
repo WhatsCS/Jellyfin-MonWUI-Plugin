@@ -47,7 +47,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Web/**/*" />
-    <EmbeddedResource Include="Resources/**/*" Exclude="Resources/**/*.js" />
+    <EmbeddedResource Include="Resources/**/*" />
     <EmbeddedResource Include="RuntimeModules/**/*" />
   </ItemGroup>
 

@@ -13,7 +13,7 @@
         "changelog": "v3.7.0.1-dev\n\nChanges:\n- Added bundled, minified slider assets\n- Added cache-aware index injection with Brotli and gzip variants\n- Added immutable caching for versioned bundle assets\n\nNotes:\n- Development build from perf-improvements\n- Restart Jellyfin and hard refresh Jellyfin Web after updating",
         "targetAbi": "10.11.0.0",
         "sourceUrl": "https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/releases/download/v3.7.0.1-dev/JMSFusionV2-3.7.0.1-server.zip",
-        "checksum": "01fae3142baaf279a0453102184720ec",
+        "checksum": "1f6feadb237a6ab6ba6e2f0ad88e2856",
         "timestamp": "2026-10-05T21:44:35.0000000Z"
       },
     {
