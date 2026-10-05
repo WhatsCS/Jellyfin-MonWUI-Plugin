@@ -5,19 +5,19 @@ export function createWatchlistPanel(config, labels) {
     panel.id = "watchlist-settings-panel";
     panel.className = "settings-panel";
 
-    const section = createSection(labels.watchlistSettingsTab || "İzleme Listesi Ayarları");
+    const section = createSection(labels.watchlistSettingsTab || "Watchlist Settings");
 
     section.appendChild(
         createCheckbox(
             "watchlistTabsSliderEnabled",
-            labels.watchlistTabsSliderEnabled || "İzleme listesi butonunu .emby-tabs-slider içine ekle",
+            labels.watchlistTabsSliderEnabled || "Add watchlist button into .emby-tabs-slider",
             config.watchlistTabsSliderEnabled
         )
     );
 
     const sharingCheckbox = createCheckbox(
         "watchlistSharingEnabled",
-        labels.watchlistSharingEnabled || "İzleme listesi paylaşımını etkinleştir",
+        labels.watchlistSharingEnabled || "Enable watchlist sharing",
         config.watchlistSharingEnabled !== false
     );
     sharingCheckbox.classList.add("watchlist-sharing-container");
@@ -25,7 +25,7 @@ export function createWatchlistPanel(config, labels) {
     const sharingDescription = document.createElement("div");
     sharingDescription.className = "description-text";
     sharingDescription.textContent = labels.watchlistSharingEnabledDescription
-        || "Kapalıyken izleme listesi ve detay penceresindeki paylaşım düğmeleri gizlenir; kullanıcı seçme penceresi açılmaz.";
+        || "When disabled, sharing buttons in watchlist and details modal are hidden; the user picker does not open.";
 
     const sharingWrapper = document.createElement("div");
     sharingWrapper.className = "watchlist-sharing-wrapper";
@@ -36,14 +36,14 @@ export function createWatchlistPanel(config, labels) {
     section.appendChild(
         createCheckbox(
             "watchlistAutoRemovePlayed",
-            labels.watchlistAutoRemovePlayed || "İzlenenleri otomatik olarak izleme listesinden kaldır",
+            labels.watchlistAutoRemovePlayed || "Automatically remove watched items from watchlist",
             config.watchlistAutoRemovePlayed
         )
     );
 
     const autoRemoveFavoriteCheckbox = createCheckbox(
         "watchlistAutoRemovePlayedFromFavorites",
-        labels.watchlistAutoRemovePlayedFromFavorites || "Otomatik kaldırırken Jellyfin favorilerinden de çıkar",
+        labels.watchlistAutoRemovePlayedFromFavorites || "Also remove from Jellyfin favorites during auto-removal",
         config.watchlistAutoRemovePlayedFromFavorites
     );
     autoRemoveFavoriteCheckbox.classList.add("watchlist-auto-remove-favorite-container");
@@ -51,7 +51,7 @@ export function createWatchlistPanel(config, labels) {
 
     const importFavoritesCheckbox = createCheckbox(
         "watchlistImportFavoritesOnStartup",
-        labels.watchlistImportFavoritesOnStartup || "Açılışta mevcut Jellyfin favorilerini izleme listesine aktar",
+        labels.watchlistImportFavoritesOnStartup || "Import existing Jellyfin favorites to watchlist on startup",
         config.watchlistImportFavoritesOnStartup
     );
 
@@ -60,7 +60,7 @@ export function createWatchlistPanel(config, labels) {
     const importFavoritesDescription = document.createElement("div");
     importFavoritesDescription.className = "description-text";
     importFavoritesDescription.textContent = labels.watchlistImportFavoritesOnStartupDescription
-        || "İlk kurulumda veya favorilerinizi içe aktarmak istediğinizde etkinleştirin. İçe aktarma tamamlandıktan sonra açık kalmasına gerek yoktur.";
+        || "Enable during initial setup or when you want to import favorites. It can be disabled after import completes.";
 
     const importFavoritesWrapper = document.createElement("div");
     importFavoritesWrapper.className = "watchlist-import-wrapper";

@@ -1,4 +1,4 @@
-import { getSessionInfo, makeApiRequest, getCachedUserTopGenres } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, makeApiRequest, getCachedUserTopGenres } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig, getHomeSectionsRuntimeConfig } from "./config.js";
 import { getLanguageLabels } from "../language/index.js";
 import { attachMiniPosterHover } from "./studioHubsUtils.js";
@@ -1080,7 +1080,7 @@ function createRecommendationCard(item, serverId, aboveFold = false) {
     noImg.className = 'prc-noimg-label';
     noImg.textContent =
       (config.languageLabels && (config.languageLabels.noImage || config.languageLabels.loadingText))
-      || (labels.noImage || 'Görsel yok');
+      || (labels.noImage || 'No Image');
     noImg.style.minHeight = '100%';
     noImg.style.height = '100%';
     noImg.style.display = 'flex';

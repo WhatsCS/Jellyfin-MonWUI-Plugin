@@ -242,7 +242,7 @@ export function createQueryPanel(config, labels) {
     queryBuilderContainer.style.alignItems = "stretch";
 
     const contentTypesTitle = createSubsectionTitle(
-        labels.queryContentTypesTitle || "Slider'da Gösterilecek İçerikler"
+        labels.queryContentTypesTitle || "Slider'da Showilecek İçerikler"
     );
     const contentTypesDesc = createSubsectionDescription(
         labels.queryContentTypesDesc || "Seçtiklerin IncludeItemTypes alanına otomatik eklenir."
@@ -356,7 +356,7 @@ export function createQueryPanel(config, labels) {
     balanceTypesDiv.className = "setting-item balance-types-container";
     const balanceTypesCheckbox = createCheckbox(
         "balanceItemTypes",
-        labels.balanceItemTypes || "Tür Dengeleme Aktif",
+        labels.balanceItemTypes || "Enable Type Balancing",
         config.balanceItemTypes || false
     );
     balanceTypesDiv.appendChild(balanceTypesCheckbox);
@@ -371,7 +371,7 @@ export function createQueryPanel(config, labels) {
     onlyUnwatchedDiv.className = "setting-item only-unwatched-container";
     const onlyUnwatchedCheckbox = createCheckbox(
         "onlyUnwatchedRandom",
-        labels.onlyUnwatchedRandom || "Sadece İzlenmeyen İçerikleri Göster",
+        labels.onlyUnwatchedRandom || "Show Only Unwatched Content",
         !!config.onlyUnwatchedRandom
     );
     onlyUnwatchedDiv.appendChild(onlyUnwatchedCheckbox);
@@ -463,7 +463,7 @@ export function createQueryPanel(config, labels) {
     playingLimitDesc.className = "description-text";
     playingLimitDesc.textContent =
         labels.playingLimitDesc ||
-        'İzlenmesi yarıda kesilen son içerikleri listeler. "0" değeri pasif hale getirir.';
+        'Lists the most recent partially watched items. Value "0" disables this.';
 
     const excludeEpisodesDiv = document.createElement("div");
     excludeEpisodesDiv.className = "setting-item exclude-episodes-container";

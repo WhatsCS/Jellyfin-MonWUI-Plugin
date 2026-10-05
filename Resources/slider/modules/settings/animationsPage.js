@@ -12,7 +12,7 @@ export function createAnimationPanel(config, labels) {
 
     const slideAnimCheckbox = createCheckbox(
         'enableSlideAnimations',
-        labels.enableSlideAnimations || 'Slayt Animasyonlarını Etkinleştir',
+        labels.enableSlideAnimations || 'Enable Slide Animations',
         config.enableSlideAnimations
     );
     slideAnimDiv.appendChild(slideAnimCheckbox);
@@ -20,7 +20,7 @@ export function createAnimationPanel(config, labels) {
     const slideTypeDiv = document.createElement('div');
     slideTypeDiv.className = 'fsetting-item slide-anim-container';
     const slideTypeLabel = document.createElement('label');
-    slideTypeLabel.textContent = labels.slideTransitionType || 'Slayt Geçiş Türü:';
+    slideTypeLabel.textContent = labels.slideTransitionType || 'Slayt Transition Type:';
     const slideTypeSelect = document.createElement('select');
     slideTypeSelect.name = 'slideTransitionType';
 
@@ -28,21 +28,21 @@ export function createAnimationPanel(config, labels) {
         { value: 'flip', label: labels.flipAnimation || '3D Flip' },
         { value: 'glitch', label: labels.glitchAnimation || 'Glitch Etkisi' },
         { value: 'morph', label: labels.morphAnimation || 'Morph' },
-        { value: 'cube', label: labels.cubeAnimation || '3D Küp' },
-        { value: 'zoom', label: labels.zoomAnimation || 'Zoom Döngüsü' },
-        { value: 'slide', label: labels.slide || 'Düz Kaydırma' },
-        { value: 'slide3d', label: labels.slide3dAnimation || '3D Kaydırma' },
-        { value: 'slideTop', label: labels.slideTop || 'Yukarıdan Kaydırma' },
-        { value: 'slideBottom', label: labels.slideBottom || 'Aşağıdan Kaydırma' },
-        { value: 'diagonal', label: labels.diagonal || 'Çapraz Kaydırma' },
-        { value: 'fadezoom', label: labels.fadezoom || 'Silinerek Yakınlaşma' },
+        { value: 'cube', label: labels.cubeAnimation || '3D Cube' },
+        { value: 'zoom', label: labels.zoomAnimation || 'Zoom Loop' },
+        { value: 'slide', label: labels.slide || 'Linear Slide' },
+        { value: 'slide3d', label: labels.slide3dAnimation || '3D Slide' },
+        { value: 'slideTop', label: labels.slideTop || 'Slide From Top' },
+        { value: 'slideBottom', label: labels.slideBottom || 'Slide From Bottom' },
+        { value: 'diagonal', label: labels.diagonal || 'Diagonal Slide' },
+        { value: 'fadezoom', label: labels.fadezoom || 'Fade Zoom' },
         { value: 'parallax', label: labels.parallax || 'Paralaks'},
-        { value: 'blur-fade', label: labels.blurfade || 'Bulanıklaşma'},
-        { value: 'rotateIn', label: labels.rotateIn || 'Dönerek Giriş'},
-        { value: 'flipInX', label: labels.flipInX || 'Çevirerek Giriş X'},
-        { value: 'flipInY', label: labels.flipInY || 'Çevirerek Giriş Y'},
-        { value: 'jelly', label: labels.jelly || 'Jöle'},
-        { value: 'eye', label: labels.eye || 'Göz'},
+        { value: 'blur-fade', label: labels.blurfade || 'Blur Fade'},
+        { value: 'rotateIn', label: labels.rotateIn || 'Rotate In'},
+        { value: 'flipInX', label: labels.flipInX || 'Flip In X'},
+        { value: 'flipInY', label: labels.flipInY || 'Flip In Y'},
+        { value: 'jelly', label: labels.jelly || 'Jelly'},
+        { value: 'eye', label: labels.eye || 'Eye'},
     ];
 
     slideTypes.forEach(type => {
@@ -62,7 +62,7 @@ export function createAnimationPanel(config, labels) {
     const slideDurationDiv = document.createElement('div');
     slideDurationDiv.className = 'fsetting-item slide-anim-container';
     const slideDurationLabel = document.createElement('label');
-    slideDurationLabel.textContent = labels.slideAnimationDuration || 'Slayt Animasyon Süresi (ms):';
+    slideDurationLabel.textContent = labels.slideAnimationDuration || 'Slayt Animasyon Duration (ms):';
     const slideDurationInput = document.createElement('input');
     slideDurationInput.type = 'number';
     slideDurationInput.value = config.slideAnimationDuration || 800;
@@ -79,7 +79,7 @@ export function createAnimationPanel(config, labels) {
 
     const dotAnimCheckbox = createCheckbox(
         'enableDotPosterAnimations',
-        labels.enableDotPosterAnimations || 'Nokta Navigasyon Poster Animasyonlarını Etkinleştir',
+        labels.enableDotPosterAnimations || 'Enable Dot Poster Animations',
         config.enableDotPosterAnimations
     );
 
@@ -88,24 +88,24 @@ export function createAnimationPanel(config, labels) {
     const dotTypeDiv = document.createElement('div');
     dotTypeDiv.className = 'fsetting-item dot-anim-container';
     const dotTypeLabel = document.createElement('label');
-    dotTypeLabel.textContent = labels.dotPosterTransitionType || 'Dot Geçiş Türü:';
+    dotTypeLabel.textContent = labels.dotPosterTransitionType || 'Dot Transition Type:';
     const dotTypeSelect = document.createElement('select');
     dotTypeSelect.name = 'dotPosterTransitionType';
 
     const dotTypes = [
-        { value: 'scale', label: labels.scaleAnimation || 'Ölçekleme' },
-        { value: 'bounce', label: labels.bounceAnimation || 'Zıplama' },
-        { value: 'rotate', label: labels.rotateAnimation || 'Döndürme' },
-        { value: 'color', label: labels.colorAnimation || 'Renk Değişimi' },
-        { value: 'float', label: labels.floatAnimation || 'Yüzdürme' },
-        { value: 'pulse', label: labels.pulseAnimation || 'Nabız' },
-        { value: 'tilt', label: labels.tiltAnimation || 'Eğilme' },
+        { value: 'scale', label: labels.scaleAnimation || 'Scale' },
+        { value: 'bounce', label: labels.bounceAnimation || 'Bounce' },
+        { value: 'rotate', label: labels.rotateAnimation || 'Rotate' },
+        { value: 'color', label: labels.colorAnimation || 'Color Shift' },
+        { value: 'float', label: labels.floatAnimation || 'Float' },
+        { value: 'pulse', label: labels.pulseAnimation || 'Pulse' },
+        { value: 'tilt', label: labels.tiltAnimation || 'Tilt' },
         { value: 'shake', label: labels.shakeAnimation || 'Titreme' },
-        { value: 'glow', label: labels.glow || 'Parıltı' },
+        { value: 'glow', label: labels.glow || 'Glow' },
         { value: 'rubberBand', label: labels.rubberBand || 'Lastik' },
         { value: 'swing', label: labels.swing || 'Sallanma' },
-        { value: 'flip', label: labels.flip || 'Çevir' },
-        { value: 'flash', label: labels.flash || 'flaş' },
+        { value: 'flip', label: labels.flip || 'Flip' },
+        { value: 'flash', label: labels.flash || 'Flash' },
         { value: 'wobble', label: labels.wobble || 'Salla' },
     ];
 
@@ -126,7 +126,7 @@ export function createAnimationPanel(config, labels) {
     const dotDurationDiv = document.createElement('div');
     dotDurationDiv.className = 'fsetting-item dot-anim-container';
     const dotDurationLabel = document.createElement('label');
-    dotDurationLabel.textContent = labels.dotPosterAnimationDuration || 'Dot Animasyon Süresi (ms):';
+    dotDurationLabel.textContent = labels.dotPosterAnimationDuration || 'Dot Animasyon Duration (ms):';
     const dotDurationInput = document.createElement('input');
     dotDurationInput.type = 'number';
     dotDurationInput.value = config.dotPosterAnimationDuration || 500;

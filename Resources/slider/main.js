@@ -1,4 +1,4 @@
-import { saveCredentials, saveApiKey, getAuthToken } from "../Plugins/JMSFusion/runtime/auth.js";
+import { saveCredentials, saveApiKey, getAuthToken } from "../Plugins/JMSFusionV2/runtime/auth.js";
 import {
   getConfig,
   getHomeSectionsRuntimeConfig,
@@ -13,7 +13,7 @@ import { ensureProgressBarExists, resetProgressBar, pauseProgressBar, resumeProg
 import { createSlide, cleanupSlideCreatorRuntime } from "./modules/slideCreator.js";
 import { changeSlide, createDotNavigation, enablePeakNeighborActivation, getPeakDisplayOptions, initSwipeEvents, primePeakFirstPaint, syncPeakStructureNow, updatePeakClasses } from "./modules/navigation.js";
 import { attachMouseEvents } from "./modules/events.js";
-import { getSessionInfo, getAuthHeader, waitForAuthReadyStrict, isAuthReadyStrict, AUTH_PROFILE_CHANGED_EVENT, USERDATA_CHANGED_EVENT } from "../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, getAuthHeader, waitForAuthReadyStrict, isAuthReadyStrict, AUTH_PROFILE_CHANGED_EVENT, USERDATA_CHANGED_EVENT } from "../Plugins/JMSFusionV2/runtime/api.js";
 import { cacheGetUserDataMap, cachePatchItemUserData, cachePutUserDataItems, cachedFetchJson, createCachedItemDetailsFetcher, releaseSliderCacheMemory, startLibraryDeltaWatcher } from "./modules/sliderCache.js";
 import { forceHomeSectionsTop, forceSkinHeaderPointerEvents } from "./modules/positionOverrides.js";
 import { initAvatarSystem } from "./modules/userAvatar.js";
@@ -47,12 +47,13 @@ const CUSTOM_SPLASH_STORAGE_KEY = "enableCustomSplashScreen";
 const CUSTOM_SPLASH_TITLE_VAR = "--jms-custom-splash-title";
 const CUSTOM_SPLASH_CAPTION_VAR = "--jms-custom-splash-caption";
 const CUSTOM_SPLASH_PROGRESS_KEY = "__JMS_CUSTOM_SPLASH_PROGRESS__";
-const CUSTOM_SPLASH_PING_PATHS = ["/JMSFusion/ping", "/Plugins/JMSFusion/ping"];
+const CUSTOM_SPLASH_PING_PATHS = ["/JMSFusionV2/ping", "/Plugins/JMSFusionV2/ping"];
 const CUSTOM_SPLASH_TIMEOUT_MS = 12_000;
 const CUSTOM_SPLASH_CLEANUP_MS = 420;
 const CUSTOM_SPLASH_EXIT_SYNC_MS = 120;
 const HOME_DEBUG_STORAGE_KEY = "jms:debug:home-sections";
 const HOME_TRACE_STORAGE_KEY = "jms:trace:home-sections";
+const PERFORMANCE_TRACE_STORAGE_KEY = "jms:performance:home-sections";
 const AUTH_CONTEXT_REBOOT_DEBOUNCE_MS = 180;
 const HOME_ITEM_DETAILS_STATIC_FIELDS = [
   "ImageTags",
@@ -126,6 +127,29 @@ const __customSplashProgressState = {
   createdSlides: 0,
   poolCount: 0
 };
+
+function beginHomePerformanceMeasure(name) {
+  let enabled = false;
+  try {
+    enabled = window.localStorage?.getItem(PERFORMANCE_TRACE_STORAGE_KEY) === "1";
+  } catch {}
+  if (!enabled || !window.performance?.mark || !window.performance?.measure) return () => {};
+
+  const id = `jms:${name}:${Date.now()}:${Math.random().toString(36).slice(2)}`;
+  performance.mark(`${id}:start`);
+  return (detail = {}) => {
+    performance.mark(`${id}:end`);
+    performance.measure(id, `${id}:start`, `${id}:end`);
+    const measures = performance.getEntriesByName(id, "measure");
+    const duration = measures.length ? measures[measures.length - 1].duration : undefined;
+    performance.clearMarks(`${id}:start`);
+    performance.clearMarks(`${id}:end`);
+    performance.clearMeasures(id);
+    window.dispatchEvent(new CustomEvent("jms:home-performance", {
+      detail: { name, duration, ...detail }
+    }));
+  };
+}
 
 async function getNotificationsModule() {
   if (!__notificationsModulePromise) {
@@ -2196,6 +2220,7 @@ async function runManagedHomeSectionRecovery({
     return true;
   }
 
+  const finishMeasure = beginHomePerformanceMeasure("managed-home-section-recovery");
   const results = await Promise.allSettled([
     shouldRenderStudioHubsUi(cfg)
       ? ensureStudioHubsMountedLazy({ eager: eagerStudioHubs })
@@ -2213,6 +2238,7 @@ async function runManagedHomeSectionRecovery({
 
   const statusAfter = getManagedHomeSectionStatus(cfg);
   const ok = !needsManagedHomeSectionRecovery(cfg);
+  finishMeasure({ ok, eagerStudioHubs });
   homeSectionLog("managedRecovery:complete", {
     seq,
     ok,

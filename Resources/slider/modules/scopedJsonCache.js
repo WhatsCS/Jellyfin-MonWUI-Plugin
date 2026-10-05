@@ -1,4 +1,4 @@
-const API_BASE = "/Plugins/JMSFusion/ScopedCache";
+const API_BASE = "/Plugins/JMSFusionV2/ScopedCache";
 const STORE_REGISTRY = new Map();
 const LEGACY_DB_CLEANUP_STARTED = new Set();
 const DEFAULT_STABLE_IGNORE_FIELDS = ["fetchedAt", "expiresAt", "updatedAt"];
@@ -247,7 +247,7 @@ async function ensureRecord(state, scope) {
         record.data = normalizeLoadedData(loaded, state.defaultData);
         record.lastPersistedStableJson = stringifyStable(record.data, state.stableOptions);
       } catch (error) {
-        console.warn(`[JMSFusion] ${state.cacheType} scope load failed:`, error);
+        console.warn(`[JMSFusionV2] ${state.cacheType} scope load failed:`, error);
         record.data = buildDefaultData(state.defaultData);
         record.lastPersistedStableJson = stringifyStable(record.data, state.stableOptions);
       } finally {
@@ -306,7 +306,7 @@ async function flushRecord(state, scope, record, options = {}) {
         snapshot = transformed;
       }
     } catch (error) {
-      console.warn(`[JMSFusion] ${state.cacheType} scope persist transform failed:`, error);
+      console.warn(`[JMSFusionV2] ${state.cacheType} scope persist transform failed:`, error);
     }
   }
 
@@ -317,7 +317,7 @@ async function flushRecord(state, scope, record, options = {}) {
     })
     .catch((error) => {
       record.dirty = true;
-      console.warn(`[JMSFusion] ${state.cacheType} scope save failed:`, error);
+      console.warn(`[JMSFusionV2] ${state.cacheType} scope save failed:`, error);
       return null;
     })
     .finally(() => {

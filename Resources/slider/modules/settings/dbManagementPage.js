@@ -1,11 +1,11 @@
 import { createSection } from "./shared.js";
 import { showNotification } from "../player/ui/notification.js";
-import { getSessionInfo } from "../../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo } from "../../../Plugins/JMSFusionV2/runtime/api.js";
 
-const API_BASE = "/Plugins/JMSFusion/ScopedCache";
+const API_BASE = "/Plugins/JMSFusionV2/ScopedCache";
 const BACKUP_FORMAT = "jms-scoped-cache-backup";
 const BACKUP_FILE_VERSION = 1;
-const SCOPED_CACHE_ROOT_HINT = "/plugins/configurations/JMSFusion/scoped-cache";
+const SCOPED_CACHE_ROOT_HINT = "/plugins/configurations/JMSFusionV2/scoped-cache";
 
 function setStatus(node, message) {
   node.textContent = message || "";
@@ -301,10 +301,10 @@ function getCacheEntries(labels) {
     {
       key: "director-rows",
       cacheType: "directorRows",
-      title: labels?.directorRowsDbTitle || "Yönetmen kartları cache",
+      title: labels?.directorRowsDbTitle || "Director kartları cache",
       description:
         labels?.directorRowsDbDescription ||
-        "Yönetmen koleksiyon satırlarında kullanılan yönetmen ve içerik eşleşme verileri burada saklanır.",
+        "Director collection row data and content matching data used in director collection rows is stored here.",
       prepare: async () => {
         const mod = await import("../dirRowsDb.js");
         await mod.prepareDirRowsDbForDeletion?.();
@@ -316,7 +316,7 @@ function getCacheEntries(labels) {
       title: labels?.personalRecommendationsDbTitle || "Kişisel öneriler cache",
       description:
         labels?.personalRecommendationsDbDescription ||
-        "\"Sana Özel Öneriler\" ve benzeri kişiselleştirilmiş öneri satırlarında kullanılan cache verileri burada tutulur.",
+        "\"Personalized Matches\" ve benzeri kişiselleştirilmiş öneri satırlarında kullanılan cache verileri burada tutulur.",
       prepare: async () => {
         const mod = await import("../prcDb.js");
         await mod.preparePrcDbForDeletion?.();
@@ -489,7 +489,7 @@ function createCacheAction(entry, labels, scope) {
     const confirmMessage = [
       formatLabel(
         labels?.dbRestoreConfirmQuestion ||
-          "Seçilen yedekten {name} cache alanını geri yüklemek istiyor musun?",
+          "Do you want to restore the {name} cache area from the selected backup?",
         { name: entry.title }
       ),
       `Cache: ${entry.cacheType}`,

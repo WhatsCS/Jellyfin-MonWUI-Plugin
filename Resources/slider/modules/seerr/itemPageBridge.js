@@ -1,4 +1,4 @@
-import { fetchItemDetailsFull, getSessionInfo, makeApiRequest } from "../../../Plugins/JMSFusion/runtime/api.js";
+import { fetchItemDetailsFull, getSessionInfo, makeApiRequest } from "../../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig } from "../config.js";
 import { withServer } from "../jfUrl.js";
 import { getEffectiveLanguage, getLanguageLabels } from "../../language/index.js";

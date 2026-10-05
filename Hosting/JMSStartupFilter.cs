@@ -1,8 +1,10 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,15 +12,25 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using Microsoft.Win32;
-using Jellyfin.Plugin.JMSFusion.Core;
+using Jellyfin.Plugin.JMSFusionV2.Core;
 using System.Runtime.Versioning;
 
-namespace Jellyfin.Plugin.JMSFusion
+namespace Jellyfin.Plugin.JMSFusionV2
 {
     public sealed class JMSStartupFilter : IStartupFilter
     {
         private static volatile string? s_cachedWebRoot;
+        private static readonly SemaphoreSlim s_indexCacheGate = new(1, 1);
+        private static CachedIndexHtml? s_cachedIndexHtml;
+        private static int s_indexCacheVersion;
+
+        public static void InvalidateIndexHtmlCache()
+        {
+            Interlocked.Increment(ref s_indexCacheVersion);
+            Volatile.Write(ref s_cachedIndexHtml, null);
+        }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
@@ -70,9 +82,41 @@ namespace Jellyfin.Plugin.JMSFusion
                         return;
                     }
 
-                    var reqLogger = ctx.RequestServices.GetRequiredService<ILogger<JMSStartupFilter>>();
-                    var originalAcceptEncoding = ctx.Request.Headers["Accept-Encoding"].ToString();
-                    ctx.Request.Headers["Accept-Encoding"] = "identity";
+                    var cached = Volatile.Read(ref s_cachedIndexHtml);
+                    if (cached != null)
+                    {
+                        await WriteCachedIndexHtmlAsync(ctx, cached);
+                        return;
+                    }
+
+                    await s_indexCacheGate.WaitAsync(ctx.RequestAborted);
+                    try
+                    {
+                        cached = Volatile.Read(ref s_cachedIndexHtml);
+                        if (cached != null)
+                        {
+                            await WriteCachedIndexHtmlAsync(ctx, cached);
+                            return;
+                        }
+
+                        await CaptureAndCacheIndexHtmlAsync(ctx, nextMiddleware);
+                    }
+                    finally
+                    {
+                        s_indexCacheGate.Release();
+                    }
+                });
+
+                next(app);
+            };
+        }
+
+        private static async Task CaptureAndCacheIndexHtmlAsync(HttpContext ctx, Func<Task> nextMiddleware)
+        {
+            var reqLogger = ctx.RequestServices.GetRequiredService<ILogger<JMSStartupFilter>>();
+            var cacheVersion = Volatile.Read(ref s_indexCacheVersion);
+            var originalAcceptEncoding = ctx.Request.Headers["Accept-Encoding"].ToString();
+            ctx.Request.Headers["Accept-Encoding"] = "identity";
 
                     var originalBody = ctx.Response.Body;
                     await using var mem = new MemoryStream();
@@ -82,20 +126,20 @@ namespace Jellyfin.Plugin.JMSFusion
                     {
                         await nextMiddleware();
 
-                        if (ctx.Response.StatusCode != StatusCodes.Status200OK)
-                        {
-                            mem.Position = 0;
-                            await mem.CopyToAsync(originalBody);
-                            return;
-                        }
+                if (ctx.Response.StatusCode != StatusCodes.Status200OK)
+                {
+                    mem.Position = 0;
+                    await mem.CopyToAsync(originalBody);
+                    return;
+                }
 
-                        var contentType = ctx.Response.ContentType ?? string.Empty;
-                        if (!contentType.StartsWith("text/html", StringComparison.OrdinalIgnoreCase))
-                        {
-                            mem.Position = 0;
-                            await mem.CopyToAsync(originalBody);
-                            return;
-                        }
+                var contentType = ctx.Response.ContentType ?? string.Empty;
+                if (!contentType.StartsWith("text/html", StringComparison.OrdinalIgnoreCase))
+                {
+                    mem.Position = 0;
+                    await mem.CopyToAsync(originalBody);
+                    return;
+                }
 
                         if (ctx.Response.Headers.ContainsKey("Content-Encoding"))
                         {
@@ -117,7 +161,7 @@ namespace Jellyfin.Plugin.JMSFusion
                         if (html.IndexOf("<!-- SL-INJECT BEGIN -->", StringComparison.OrdinalIgnoreCase) < 0)
                         {
                             var pathBase = ctx.Request.PathBase.HasValue ? ctx.Request.PathBase.Value : null;
-                            var snippet = JMSFusionPlugin.Instance.BuildScriptsHtml(pathBase);
+                            var snippet = JMSFusionV2Plugin.Instance.BuildScriptsHtml(pathBase);
 
                             var headEnd = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
                             if (headEnd >= 0)
@@ -130,34 +174,128 @@ namespace Jellyfin.Plugin.JMSFusion
                             }
                         }
 
-                        var outBytes = Encoding.UTF8.GetBytes(html);
-                        ctx.Response.ContentLength = outBytes.Length;
+                var cached = new CachedIndexHtml(Encoding.UTF8.GetBytes(html), contentType);
+                if (cacheVersion == Volatile.Read(ref s_indexCacheVersion))
+                {
+                    Volatile.Write(ref s_cachedIndexHtml, cached);
+                }
 
-                        await originalBody.WriteAsync(outBytes, 0, outBytes.Length, ctx.RequestAborted);
-                    }
-                    catch (Exception ex)
-                    {
-                        reqLogger.LogWarning(ex, "[JMSFusion] In-memory index.html injection failed, falling back to original body.");
-                        mem.Position = 0;
-                        await mem.CopyToAsync(originalBody);
-                    }
-                    finally
-                    {
-                        if (string.IsNullOrEmpty(originalAcceptEncoding))
-                        {
-                            ctx.Request.Headers.Remove("Accept-Encoding");
-                        }
-                        else
-                        {
-                            ctx.Request.Headers["Accept-Encoding"] = originalAcceptEncoding;
-                        }
+                ctx.Response.Body = originalBody;
+                await WriteCachedIndexHtmlAsync(ctx, cached, originalAcceptEncoding);
+            }
+            catch (Exception ex)
+            {
+                reqLogger.LogWarning(ex, "[JMSFusionV2] In-memory index.html injection failed, falling back to original body.");
+                mem.Position = 0;
+                await mem.CopyToAsync(originalBody);
+            }
+            finally
+            {
+                if (string.IsNullOrEmpty(originalAcceptEncoding))
+                {
+                    ctx.Request.Headers.Remove("Accept-Encoding");
+                }
+                else
+                {
+                    ctx.Request.Headers["Accept-Encoding"] = originalAcceptEncoding;
+                }
 
-                        ctx.Response.Body = originalBody;
-                    }
-                });
+                ctx.Response.Body = originalBody;
+            }
+        }
 
-                next(app);
-            };
+        private static async Task WriteCachedIndexHtmlAsync(HttpContext ctx, CachedIndexHtml cached, string? acceptEncoding = null)
+        {
+            var encoding = SelectContentEncoding(acceptEncoding ?? ctx.Request.Headers[HeaderNames.AcceptEncoding].ToString());
+            var payload = cached.GetPayload(encoding);
+
+            ctx.Response.StatusCode = StatusCodes.Status200OK;
+            ctx.Response.ContentType = cached.ContentType;
+            ctx.Response.Headers.Remove(HeaderNames.ETag);
+            ctx.Response.Headers.Remove(HeaderNames.LastModified);
+            ctx.Response.Headers.Remove(HeaderNames.AcceptRanges);
+            ctx.Response.Headers[HeaderNames.Vary] = HeaderNames.AcceptEncoding;
+            if (encoding == null)
+            {
+                ctx.Response.Headers.Remove(HeaderNames.ContentEncoding);
+            }
+            else
+            {
+                ctx.Response.Headers[HeaderNames.ContentEncoding] = encoding;
+            }
+
+            ctx.Response.ContentLength = payload.Length;
+            await ctx.Response.Body.WriteAsync(payload, 0, payload.Length, ctx.RequestAborted);
+        }
+
+        private static string? SelectContentEncoding(string value)
+        {
+            if (AllowsEncoding(value, "br")) return "br";
+            if (AllowsEncoding(value, "gzip")) return "gzip";
+            return null;
+        }
+
+        private static bool AllowsEncoding(string value, string encoding)
+        {
+            foreach (var token in (value ?? string.Empty).Split(','))
+            {
+                var parts = token.Trim().Split(';', 2);
+                if (!string.Equals(parts[0].Trim(), encoding, StringComparison.OrdinalIgnoreCase)) continue;
+                if (parts.Length == 1) return true;
+
+                var parameter = parts[1].Trim();
+                if (!parameter.StartsWith("q=", StringComparison.OrdinalIgnoreCase)) return true;
+                return !double.TryParse(
+                    parameter.AsSpan(2),
+                    NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture,
+                    out var quality) || quality > 0;
+            }
+
+            return false;
+        }
+
+        private sealed class CachedIndexHtml
+        {
+            private readonly object _gate = new();
+            private readonly byte[] _identity;
+            private byte[]? _brotli;
+            private byte[]? _gzip;
+
+            public CachedIndexHtml(byte[] identity, string contentType)
+            {
+                _identity = identity;
+                ContentType = contentType;
+            }
+
+            public string ContentType { get; }
+
+            public byte[] GetPayload(string? encoding)
+            {
+                if (encoding == null) return _identity;
+
+                lock (_gate)
+                {
+                    if (encoding == "br") return _brotli ??= CompressBrotli(_identity);
+                    return _gzip ??= CompressGzip(_identity);
+                }
+            }
+
+            private static byte[] CompressBrotli(byte[] payload)
+            {
+                using var output = new MemoryStream();
+                using (var stream = new BrotliStream(output, CompressionLevel.Fastest, leaveOpen: true))
+                    stream.Write(payload, 0, payload.Length);
+                return output.ToArray();
+            }
+
+            private static byte[] CompressGzip(byte[] payload)
+            {
+                using var output = new MemoryStream();
+                using (var stream = new GZipStream(output, CompressionLevel.Fastest, leaveOpen: true))
+                    stream.Write(payload, 0, payload.Length);
+                return output.ToArray();
+            }
         }
 
         private static bool IsIndexRequest(PathString path)

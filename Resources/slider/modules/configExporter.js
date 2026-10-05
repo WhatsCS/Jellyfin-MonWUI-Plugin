@@ -49,7 +49,7 @@ export function createBackupRestoreButtons() {
 
   const backupBtn = document.createElement('button');
   backupBtn.className = 'backup-button';
-  backupBtn.textContent = labels.ayarlariYedekle || 'Ayarları Yedekle';
+  backupBtn.textContent = labels.backupSettings || 'Backup Settings';
   backupBtn.addEventListener('click', (e) => {
     e.preventDefault();
     downloadConfigBackup();

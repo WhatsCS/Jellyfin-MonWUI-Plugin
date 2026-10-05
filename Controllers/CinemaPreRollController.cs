@@ -1,13 +1,13 @@
-using Jellyfin.Plugin.JMSFusion.Core;
+using Jellyfin.Plugin.JMSFusionV2.Core;
 using Jellyfin.Database.Implementations.Entities;
 using MediaBrowser.Controller.Library;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers;
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers;
 
 [ApiController]
-[Route("JMSFusion/cinema-preroll")]
-[Route("Plugins/JMSFusion/cinema-preroll")]
+[Route("JMSFusionV2/cinema-preroll")]
+[Route("Plugins/JMSFusionV2/cinema-preroll")]
 public class CinemaPreRollController : ControllerBase
 {
     private readonly CinemaPreRollCacheService _cacheService;

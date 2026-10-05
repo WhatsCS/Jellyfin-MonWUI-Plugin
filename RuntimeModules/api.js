@@ -61,9 +61,9 @@ export function getLastPlayNowBlockReason() {
 function getPlayNowSuccessMessage() {
   try {
     const liveConfig = (typeof getConfig === "function" ? getConfig() : null) || config || {};
-    return liveConfig?.languageLabels?.castbasarili || "Oynatma baslatildi";
+    return liveConfig?.languageLabels?.castplaybackstarted || "Playback Started";
   } catch {
-    return "Oynatma baslatildi";
+    return "Playback Started";
   }
 }
 
@@ -241,7 +241,7 @@ async function maybePlayCinemaPreRollSessionIfEnabled({ item } = {}) {
 
     return await mod.maybePlayCinemaPreRollSession({ item });
   } catch (error) {
-    console.warn("[JMSFusion] Cinema pre-roll runtime yuklenemedi:", error);
+    console.warn("[JMSFusionV2] Cinema pre-roll runtime yuklenemedi:", error);
     __cinemaPreRollRuntimePromise = null;
     return {
       played: false,
@@ -269,7 +269,7 @@ async function armCinemaPreRollNativePlaybackBypassIfEnabled({ itemId = "", item
 
     return !!mod.armCinemaPreRollNativePlaybackBypass({ itemId, itemIds, delayMs });
   } catch (error) {
-    console.warn("[JMSFusion] Cinema pre-roll native bypass kurulamadı:", error);
+    console.warn("[JMSFusionV2] Cinema pre-roll native bypass kurulamadı:", error);
     return false;
   }
 }
@@ -324,7 +324,7 @@ async function startResolvedVideoPlayback({ itemId, item, requesterUserId, persi
       itemType: item?.Type || "",
       mediaType: item?.MediaType || ""
     });
-    console.warn("[JMSFusion] Live TV playback is left to Jellyfin native player.", {
+    console.warn("[JMSFusionV2] Live TV playback is left to Jellyfin native player.", {
       itemId: normalizedItemId,
       type: item?.Type,
       mediaType: item?.MediaType
@@ -691,7 +691,7 @@ function shouldDebugAuthSnapshot() {
 function debugAuthSnapshot(reason, extra = {}) {
   if (!shouldDebugAuthSnapshot()) return;
   try {
-    console.debug("[JMSFusion] auth snapshot sync", { reason, ...extra });
+    console.debug("[JMSFusionV2] auth snapshot sync", { reason, ...extra });
   } catch {}
 }
 
@@ -2800,7 +2800,7 @@ export async function playNow(itemId) {
         itemType: item?.Type || "",
         mediaType: item?.MediaType || ""
       });
-      console.warn("[JMSFusion] Live TV playNow bypassed; native Jellyfin must handle channel playback.", {
+      console.warn("[JMSFusionV2] Live TV playNow bypassed; native Jellyfin must handle channel playback.", {
         itemId,
         type: item?.Type,
         mediaType: item?.MediaType
@@ -2815,7 +2815,7 @@ export async function playNow(itemId) {
     }
     if (item.Type === "Season") {
       const best = await getBestEpisodeIdForSeason(item.Id, item.SeriesId, requesterUserId);
-      if (!best) throw new Error("Bu sezonda hiç bölüm yok!");
+      if (!best) throw new Error("No episodes in this season!");
       itemId = best;
       item = await fetchItemDetails(itemId);
     }
@@ -2848,7 +2848,7 @@ export async function playNow(itemId) {
 
     await __destroyGmmpBeforeVideoPlayNow().catch(() => false);
     const cinemaPreRollResult = await maybePlayCinemaPreRollSessionIfEnabled({ item }).catch((error) => {
-      console.warn("[JMSFusion] Cinema pre-roll oynatimi atlandi:", error);
+      console.warn("[JMSFusionV2] Cinema pre-roll oynatimi atlandi:", error);
       return { played: false, reason: "error" };
     });
     if (cinemaPreRollResult?.reason === "session-active") {
@@ -2997,7 +2997,7 @@ export async function getVideoStreamUrl(
 
     if (item.Type === "Season") {
       const episodes = await makeApiRequest(`/Shows/${item.SeriesId}/Episodes?SeasonId=${itemId}&Fields=Id`, { signal });
-      if (!episodes?.Items?.length) throw new Error("Bu sezonda hiç bölüm yok!");
+      if (!episodes?.Items?.length) throw new Error("No episodes in this season!");
       const episode = episodes.Items[Math.floor(Math.random() * episodes.Items.length)];
       itemId = episode.Id;
       item = await fetchItemDetails(itemId, { signal });

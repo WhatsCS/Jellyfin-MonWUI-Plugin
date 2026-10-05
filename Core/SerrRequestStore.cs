@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 
-namespace Jellyfin.Plugin.JMSFusion
+namespace Jellyfin.Plugin.JMSFusionV2
 {
     internal static class SerrRequestStore
     {
@@ -16,7 +16,7 @@ namespace Jellyfin.Plugin.JMSFusion
             WriteIndented = false
         };
 
-        public static bool Save(JMSFusionConfiguration cfg)
+        public static bool Save(JMSFusionV2Configuration cfg)
         {
             if (cfg is null) return false;
 
@@ -148,7 +148,7 @@ namespace Jellyfin.Plugin.JMSFusion
 
         private static string StorePath()
         {
-            var plugin = JMSFusionPlugin.Instance;
+            var plugin = JMSFusionV2Plugin.Instance;
             return plugin is null ? string.Empty : Path.Combine(plugin.GetStorageDirectory("seerr"), StoreFileName);
         }
 

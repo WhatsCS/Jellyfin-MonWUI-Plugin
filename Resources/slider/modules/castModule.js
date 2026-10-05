@@ -5,7 +5,7 @@ import {
   updateFavoriteStatus,
   getDetailsUrl,
   isCurrentUserAdmin
-} from "../../Plugins/JMSFusion/runtime/api.js";
+} from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig } from "./config.js";
 import { withServer } from "./jfUrl.js";
 import { getWatchlistButtonText, getWatchlistToast } from "./watchlist.js";
@@ -252,7 +252,7 @@ export async function getCastAccess({ force = false } = {}) {
 
   castAccessPromise = (async () => {
     try {
-      const response = await makeCastApiRequest("/Plugins/JMSFusion/cast/access", { __quiet: true });
+      const response = await makeCastApiRequest("/Plugins/JMSFusionV2/cast/access", { __quiet: true });
       const normalized = {
         ...getLocalCastAccessFallback(),
         ...(response && typeof response === "object" ? response : {})
@@ -1052,7 +1052,7 @@ function isRemoteGmmpStateFresh(remoteState) {
 
 async function fetchRemoteGmmpStateMap({ signal } = {}) {
   try {
-    const response = await makeCastApiRequest("/Plugins/JMSFusion/gmmp/states", {
+    const response = await makeCastApiRequest("/Plugins/JMSFusionV2/gmmp/states", {
       signal,
       __quiet: true
     });
@@ -1662,7 +1662,7 @@ async function fetchVisiblePlaybackSessions({ signal } = {}) {
   }
 
   try {
-    const response = await makeCastApiRequest("/Plugins/JMSFusion/cast/sessions", {
+    const response = await makeCastApiRequest("/Plugins/JMSFusionV2/cast/sessions", {
       signal,
       __quiet: true
     });
@@ -2734,7 +2734,7 @@ async function sendRemoteGmmpCommand(target, name, args = undefined, { signal, b
     });
   } catch {}
 
-  return makeCastApiRequest("/Plugins/JMSFusion/gmmp/commands", {
+  return makeCastApiRequest("/Plugins/JMSFusionV2/gmmp/commands", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -3676,7 +3676,7 @@ export async function loadAvailableDevices(itemId, dropdown) {
     if (sortedDevices.length === 0) {
       const emptyState = document.createElement("div");
       emptyState.className = "monwui-no-devices";
-      emptyState.textContent = t("castcihazyok", "Kullanilabilir hedef cihaz bulunamadı");
+      emptyState.textContent = t("castdevicenotfound", "No Available Target Device Found");
       dropdown.appendChild(emptyState);
       return;
     }
@@ -3752,11 +3752,11 @@ export async function startPlayback(itemId, sessionId) {
       }
     );
 
-    showNotification(t("castbasarili", "Oynatma başlatıldı"), "success");
+    showNotification(t("castplaybackstarted", "Playback Started"), "success");
     return true;
   } catch (error) {
-    console.error("Oynatma hatası:", error);
-    showNotification(`${t("castoynatmahata", "Oynatma hatası")}: ${error.message}`, "error");
+    console.error("Playback error:", error);
+    showNotification(`${t("castplaybackerror", "Playback error")}: ${error.message}`, "error");
     return false;
   }
 }

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/29947627-b2ff-4ecd-8a2b-4df932aca657" alt="JMSFusion logo" width="200" />
+  <img src="https://github.com/user-attachments/assets/29947627-b2ff-4ecd-8a2b-4df932aca657" alt="JMSFusionV2 logo" width="200" />
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
     src="https://img.shields.io/badge/Status-Archived-6b7280?style=for-the-badge"
   />
 
-  <a href="https://github.com/G-grbz/Jellyfin-MonWUI-Plugin/blob/main/LICENSE">
+  <a href="https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/blob/main/LICENSE">
     <img
       alt="License"
       src="https://img.shields.io/badge/License-GPLv3-7c3aed?style=for-the-badge"
@@ -45,9 +45,9 @@
 
 ## Overview
 
-**Jellyfin MonWUI Plugin**, displayed in Jellyfin as **JMSFusion**, is an all-in-one frontend enhancement layer built around a modular slider system located in `Resources/slider/`.
+**Jellyfin MonWUI Plugin**, displayed in Jellyfin as **JMSFusionV2**, is an all-in-one frontend enhancement layer built around a modular slider system located in `Resources/slider/`.
 
-Rather than applying a single visual modification, JMSFusion expands the Jellyfin Web experience across home screen presentation, metadata, hover interactions, profile management, music playback, pause behavior, library discovery, notifications, and centralized UI configuration.
+Rather than applying a single visual modification, JMSFusionV2 expands the Jellyfin Web experience across home screen presentation, metadata, hover interactions, profile management, music playback, pause behavior, library discovery, notifications, and centralized UI configuration.
 
 The project was designed to make Jellyfin feel more polished, personal, and cinematic while keeping the interface cohesive.
 
@@ -55,7 +55,7 @@ The project was designed to make Jellyfin feel more polished, personal, and cine
 
 ## Client Compatibility
 
-JMSFusion works by injecting JavaScript and CSS into the **Jellyfin Web UI**.
+JMSFusionV2 works by injecting JavaScript and CSS into the **Jellyfin Web UI**.
 
 ### Compatible clients
 
@@ -71,7 +71,7 @@ JMSFusion works by injecting JavaScript and CSS into the **Jellyfin Web UI**.
 * Native TV clients that do not load the server's `jellyfin-web` frontend
 * Other clients using an independent native interface
 
-In short, if a client does not render the server's `/web/index.html`, JMSFusion cannot modify its interface.
+In short, if a client does not render the server's `/web/index.html`, JMSFusionV2 cannot modify its interface.
 
 Because the project is archived, compatibility with newer Jellyfin server or client releases is not guaranteed.
 
@@ -169,17 +169,17 @@ For existing installations:
 
 1. Open **Jellyfin Dashboard**
 2. Go to **Plugins**
-3. Uninstall **JMSFusion**
+3. Uninstall **JMSFusionV2**
 4. Restart Jellyfin
 5. Hard refresh the Jellyfin Web interface using **Ctrl + F5** or **Ctrl + Shift + R**
 
-If browser-cached JMSFusion assets remain visible after uninstalling, clear the Jellyfin site's cached data and reload the page.
+If browser-cached JMSFusionV2 assets remain visible after uninstalling, clear the Jellyfin site's cached data and reload the page.
 
 ---
 
 ## Acknowledgment
 
-The original idea behind the **JMS slider concept**, which influenced parts of JMSFusion, was created by **BobHasNoSoul**.
+The original idea behind the **JMS slider concept**, which influenced parts of JMSFusionV2, was created by **BobHasNoSoul**.
 
 https://github.com/BobHasNoSoul
 
@@ -187,7 +187,7 @@ https://github.com/BobHasNoSoul
 
 ## License
 
-JMSFusion is released under the **GNU General Public License v3.0**.
+JMSFusionV2 is released under the **GNU General Public License v3.0**.
 
 See [LICENSE](LICENSE) for details.
 

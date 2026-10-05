@@ -17,13 +17,13 @@ export function createPausePanel(_config, labels) {
   panel.id = 'pause-panel';
   panel.className = 'settings-panel';
 
-  const section = createSection(labels.pauseSettings || 'Duraklatma Ekranı Ayarları');
+  const section = createSection(labels.pauseSettings || 'Pause Screen Settings');
 
   const pauseCssVariantContainer = document.createElement('div');
   pauseCssVariantContainer.className = 'fsetting-item';
 
   const pauseCssVariantLabel = document.createElement('label');
-  pauseCssVariantLabel.textContent = labels.pauseOverlayCssVariant || 'Duraklatma Ekranı Stili';
+  pauseCssVariantLabel.textContent = labels.pauseOverlayCssVariant || 'Pause Screen Style';
   pauseCssVariantLabel.htmlFor = 'pauseOverlayCssVariant';
   pauseCssVariantLabel.className = 'settings-label';
 
@@ -51,12 +51,12 @@ export function createPausePanel(_config, labels) {
   pauseCssVariantDescription.className = 'description-text';
   pauseCssVariantDescription.textContent =
     labels.pauseOverlayCssVariantDescription ||
-    'Duraklatma ekranında kullanılacak CSS tasarımını seçin.';
+    'Select the CSS design to be used on the pause screen.';
   section.appendChild(pauseCssVariantDescription);
 
   const enableCheckbox = createCheckbox(
     'pauseOverlay',
-    labels.enablePauseOverlay || 'Durdurma Ekranını Etkinleştir',
+    labels.enablePauseOverlay || 'Enable Pause Screen',
     config.pauseOverlay.enabled
   );
   section.appendChild(enableCheckbox);
@@ -64,7 +64,7 @@ export function createPausePanel(_config, labels) {
   const description = document.createElement('div');
   description.className = 'description-text';
   description.textContent = labels.pauseOverlayDescription ||
-      'Bu özellik etkinleştirildiğinde, video duraklatıldığında içerik bilgilerini gösteren bir ekran görüntülenir.';
+      'When this feature is enabled, a screen appears showing the content information when the video is paused.';
   section.appendChild(description);
   const imagePrefContainer = document.createElement('div');
   imagePrefContainer.className = 'fsetting-item';
@@ -93,28 +93,28 @@ export function createPausePanel(_config, labels) {
 
   const showPlotCheckbox = createCheckbox(
     'pauseOverlayShowPlot',
-    labels.showPlot || 'Konu Açıklamasını Göster',
+    labels.showPlot || 'Konu Açıklamasını Show',
     config.pauseOverlay.showPlot !== false
   );
   section.appendChild(showPlotCheckbox);
 
   const showMetadataCheckbox = createCheckbox(
     'pauseOverlayShowMetadata',
-    labels.showMetadata || 'Bilgi Satırlarını Göster',
+    labels.showMetadata || 'Bilgi Satırlarını Show',
     config.pauseOverlay.showMetadata !== false
   );
   section.appendChild(showMetadataCheckbox);
 
   const showLogoCheckbox = createCheckbox(
     'pauseOverlayShowLogo',
-    labels.showLogo || 'Logo/Disk/Yazı Göster',
+    labels.showLogo || 'Logo/Disk/Yazı Show',
     config.pauseOverlay.showLogo !== false
   );
   section.appendChild(showLogoCheckbox);
 
   const showBackdropCheckbox = createCheckbox(
     'pauseOverlayShowBackdrop',
-    labels.showBackdrop || 'Arka Plan Görselini Göster',
+    labels.showBackdrop || 'Arka Plan Görselini Show',
     config.pauseOverlay.showBackdrop !== false
   );
   section.appendChild(showBackdropCheckbox);
@@ -141,12 +141,12 @@ export function createPausePanel(_config, labels) {
   minDurDesc.className = 'description-text';
   minDurDesc.textContent =
     labels.pauseOverlayMinVideoMinutesDesc
-    || 'Bu değerden kısa (dk) videolarda üst-badge ve duraklatma ekranı gösterilmez.';
+    || 'Videos shorter than this value (min) will not show top-badge and pause screen.';
   section.appendChild(minDurDesc);
 
   const osdHeaderRatingsHeader = document.createElement('h3');
   osdHeaderRatingsHeader.className = 'settings-subheader';
-  osdHeaderRatingsHeader.textContent = labels.osdHeaderRatingsHeader || 'OSD Başlık Öğeleri';
+  osdHeaderRatingsHeader.textContent = labels.osdHeaderRatingsHeader || 'OSD Title Itemleri';
   section.appendChild(osdHeaderRatingsHeader);
 
   const showOsdHeaderRatingsCheckbox = createCheckbox(
@@ -160,7 +160,7 @@ export function createPausePanel(_config, labels) {
   osdHeaderRatingsSubOptions.className = 'sub-options pause-osd-header-rating-sub-options';
   osdHeaderRatingsSubOptions.appendChild(createCheckbox(
     'pauseOverlayShowOsdHeaderCommunityRating',
-    labels.showCommunityRating || 'Topluluk',
+    labels.showCommunityRating || 'Community',
     config.pauseOverlay?.showOsdHeaderCommunityRating !== false
   ));
   osdHeaderRatingsSubOptions.appendChild(createCheckbox(
@@ -170,7 +170,7 @@ export function createPausePanel(_config, labels) {
   ));
   osdHeaderRatingsSubOptions.appendChild(createCheckbox(
     'pauseOverlayShowOsdHeaderOfficialRating',
-    labels.showOfficialRating || 'Sertifikasyon',
+    labels.showOfficialRating || 'Certification',
     config.pauseOverlay?.showOsdHeaderOfficialRating !== false
   ));
 
@@ -202,7 +202,7 @@ export function createPausePanel(_config, labels) {
   osdHeaderRatingsDesc.className = 'description-text';
   osdHeaderRatingsDesc.textContent =
     labels.osdHeaderRatingsDescription ||
-    'Oynatma ekranındaki üst başlıkta, içerik adının yanında gösterilen puan rozetlerini ve saati kontrol eder.';
+    'Controls the rating badges and clock displayed next to the content name in the top header of the playback screen.';
   section.appendChild(osdHeaderRatingsDesc);
 
   bindCheckboxKontrol('#pauseOverlayShowOsdHeaderRatings', '.pause-osd-header-rating-sub-options');
@@ -222,7 +222,7 @@ export function createPausePanel(_config, labels) {
 
   const minDelayRow = addNumberRow({
     name: 'badgeDelayMs',
-    label: (labels.pauseOverlayBadgeDelayMs || 'Badge Gecikme Süresi'),
+    label: (labels.pauseOverlayBadgeDelayMs || 'Badge Delay Duration'),
     value: Math.max(1, Math.round((config.pauseOverlay?.badgeDelayMs ?? 5000) / 1000)),
     min: 1,
     max: 3600,
@@ -233,7 +233,7 @@ export function createPausePanel(_config, labels) {
 
   const minDelayResumeRow = addNumberRow({
     name: 'badgeDelayResumeMs',
-    label: (labels.badgeDelayResumeMs || 'Devam Ettirildiğinde Badge Gecikme Süresi'),
+    label: (labels.badgeDelayResumeMs || 'Devam Ettirildiğinde Badge Delay Duration'),
     value: Math.max(1, Math.round((config.pauseOverlay?.badgeDelayResumeMs ?? 5000) / 1000)),
     min: 1,
     max: 3600,
@@ -255,7 +255,7 @@ export function createPausePanel(_config, labels) {
 
   const ageBadgeDurationResumeMs = addNumberRow({
     name: 'ageBadgeDurationResumeMs',
-    label: (labels.ageBadgeDurationResumeMs || 'Devam Ettirildiğinde Badge Gösterim Süresi'),
+    label: (labels.ageBadgeDurationResumeMs || 'Devam Ettirildiğinde Badge Showim Duration'),
     value: Math.max(1, Math.round((config.pauseOverlay?.ageBadgeDurationResumeMs ?? 5000) / 1000)),
     min: 1,
     max: 3600,

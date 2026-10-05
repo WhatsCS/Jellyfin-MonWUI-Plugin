@@ -10,13 +10,13 @@ export function createButtonsPanel(config, labels) {
     const section = createSection(labels.buttons || 'Buton Ayarları');
 
     const trailerButtonDiv = document.createElement('div');
-    trailerButtonDiv.appendChild(createCheckbox('showTrailerButton', labels.showTrailerButton || 'Fragman Butonunu Göster', config.showTrailerButton));
+    trailerButtonDiv.appendChild(createCheckbox('showTrailerButton', labels.showTrailerButton || 'Fragman Butonunu Show', config.showTrailerButton));
     section.appendChild(trailerButtonDiv);
 
     const trailerBgDiv = document.createElement('div');
     trailerBgDiv.className = 'setting-item trailer-bg-container';
     const trailerBgLabel = document.createElement('label');
-    trailerBgLabel.textContent = labels.buttonBackgroundImageType || 'Buton Arka Plan Görsel Türü:';
+    trailerBgLabel.textContent = labels.buttonBackgroundImageType || 'Buton Arka Plan Image Type:';
     const trailerBgSelect = createImageTypeSelect('trailerBackgroundImageType', config.trailerBackgroundImageType || 'backdropUrl', true);
     trailerBgLabel.htmlFor = 'trailerBgSelect';
     trailerBgSelect.id = 'trailerBgSelect';
@@ -26,13 +26,13 @@ export function createButtonsPanel(config, labels) {
     bindCheckboxKontrol('#showTrailerButton', '.trailer-bg-container', 0.6, [trailerBgSelect]);
 
     const watchButtonDiv = document.createElement('div');
-    watchButtonDiv.appendChild(createCheckbox('showWatchButton', labels.showWatchButton || 'İzle Butonunu Göster', config.showWatchButton));
+    watchButtonDiv.appendChild(createCheckbox('showWatchButton', labels.showWatchButton || 'İzle Butonunu Show', config.showWatchButton));
     section.appendChild(watchButtonDiv);
 
     const watchBgDiv = document.createElement('div');
     watchBgDiv.className = 'setting-item watch-bg-container';
     const watchBgLabel = document.createElement('label');
-    watchBgLabel.textContent = labels.buttonBackgroundImageType || 'Buton Arka Plan Görsel Türü:';
+    watchBgLabel.textContent = labels.buttonBackgroundImageType || 'Buton Arka Plan Image Type:';
     const watchBgSelect = createImageTypeSelect('watchBackgroundImageType', config.watchBackgroundImageType || 'backdropUrl', true);
     watchBgLabel.htmlFor = 'watchBgSelect';
     watchBgSelect.id = 'watchBgSelect';
@@ -42,13 +42,13 @@ export function createButtonsPanel(config, labels) {
     bindCheckboxKontrol('#showWatchButton', '.watch-bg-container', 0.6, [watchBgSelect]);
 
     const favoriteButtonDiv = document.createElement('div');
-    favoriteButtonDiv.appendChild(createCheckbox('showFavoriteButton', labels.showFavoriteButton || 'Favori Butonunu Göster', config.showFavoriteButton));
+    favoriteButtonDiv.appendChild(createCheckbox('showFavoriteButton', labels.showFavoriteButton || 'Favori Butonunu Show', config.showFavoriteButton));
     section.appendChild(favoriteButtonDiv);
 
     const favoriBgDiv = document.createElement('div');
     favoriBgDiv.className = 'setting-item favorite-bg-container';
     const favoriBgLabel = document.createElement('label');
-    favoriBgLabel.textContent = labels.buttonBackgroundImageType || 'Buton Arka Plan Görsel Türü:';
+    favoriBgLabel.textContent = labels.buttonBackgroundImageType || 'Buton Arka Plan Image Type:';
     const favoriBgSelect = createImageTypeSelect('favoriteBackgroundImageType', config.favoriteBackgroundImageType || 'backdropUrl', true);
     favoriBgLabel.htmlFor = 'favoriBgSelect';
     favoriBgSelect.id = 'favoriBgSelect';
@@ -58,13 +58,13 @@ export function createButtonsPanel(config, labels) {
     bindCheckboxKontrol('#showFavoriteButton', '.favorite-bg-container', 0.6, [favoriBgSelect]);
 
     const playedButtonDiv = document.createElement('div');
-    playedButtonDiv.appendChild(createCheckbox('showPlayedButton', labels.showPlayedButton || 'İzlenme Durumu Kontrol Butonunu Göster', config.showPlayedButton));
+    playedButtonDiv.appendChild(createCheckbox('showPlayedButton', labels.showPlayedButton || 'Show Watch Status Toggle Button', config.showPlayedButton));
     section.appendChild(playedButtonDiv);
 
     const playedBgDiv = document.createElement('div');
     playedBgDiv.className = 'setting-item played-bg-container';
     const playedBgLabel = document.createElement('label');
-    playedBgLabel.textContent = labels.buttonBackgroundImageType || 'Buton Arka Plan Görsel Türü:';
+    playedBgLabel.textContent = labels.buttonBackgroundImageType || 'Buton Arka Plan Image Type:';
     const playedBgSelect = createImageTypeSelect('playedBackgroundImageType', config.playedBackgroundImageType || 'backdropUrl', true);
     playedBgLabel.htmlFor = 'playedBgSelect';
     playedBgSelect.id = 'playedBgSelect';

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Net.Http.Headers;
 
-namespace Jellyfin.Plugin.JMSFusion
+namespace Jellyfin.Plugin.JMSFusionV2
 {
     internal static class AssetVersioning
     {
         private const string CacheControlValue = "public, max-age=0, must-revalidate";
+        private const string ImmutableCacheControlValue = "public, max-age=31536000, immutable";
         private static readonly string s_assetVersion = BuildAssetVersion();
 
         public static string AssetVersion => s_assetVersion;
@@ -139,7 +140,7 @@ namespace Jellyfin.Plugin.JMSFusion
   var PROGRESS_API_KEY = "__JMS_CUSTOM_SPLASH_PROGRESS__";
   var FALLBACK_TIMEOUT_MS = 16000;
   var FALLBACK_CLEANUP_MS = 460;
-  var PING_PATHS = ["/JMSFusion/ping", "/Plugins/JMSFusion/ping"];
+  var PING_PATHS = ["/JMSFusionV2/ping", "/Plugins/JMSFusionV2/ping"];
 
   function toCssContent(value) {
     return '"' + String(value || "")
@@ -1334,14 +1335,17 @@ html[data-jms-custom-splash="1"][data-jms-custom-splash-hidden="1"] #${LOGO_ID} 
         {
             var cacheKey = context.Context.Request.Path.Value ?? string.Empty;
             var etag = BuildEtag(cacheKey);
-            ApplyHeaders(context.Context.Response.Headers, etag);
+            ApplyHeaders(context.Context.Response.Headers, etag, IsHashedBundleChunk(cacheKey));
         }
 
-        private static void ApplyHeaders(IHeaderDictionary headers, string etag)
+        private static void ApplyHeaders(IHeaderDictionary headers, string etag, bool immutable = false)
         {
-            headers[HeaderNames.CacheControl] = CacheControlValue;
+            headers[HeaderNames.CacheControl] = immutable ? ImmutableCacheControlValue : CacheControlValue;
             headers[HeaderNames.ETag] = etag;
         }
+
+        private static bool IsHashedBundleChunk(string path)
+            => path.StartsWith("/slider/dist/", StringComparison.OrdinalIgnoreCase);
 
         private static string BuildEtag(string cacheKey)
         {
@@ -1351,7 +1355,7 @@ html[data-jms-custom-splash="1"][data-jms-custom-splash-hidden="1"] #${LOGO_ID} 
 
         private static string BuildAssetVersion()
         {
-            var assembly = typeof(JMSFusionPlugin).Assembly;
+            var assembly = typeof(JMSFusionV2Plugin).Assembly;
             var version = assembly.GetName().Version?.ToString() ?? "0.0.0.0";
             var mvid = assembly.ManifestModule.ModuleVersionId.ToString("N");
             return $"{version}-{mvid[..12]}";

@@ -9,11 +9,11 @@ using Jellyfin.Database.Implementations.Enums;
 using MediaBrowser.Controller.Library;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/gmmp")]
-    [Route("Plugins/JMSFusion/gmmp")]
+    [Route("JMSFusionV2/gmmp")]
+    [Route("Plugins/JMSFusionV2/gmmp")]
     public class GmmpSyncController : ControllerBase
     {
         private static readonly ConcurrentDictionary<string, GmmpStateRecord> StateRecords =
@@ -192,7 +192,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             CleanupExpiredEntries();
 
-            var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+            var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
             var cfg = plugin.Configuration;
             var isAdmin = IsAdminUser(userCheck.User);
 

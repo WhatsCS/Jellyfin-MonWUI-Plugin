@@ -59,35 +59,35 @@ export function createImageTypeSelect(name, selectedValue, includeExtended = fal
   const options = [
     {
       value: "none",
-      label: labels.imageTypeNone || "Hiçbiri"
+      label: labels.imageTypeNone || "None"
     },
     {
       value: "backdropUrl",
-      label: labels.imageTypeBackdrop || "Backdrop Görseli"
+      label: labels.imageTypeBackdrop || "Backdrop Image"
     },
     {
       value: "landscapeUrl",
-      label: labels.imageTypeLandscape || "Landscape Görseli"
+      label: labels.imageTypeLandscape || "Landscape Image"
     },
     {
       value: "primaryUrl",
-      label: labels.imageTypePoster || "Poster Görseli"
+      label: labels.imageTypePoster || "Poster Image"
     },
     {
       value: "logoUrl",
-      label: labels.imageTypeLogo || "Logo Görseli"
+      label: labels.imageTypeLogo || "Logo Image"
     },
     {
       value: "bannerUrl",
-      label: labels.imageTypeBanner || "Banner Görseli"
+      label: labels.imageTypeBanner || "Banner Image"
     },
     {
       value: "artUrl",
-      label: labels.imageTypeArt || "Art Görseli"
+      label: labels.imageTypeArt || "Art Image"
     },
     {
       value: "discUrl",
-      label: labels.imageTypeDisc || "Disk Görseli"
+      label: labels.imageTypeDisc || "Disc Image"
     }
   ];
 

@@ -1,4 +1,4 @@
-import { fetchItemDetailsFull, fetchItemsBulk, getEmbyHeaders, getLastPlayNowBlockReason, getSessionInfo, makeApiRequest, playNow, updateFavoriteStatus } from "../../Plugins/JMSFusion/runtime/api.js";
+import { fetchItemDetailsFull, fetchItemsBulk, getEmbyHeaders, getLastPlayNowBlockReason, getSessionInfo, makeApiRequest, playNow, updateFavoriteStatus } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { CollectionCacheDB } from "./collectionCacheDb.js";
 import { getConfig } from "./config.js";
 import { withServer } from "./jfUrl.js";
@@ -14,7 +14,7 @@ import {
   requestSerrMissingSyntheticItem
 } from "./seerr/itemPageBridge.js";
 
-const WATCHLIST_ENDPOINT = "/Plugins/jmsFusion/watchlist";
+const WATCHLIST_ENDPOINT = "/Plugins/JMSFusionV2/watchlist";
 export const WATCHLIST_MODAL_ID = "monwui-watchlist-modal-root";
 const WATCHLIST_STYLE_ID = "monwui-watchlist-modal-style";
 const WATCHLIST_NAV_BUTTON_CLASS = "monwui-watchlist-nav-button";
@@ -1101,7 +1101,7 @@ function buildWatchlistHeaders(extra = {}) {
   });
 
   if (userId) headers["X-Emby-UserId"] = userId;
-  if (userName) headers["X-jmsFusion-UserName"] = userName;
+  if (userName) headers["X-JMSFusionV2-UserName"] = userName;
 
   return headers;
 }
@@ -4989,9 +4989,9 @@ function renderGeneralStatsMediaCard(section) {
     ? `
       <div class="monwuiwl-general-last-title">${escapeHtml(lastItem.title)}</div>
       ${lastItem.subtitle ? `<div class="monwuiwl-general-last-subtitle">${escapeHtml(lastItem.subtitle)}</div>` : ""}
-      <div class="monwuiwl-general-last-meta">${escapeHtml(lastItem.playedAt ? formatDate(lastItem.playedAt) : L("watchlistGeneralEmptyLast", "Henüz oynatma yok"))}</div>
+      <div class="monwuiwl-general-last-meta">${escapeHtml(lastItem.playedAt ? formatDate(lastItem.playedAt) : L("watchlistGeneralEmptyLast", "No Playback Yet"))}</div>
     `
-    : `<div class="monwuiwl-general-last-empty">${escapeHtml(L("watchlistGeneralEmptyLast", "Henüz oynatma yok"))}</div>`;
+    : `<div class="monwuiwl-general-last-empty">${escapeHtml(L("watchlistGeneralEmptyLast", "No Playback Yet"))}</div>`;
 
   return `
     <article class="monwuiwl-general-card" data-media-key="${escapeHtml(section?.key || "")}">
@@ -5021,7 +5021,7 @@ function renderGeneralStatsMediaCard(section) {
 
 function renderGeneralTopRepeated(topRepeated = []) {
   if (!Array.isArray(topRepeated) || !topRepeated.length) {
-    return `<div class="monwuiwl-empty">${escapeHtml(L("watchlistGeneralTopReplayEmpty", "Tekrar oynatma verisi henüz yok."))}</div>`;
+    return `<div class="monwuiwl-empty">${escapeHtml(L("watchlistGeneralTopReplayEmpty", "No Replay Data Yet."))}</div>`;
   }
 
   return `
@@ -5139,7 +5139,7 @@ function renderPreviewEmptyState() {
   return `
     <div class="monwuiwl-preview-empty">
       <div class="monwuiwl-preview-empty-copy">
-        ${escapeHtml(L("watchlistEmptySection", "Burada henüz öğe yok."))}
+        ${escapeHtml(L("watchlistEmptySection", "No Items Here Yet."))}
       </div>
     </div>
   `;
@@ -6205,7 +6205,7 @@ function renderSection(title, items, sectionKey = "") {
         <div class="monwuiwl-section-head">
           <h3 class="monwuiwl-section-title">${escapeHtml(sectionTitle)}</h3>
         </div>
-        <div class="monwuiwl-empty">${escapeHtml(L("watchlistEmptySection", "Burada henüz öğe yok."))}</div>
+        <div class="monwuiwl-empty">${escapeHtml(L("watchlistEmptySection", "No Items Here Yet."))}</div>
       </section>
     `;
   }

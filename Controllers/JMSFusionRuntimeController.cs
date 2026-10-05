@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/runtime")]
-    [Route("Plugins/JMSFusion/runtime")]
-    public class JMSFusionRuntimeController : ControllerBase
+    [Route("JMSFusionV2/runtime")]
+    [Route("Plugins/JMSFusionV2/runtime")]
+    public class JMSFusionV2RuntimeController : ControllerBase
     {
         private static readonly IReadOnlyDictionary<string, string> ScriptResourceMap =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -19,9 +19,9 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 ["storage-preload"] = "RuntimeModules.storagePreload.js"
             };
 
-        private readonly ILogger<JMSFusionRuntimeController> _logger;
+        private readonly ILogger<JMSFusionV2RuntimeController> _logger;
 
-        public JMSFusionRuntimeController(ILogger<JMSFusionRuntimeController> logger)
+        public JMSFusionV2RuntimeController(ILogger<JMSFusionV2RuntimeController> logger)
         {
             _logger = logger;
         }
@@ -41,8 +41,8 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                     return StatusCode(304);
                 }
 
-                var asm = typeof(JMSFusionPlugin).Assembly;
-                var ns = typeof(JMSFusionPlugin).Namespace;
+                var asm = typeof(JMSFusionV2Plugin).Assembly;
+                var ns = typeof(JMSFusionV2Plugin).Namespace;
                 var resourceName = $"{ns}.{resourceSuffix}";
 
                 using var stream = asm.GetManifestResourceStream(resourceName);

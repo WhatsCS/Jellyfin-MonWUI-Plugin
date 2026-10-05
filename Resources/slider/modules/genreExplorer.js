@@ -1,4 +1,4 @@
-import { makeApiRequest, getSessionInfo, getCachedUserTopGenres } from "../../Plugins/JMSFusion/runtime/api.js";
+import { makeApiRequest, getSessionInfo, getCachedUserTopGenres } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig } from "./config.js";
 import { withServer } from "./jfUrl.js";
 import { openDetailsModal } from "./detailsModalLoader.js";
@@ -782,7 +782,7 @@ function createCardFor(item) {
     noImg.className = 'prc-noimg-label';
     noImg.textContent =
       (cfg.languageLabels && (cfg.languageLabels.noImage || cfg.languageLabels.loadingText))
-      || 'Görsel yok';
+      || 'No Image';
     noImg.style.minHeight = '220px';
     noImg.style.display = 'flex';
     noImg.style.alignItems = 'center';

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers;
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers;
 
 [ApiController]
-[Route("JMSFusion/ping")]
-[Route("Plugins/JMSFusion/ping")]
+[Route("JMSFusionV2/ping")]
+[Route("Plugins/JMSFusionV2/ping")]
 public class PingController : ControllerBase
 {
     [HttpGet]
@@ -13,7 +13,7 @@ public class PingController : ControllerBase
         Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
         Response.Headers["Pragma"] = "no-cache";
         Response.Headers["Expires"] = "0";
-        Response.Headers["X-JMSFusion-Version"] = AssetVersioning.AssetVersion;
+        Response.Headers["X-JMSFusionV2-Version"] = AssetVersioning.AssetVersion;
         return NoContent();
     }
 }

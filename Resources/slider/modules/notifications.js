@@ -1,4 +1,4 @@
-import { makeApiRequest, getSessionInfo, fetchItemDetails, getVideoStreamUrl, playNow, isCurrentUserAdmin, fetchItemsBulk } from "../../Plugins/JMSFusion/runtime/api.js";
+import { makeApiRequest, getSessionInfo, fetchItemDetails, getVideoStreamUrl, playNow, isCurrentUserAdmin, fetchItemsBulk } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig, getServerAddress } from "./config.js";
 import { getVideoQualityText } from "./containerUtils.js";
 import { getCurrentVersionFromEnv, compareSemver } from "./update.js";
@@ -1205,7 +1205,7 @@ items = [...updates, ...normals];
     ul.innerHTML = `
       <li class="jf-notif-empty">
         <i class="fa-solid fa-box-open" aria-hidden="true"></i>
-        <span>${config.languageLabels.noNewContent || "Yeni içerik yok."}</span>
+        <span>${config.languageLabels.noNewContent || "No New Content."}</span>
       </li>`;
     return;
   }
@@ -1244,7 +1244,7 @@ function getDetailFor(n) {
       <div class="time">${formatTime(n.timestamp)}</div>
     </div>
     <div class="actions">
-      <a class="lnk" target="_blank" rel="noopener" href="${escapeHtml(n.url || "https://github.com/G-grbz/Jellyfin-MonWUI-Plugin/releases")}">
+      <a class="lnk" target="_blank" rel="noopener" href="${escapeHtml(n.url || "https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/releases")}">
         ${escapeHtml(config.languageLabels?.viewOnGithub || "GitHub’da Gör / İndir")}
       </a>
       ${!n.read ? `
@@ -1406,7 +1406,7 @@ async function renderResume() {
       .filter((it) => Number(it?.UserData?.PlaybackPositionTicks || 0) > 0)
       .slice(0, liveConfig.renderResume || 10);
     if (!items.length) {
-      container.innerHTML = `<div class="jf-empty">${labels.noUnfinishedContent || "Yarim kalan icerik yok."}</div>`;
+      container.innerHTML = `<div class="jf-empty">${labels.noUnfinishedContent || "No Unfinished Content."}</div>`;
       return;
     }
 
@@ -1989,7 +1989,7 @@ function renderActivities(activities = []) {
   ul.innerHTML = "";
 
   if (!activities.length) {
-    ul.innerHTML = `<li class="jf-activity-empty">${config.languageLabels.noSystemActivities || "Henüz sistem bildirimi yok."}</li>`;
+    ul.innerHTML = `<li class="jf-activity-empty">${config.languageLabels.noSystemActivities || "No System Notifications Yet."}</li>`;
     return;
   }
 
@@ -2262,7 +2262,7 @@ export function renderUpdateBanner() {
 
   txt.textContent = `${config.languageLabels?.updateAvailable || "Yeni sürüm mevcut"}: ${data.latest}`;
   lnk.textContent = config.languageLabels?.viewOnGithub || "GitHub'da Gör / İndir";
-  lnk.href = data.url || "https://github.com/G-grbz/Jellyfin-MonWUI-Plugin/releases";
+  lnk.href = data.url || "https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/releases";
 
   dis.onclick = () => {
     el.style.display = "none";
@@ -2586,7 +2586,7 @@ function formatEpisodeHeading({
   function addUpdate() {
     if (!S.enabled) return;
     const v = `v${(Math.random()*3+1).toFixed(1)}.${Math.floor(Math.random()*10)}`;
-    try { window.jfNotifyUpdateAvailable({ latest:v, url:"https://github.com/G-grbz/Jellyfin-MonWUI-Plugin/releases", remindMs:0 }); } catch {}
+    try { window.jfNotifyUpdateAvailable({ latest:v, url:"https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/releases", remindMs:0 }); } catch {}
     if (S.autoOpenModal) openModalHard();
   }
   function clearToasts() {

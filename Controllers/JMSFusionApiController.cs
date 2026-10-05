@@ -12,17 +12,17 @@ using System.Text.RegularExpressions;
 using System.IO.Compression;
 using IOFile = System.IO.File;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("Plugins/JMSFusion")]
-    public class JMSFusionApiController : ControllerBase
+    [Route("Plugins/JMSFusionV2")]
+    public class JMSFusionV2ApiController : ControllerBase
     {
-        private readonly ILogger<JMSFusionApiController> _logger;
-        public JMSFusionApiController(ILogger<JMSFusionApiController> logger) => _logger = logger;
+        private readonly ILogger<JMSFusionV2ApiController> _logger;
+        public JMSFusionV2ApiController(ILogger<JMSFusionV2ApiController> logger) => _logger = logger;
 
         [HttpGet("Configuration")]
-        public ActionResult<JMSFusionConfiguration> GetConfiguration() => Ok(JMSFusionPlugin.Instance.Configuration);
+        public ActionResult<JMSFusionV2Configuration> GetConfiguration() => Ok(JMSFusionV2Plugin.Instance.Configuration);
 
         public sealed class UpdateRequest
         {
@@ -37,7 +37,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         {
             try
             {
-                var plugin = JMSFusionPlugin.Instance;
+                var plugin = JMSFusionV2Plugin.Instance;
                 var cfg = plugin.Configuration;
 
                 if (req.ScriptDirectory != null) cfg.ScriptDirectory = req.ScriptDirectory.Trim();
@@ -48,7 +48,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                     cfg.EnablePhysicalIndexHtmlPatchFallback = req.EnablePhysicalIndexHtmlPatchFallback.Value;
 
                 plugin.UpdateConfiguration(cfg);
-                _logger.LogInformation("[JMSFusion] CFG SAVED: dir='{dir}', player='{sub}'", cfg.ScriptDirectory, cfg.PlayerSubdir);
+                _logger.LogInformation("[JMSFusionV2] CFG SAVED: dir='{dir}', player='{sub}'", cfg.ScriptDirectory, cfg.PlayerSubdir);
                 return Ok(new { success = true });
             }
             catch (Exception ex)
@@ -71,21 +71,21 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         [HttpGet("Status")]
         public IActionResult GetStatus()
         {
-            var cfg = JMSFusionPlugin.Instance.Configuration;
+            var cfg = JMSFusionV2Plugin.Instance.Configuration;
             var usingEmbedded = string.IsNullOrWhiteSpace(cfg.ScriptDirectory) || !Directory.Exists(cfg.ScriptDirectory);
 
             var playerDir = string.IsNullOrWhiteSpace(cfg.PlayerSubdir) ? "modules/player" : cfg.PlayerSubdir.Trim().Trim('/');
             var playerPath = usingEmbedded
-                ? $"(embedded)/Resources/slider/{playerDir}/main.js"
+                ? "(embedded)/Resources/slider/dist/player.js"
                 : Path.Combine(cfg.ScriptDirectory ?? string.Empty, playerDir, "main.js");
 
             var res = new StatusResponse
             {
                 Configured      = !string.IsNullOrWhiteSpace(cfg.ScriptDirectory),
                 DirectoryExists = !string.IsNullOrWhiteSpace(cfg.ScriptDirectory) && Directory.Exists(cfg.ScriptDirectory),
-                MainJsExists    = usingEmbedded ? EmbeddedAssetHelper.Exists("Resources.slider.main.js")
+                MainJsExists    = usingEmbedded ? EmbeddedAssetHelper.Exists("Resources.slider.dist.main.js")
                                                 : IOFile.Exists(Path.Combine(cfg.ScriptDirectory ?? "", "main.js")),
-                PlayerJsExists  = usingEmbedded ? EmbeddedAssetHelper.Exists($"Resources.slider.{playerDir.Replace('/', '.')}.main.js")
+                PlayerJsExists  = usingEmbedded ? EmbeddedAssetHelper.Exists("Resources.slider.dist.player.js")
                                                 : IOFile.Exists(playerPath),
                 PlayerPath      = playerPath,
                 UsingEmbedded   = usingEmbedded
@@ -99,7 +99,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         public ContentResult GetSnippet()
         {
             var pathBase = HttpContext?.Request.PathBase.Value ?? string.Empty;
-            var html = JMSFusionPlugin.Instance.BuildScriptsHtml(pathBase);
+            var html = JMSFusionV2Plugin.Instance.BuildScriptsHtml(pathBase);
             var safe = System.Net.WebUtility.HtmlEncode(html);
             return Content($"<html><body><pre>{safe}</pre></body></html>", "text/html; charset=utf-8");
         }
@@ -249,7 +249,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 var html = IOFile.ReadAllText(indexPath, Encoding.UTF8);
 
                 var pathBase = HttpContext?.Request.PathBase.Value ?? string.Empty;
-                var snippet = JMSFusionPlugin.Instance.BuildScriptsHtml(pathBase);
+                var snippet = JMSFusionV2Plugin.Instance.BuildScriptsHtml(pathBase);
 
                 var newHtml = InjectOrReplace(html, snippet);
 
@@ -257,7 +257,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
                 TryWriteCompressedCopies(indexPath, newHtml, _logger);
 
-                _logger.LogInformation("[JMSFusion] Patched index.html at {Index}", indexPath);
+                _logger.LogInformation("[JMSFusionV2] Patched index.html at {Index}", indexPath);
                 return Ok(new { success = true, path = indexPath });
             }
             catch (UnauthorizedAccessException ex)
@@ -292,7 +292,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
                 TryWriteCompressedCopies(indexPath, newHtml, _logger);
 
-                _logger.LogInformation("[JMSFusion] Unpatched index.html at {Index}", indexPath);
+                _logger.LogInformation("[JMSFusionV2] Unpatched index.html at {Index}", indexPath);
                 return Ok(new { success = true, path = indexPath });
             }
             catch (UnauthorizedAccessException ex)

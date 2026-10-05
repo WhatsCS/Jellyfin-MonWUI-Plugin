@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("Plugins/JMSFusion/UserSettings")]
+    [Route("Plugins/JMSFusionV2/UserSettings")]
     public class UserSettingsController : ControllerBase
     {
         private void NoCache()
@@ -145,7 +145,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             }
         }
 
-        private static void EnsureMigrated(JMSFusionConfiguration cfg, JMSFusionPlugin plugin)
+        private static void EnsureMigrated(JMSFusionV2Configuration cfg, JMSFusionV2Plugin plugin)
         {
             var legacy = cfg.GlobalUserSettingsJson;
             var legacyHas = !string.IsNullOrWhiteSpace(legacy) && legacy != "{}";
@@ -169,7 +169,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] string? profile = null)
         {
-            var plugin = JMSFusionPlugin.Instance;
+            var plugin = JMSFusionV2Plugin.Instance;
             var cfg = plugin.Configuration;
 
             EnsureMigrated(cfg, plugin);
@@ -212,7 +212,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         [HttpPost("Publish")]
         public IActionResult Publish([FromBody] PublishReq req, [FromQuery] string? profile = null)
         {
-            var plugin = JMSFusionPlugin.Instance;
+            var plugin = JMSFusionV2Plugin.Instance;
             var cfg = plugin.Configuration;
 
             EnsureMigrated(cfg, plugin);
