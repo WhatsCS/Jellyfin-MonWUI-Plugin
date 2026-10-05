@@ -7,7 +7,7 @@
     <AssemblyName>Jellyfin.Plugin.JMSFusionV2</AssemblyName>
     <RootNamespace>Jellyfin.Plugin.JMSFusionV2</RootNamespace>
 
-    <Version>3.7.0.0</Version>
+    <Version>3.7.0.1</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
