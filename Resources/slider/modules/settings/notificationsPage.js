@@ -44,7 +44,7 @@ export function createNotificationsPanel(config, labels) {
     maxNotificationsDiv.className = 'setting-item limit-container';
 
     const maxNotificationsLabel = document.createElement('label');
-    maxNotificationsLabel.textContent = labels.maxNotifications || 'Gösterilecek Bildirim Limiti:';
+    maxNotificationsLabel.textContent = labels.maxNotifications || 'Showilecek Bildirim Limiti:';
 
     const maxNotificationsInput = document.createElement('input');
     maxNotificationsInput.type = 'number';
@@ -62,7 +62,7 @@ export function createNotificationsPanel(config, labels) {
     toastDurationDiv.className = 'setting-item limit-container';
 
     const toastDurationLabel = document.createElement('label');
-    toastDurationLabel.textContent = labels.toastDuration || 'Toast Süresi (ms):';
+    toastDurationLabel.textContent = labels.toastDuration || 'Toast Duration (ms):';
 
     const toastDurationInput = document.createElement('input');
     toastDurationInput.type = 'number';
@@ -96,7 +96,7 @@ export function createNotificationsPanel(config, labels) {
 
     const enableRenderResumeCheckbox = createCheckbox(
     'enableRenderResume',
-    labels.enableRenderResume || 'İzlenmesi Yarım Kalanları Görüntüle',
+    labels.enableRenderResume || 'Show Partially Watched Items',
     config.enableRenderResume
 );
     section.appendChild(enableRenderResumeCheckbox);

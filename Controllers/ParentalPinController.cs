@@ -12,11 +12,11 @@ using MediaBrowser.Controller.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers;
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers;
 
 [ApiController]
-[Route("JMSFusion/parental-pin")]
-[Route("Plugins/JMSFusion/parental-pin")]
+[Route("JMSFusionV2/parental-pin")]
+[Route("Plugins/JMSFusionV2/parental-pin")]
 public class ParentalPinController : ControllerBase
 {
     private const int DefaultMaxAttempts = 5;
@@ -120,7 +120,7 @@ public class ParentalPinController : ControllerBase
                 return adminCheck.Result;
             }
 
-            var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+            var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
             var cfg = plugin.Configuration;
             var users = GetKnownUsers();
             var sanitizedRules = SanitizeRules(cfg.ParentalPinRules, users, out var rulesChanged);
@@ -149,7 +149,7 @@ public class ParentalPinController : ControllerBase
             return adminCheck.Result;
         }
 
-        var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+        var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
         var cfg = plugin.Configuration;
         var users = GetKnownUsers();
         NormalizeSecuritySettings(cfg);
@@ -238,7 +238,7 @@ public class ParentalPinController : ControllerBase
             return adminCheck.Result;
         }
 
-        var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+        var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
         var cfg = plugin.Configuration;
         var users = GetKnownUsers();
         var sanitizedRules = SanitizeRules(cfg.ParentalPinRules, users, out var rulesChanged);
@@ -284,7 +284,7 @@ public class ParentalPinController : ControllerBase
             return userCheck.Result;
         }
 
-        var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+        var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
         var cfg = plugin.Configuration;
         var users = GetKnownUsers();
         var sanitizedRules = SanitizeRules(cfg.ParentalPinRules, users, out var rulesChanged);
@@ -335,7 +335,7 @@ public class ParentalPinController : ControllerBase
             return userCheck.Result;
         }
 
-        var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+        var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
         var cfg = plugin.Configuration;
         var users = GetKnownUsers();
         var sanitizedRules = SanitizeRules(cfg.ParentalPinRules, users, out var rulesChanged);
@@ -560,7 +560,7 @@ public class ParentalPinController : ControllerBase
         };
 
     private object BuildSettingsResponse(
-        JMSFusionConfiguration cfg,
+        JMSFusionV2Configuration cfg,
         IReadOnlyDictionary<string, KnownUser> users,
         IReadOnlyList<ParentalPinRuleEntry> rules,
         string? unlockedUserId = null)
@@ -713,7 +713,7 @@ public class ParentalPinController : ControllerBase
     private static int NormalizeThreshold(int value)
         => AllowedThresholds.Contains(value) ? value : 0;
 
-    private static bool NormalizeSecuritySettings(JMSFusionConfiguration cfg)
+    private static bool NormalizeSecuritySettings(JMSFusionV2Configuration cfg)
     {
         var maxAttempts = NormalizeMaxAttempts(cfg.ParentalPinMaxAttempts);
         var lockoutMinutes = NormalizeLockoutMinutes(cfg.ParentalPinLockoutMinutes);
@@ -800,7 +800,7 @@ public class ParentalPinController : ControllerBase
         return PinRegex.IsMatch(pin) ? pin : null;
     }
 
-    private static bool HasConfiguredPin(JMSFusionConfiguration cfg)
+    private static bool HasConfiguredPin(JMSFusionV2Configuration cfg)
         => !string.IsNullOrWhiteSpace(cfg.ParentalPinHash)
             && !string.IsNullOrWhiteSpace(cfg.ParentalPinSalt);
 
@@ -1336,7 +1336,7 @@ public class ParentalPinController : ControllerBase
 
     private IActionResult InternalError(Exception ex)
     {
-        _logger.LogError(ex, "[JMSFusion] Parental PIN settings failed.");
+        _logger.LogError(ex, "[JMSFusionV2] Parental PIN settings failed.");
         NoCache();
         return StatusCode(500, new
         {

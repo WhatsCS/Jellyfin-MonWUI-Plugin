@@ -1,4 +1,4 @@
-import { getSessionInfo, fetchItemDetails, makeApiRequest, isAuthReadyStrict } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, fetchItemDetails, makeApiRequest, isAuthReadyStrict } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig, getPauseFeaturesRuntimeConfig } from "./config.js";
 import { getLanguageLabels, getDefaultLanguage } from "../language/index.js";
 import { withServer } from "./jfUrl.js";
@@ -732,7 +732,7 @@ async function loadCatalogTagsWithCache() {
 }
 
 function normalizeAgeChip(rating) {
-  if (!rating) return labels?.noRating || "Derecelendirme yok";
+  if (!rating) return labels?.noRating || "No Rating";
   const r = String(rating).toUpperCase().trim().replace(/\s+/g, "").replace(/-/g, "");
   if (/(18\+|R18|ADULT|NC17|NC\-?17|XRATED|XXX|ADULTSONLY|AO|TR18|DE18|FSK18)/.test(r)) return "18+";
   if (/(17\+|^R$|TVMA|TR17)/.test(r)) return "17+";
@@ -752,7 +752,7 @@ function normalizeAgeChip(rating) {
 }
 
 function normalizeAgeRating(raw) {
-  if (!raw) return labels?.noRating || "Derecelendirme yok";
+  if (!raw) return labels?.noRating || "No Rating";
   const s = String(raw).toUpperCase().replace(/\s+/g, "").replace(/-/g, "");
   if (/^TVMA$/.test(s)) return "18+";
   if (/^TV14$/.test(s)) return "14+";

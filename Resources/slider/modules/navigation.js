@@ -4,7 +4,7 @@ import { getConfig, getDeviceProfileAuto } from './config.js';
 import { getLanguageLabels, getDefaultLanguage } from '../language/index.js';
 import { getCurrentIndex, setCurrentIndex, setRemainingTime } from "./sliderState.js";
 import { applyContainerStyles } from "./positionUtils.js";
-import { playNow, fetchItemDetails, getCachedUserTopGenres, getGenresForDot, goToDetailsPage } from "../../Plugins/JMSFusion/runtime/api.js";
+import { playNow, fetchItemDetails, getCachedUserTopGenres, getGenresForDot, goToDetailsPage } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { applySlideAnimation, applyDotPosterAnimation, teardownAnimations, forceReflow, nextAnimToken, hardCleanupSlide } from "./animations.js";
 import { getMetaVibrantColor, getVideoQualityText } from "./containerUtils.js";
 import { previewPreloadCache } from "./hoverTrailerModal.js";
@@ -1191,15 +1191,15 @@ export function createDotNavigation() {
         e.stopPropagation();
         const itemId = slide.dataset.itemId;
         if (!itemId) {
-        alert("Oynatma başarısız: itemId bulunamadı");
+        alert("Playback failed: itemId not found");
         return;
       }
       closeVideoModal();
       try {
         await playNow(itemId);
       } catch (error) {
-        console.error("Oynatma hatası:", error);
-        alert("Oynatma başarısız: " + error.message);
+        console.error("Playback error:", error);
+        alert("Playback failed: " + error.message);
       } finally {
         closeVideoModal();
       }

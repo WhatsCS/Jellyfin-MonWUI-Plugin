@@ -12,7 +12,7 @@ import {
 } from "../homeSectionNative.js";
 import { createCheckbox, createSection, createNumberInput } from "./shared.js";
 import { applySettings } from "./applySettings.js";
-import { fetchItemDetails, makeApiRequest } from "../../../Plugins/JMSFusion/runtime/api.js";
+import { fetchItemDetails, makeApiRequest } from "../../../Plugins/JMSFusionV2/runtime/api.js";
 import {
   JMS_STUDIO_HUB_MANUAL_ENTRY_ADDED_EVENT,
   buildStudioHubLogoUrl,
@@ -307,14 +307,14 @@ function getManagedHomeSectionOrderLabel(name, config, labels) {
     return (
       labels?.studioHubs ||
       config?.languageLabels?.studioHubs ||
-      "Stüdyo Koleksiyonları"
+      "Studio Collections"
     );
   }
   if (name === "personalRecommendations") {
     return (
       labels?.personalRecommendations ||
       config?.languageLabels?.personalRecommendations ||
-      "Sana Özel Öneriler"
+      "Personalized Matches"
     );
   }
   if (name === "top10SeriesRows") {
@@ -342,14 +342,14 @@ function getManagedHomeSectionOrderLabel(name, config, labels) {
     return (
       labels?.becauseYouWatched ||
       config?.languageLabels?.becauseYouWatched ||
-      "İzlediğin İçin Öneriler"
+      "Matches Based on What You Watched"
     );
   }
   if (name === "genreHubs") {
-    return labels?.managedGenreHubsLabel || "Tür Önerileri";
+    return labels?.managedGenreHubsLabel || "Genre Matches";
   }
   if (name === "directorRows") {
-    return labels?.managedDirectorRowsLabel || "Yönetmen Koleksiyonları";
+    return labels?.managedDirectorRowsLabel || "Director Collections";
   }
   return name;
 }
@@ -582,8 +582,8 @@ function applyDnDItemState(li, labels, state = {}) {
 
   const toggleBtn = li.querySelector(".dnd-btn-visibility");
   if (toggleBtn) {
-    const showText = labels?.showCollection || "Göster";
-    const hideText = labels?.hideCollection || "Gizle";
+    const showText = labels?.showCollection || "Show";
+    const hideText = labels?.hideCollection || "Hide";
     toggleBtn.textContent = hidden ? showText : hideText;
     toggleBtn.disabled = visibilityDisabled;
     toggleBtn.title = visibilityDisabled
@@ -1033,12 +1033,12 @@ export function createStudioHubsPanel(config, labels) {
   const section = createSection(
     labels?.studioHubsSettings ||
     config.languageLabels.studioHubsSettings ||
-    'Stüdyo Koleksiyonları Ayarları'
+    'Studio Collections Settings'
   );
 
   const enableCheckbox = createCheckbox(
     'enableStudioHubs',
-    labels?.enableStudioHubs || config.languageLabels.enableStudioHubs || 'Stüdyo Koleksiyonlarını Etkinleştir',
+    labels?.enableStudioHubs || config.languageLabels.enableStudioHubs || 'Enable Studio Collections',
     config.enableStudioHubs
   );
 
@@ -1061,7 +1061,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const countWrap = createNumberInput(
     'studioHubsCardCount',
-    labels?.studioHubsCardCount || 'Gösterilecek kart sayısı (Ana ekran)',
+    labels?.studioHubsCardCount || 'Showilecek kart sayısı (Ana ekran)',
     Number.isFinite(config.studioHubsCardCount) ? config.studioHubsCardCount : 10,
     1,
     100
@@ -1082,7 +1082,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const autoAddFromWatchlistCopyCheckbox = createCheckbox(
     'studioHubsAutoAddFromWatchlistCopy',
-    labels?.studioHubsAutoAddFromWatchlistCopy || 'Watchlist stüdyo ID kopyasında koleksiyonu otomatik ekle',
+    labels?.studioHubsAutoAddFromWatchlistCopy || 'Auto-add collection on watchlist studio ID copy',
     config.studioHubsAutoAddFromWatchlistCopy === true
   );
   autoAddFromWatchlistCopyCheckbox.style.display = isAdmin ? '' : 'none';
@@ -1326,7 +1326,7 @@ export function createStudioHubsPanel(config, labels) {
   const manualAddHint = document.createElement("div");
   manualAddHint.className = "description-text2";
   manualAddHint.style.marginBottom = "8px";
-  manualAddHint.textContent = labels?.manualCollectionStudioIdHint || "Studio ID girin. Başlık otomatik çözülür; logo ve video yükleme opsiyoneldir.";
+  manualAddHint.textContent = labels?.manualCollectionStudioIdHint || "Studio ID girin. Title resolves automatically; logo and video upload are optional.";
   manualAddWrap.appendChild(manualAddHint);
 
   const studioIdLabel = document.createElement("label");
@@ -1469,7 +1469,7 @@ export function createStudioHubsPanel(config, labels) {
 
     setManualAddBusy(true);
     try {
-      setStatus(labels?.studioResolving || "Stüdyo çözümleniyor...");
+      setStatus(labels?.studioResolving || "Resolving studio...");
       const item = await fetchItemDetails(studioId).catch(() => null);
       const resolvedName = String(item?.Name || "").trim();
       if (!resolvedName) {
@@ -1808,7 +1808,7 @@ export function createStudioHubsPanel(config, labels) {
   })();
 
   const subheading = document.createElement('h3');
-  subheading.textContent = labels?.personalRecommendations || 'Kişisel Öneriler';
+  subheading.textContent = labels?.personalRecommendations || 'Personal Matches';
   section.appendChild(subheading);
 
   const cardTitleModeWrap = document.createElement("div");
@@ -1843,7 +1843,7 @@ export function createStudioHubsPanel(config, labels) {
     },
     {
       value: "none",
-      label: labels?.managedCardTitleDisplayModeNone || "Hiçbiri",
+      label: labels?.managedCardTitleDisplayModeNone || "None",
     },
   ];
 
@@ -1867,7 +1867,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const ratingWrap = createNumberInput(
    'studioHubsMinRating',
-   labels?.studioHubsMinRating || 'Minimum Derecelendirme',
+   labels?.studioHubsMinRating || 'Minimum Rating',
    Number.isFinite(config.studioHubsMinRating) ? config.studioHubsMinRating : 6.5,
    1,
    10,
@@ -1877,7 +1877,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const personalcountWrap = createNumberInput(
     'personalRecsCardCount',
-    labels?.studioHubsCardCount || 'Gösterilecek kart sayısı (Ana ekran)',
+    labels?.studioHubsCardCount || 'Showilecek kart sayısı (Ana ekran)',
     Number.isFinite(config.personalRecsCardCount) ? config.personalRecsCardCount : 9,
     1,
     20
@@ -1905,7 +1905,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showRecentRowsHeroCards = createCheckbox(
     'showRecentRowsHeroCards',
-    labels?.showRecentRowsHeroCards || 'Hero kartını göster (Son Eklenenler)',
+    labels?.showRecentRowsHeroCards || 'Show hero card (Son Eklenenler)',
     config.showRecentRowsHeroCards !== false
   );
   recentSubWrap.appendChild(showRecentRowsHeroCards);
@@ -1947,14 +1947,14 @@ export function createStudioHubsPanel(config, labels) {
 
   const showRecentMoviesHeroCards = createCheckbox(
     'showRecentMoviesHeroCards',
-    labels?.showRecentMoviesHeroCards || 'Hero kartını göster (Son Eklenen Filmler)',
+    labels?.showRecentMoviesHeroCards || 'Show hero card (Son Eklenen Filmler)',
     config.showRecentMoviesHeroCards !== false
   );
   recentSubWrap.appendChild(showRecentMoviesHeroCards);
 
   const splitMovieLibRows = createCheckbox(
     'recentRowsSplitMovieLibs',
-    labels?.recentRowsSplitMovieLibs || 'Film Kütüphanelerini Ayrı Bölümlerde Göster',
+    labels?.recentRowsSplitMovieLibs || 'Film Kütüphanelerini Ayrı Bölümlerde Show',
     config.recentRowsSplitMovieLibs === true
   );
   recentSubWrap.appendChild(splitMovieLibRows);
@@ -1977,7 +1977,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showRecentSeriesHeroCards = createCheckbox(
     'showRecentSeriesHeroCards',
-    labels?.showRecentSeriesHeroCards || 'Hero kartını göster (Son Eklenen Diziler)',
+    labels?.showRecentSeriesHeroCards || 'Show hero card (Son Eklenen Diziler)',
     config.showRecentSeriesHeroCards !== false
   );
   recentSubWrap.appendChild(showRecentSeriesHeroCards);
@@ -2007,7 +2007,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showRecentMusicHeroCards = createCheckbox(
     'showRecentMusicHeroCards',
-    labels?.showRecentMusicHeroCards || 'Hero kartını göster (Son Eklenen Albümler)',
+    labels?.showRecentMusicHeroCards || 'Show hero card (Son Eklenen Albümler)',
     config.showRecentMusicHeroCards !== false
   );
   recentSubWrap.appendChild(showRecentMusicHeroCards);
@@ -2021,7 +2021,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showRecentTracksHeroCards = createCheckbox(
     'showRecentTracksHeroCards',
-    labels?.showRecentTracksHeroCards || 'Hero kartını göster (Son Dinlenen Şarkılar)',
+    labels?.showRecentTracksHeroCards || 'Show hero card (Son Dinlenen Şarkılar)',
     config.showRecentTracksHeroCards !== false
   );
   recentSubWrap.appendChild(showRecentTracksHeroCards);
@@ -2044,7 +2044,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showRecentEpisodesHeroCards = createCheckbox(
     'showRecentEpisodesHeroCards',
-    labels?.showRecentEpisodesHeroCards || 'Hero kartını göster (Son Eklenen Bölümler)',
+    labels?.showRecentEpisodesHeroCards || 'Show hero card (Son Eklenen Bölümler)',
     config.showRecentEpisodesHeroCards !== false
   );
   recentSubWrap.appendChild(showRecentEpisodesHeroCards);
@@ -2067,7 +2067,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showNextUpHeroCards = createCheckbox(
     'showNextUpHeroCards',
-    labels?.showNextUpHeroCards || 'Hero kartını göster (Sıradaki Bölümler)',
+    labels?.showNextUpHeroCards || 'Show hero card (Sıradaki Bölümler)',
     config.showNextUpHeroCards !== false
   );
   recentSubWrap.appendChild(showNextUpHeroCards);
@@ -2161,7 +2161,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showContinueMoviesHeroCards = createCheckbox(
     'showContinueMoviesHeroCards',
-    labels?.showContinueMoviesHeroCards || 'Hero kartını göster (İzlemeye Devam Et - Filmler)',
+    labels?.showContinueMoviesHeroCards || 'Show hero card (İzlemeye Devam Et - Filmler)',
     config.showContinueMoviesHeroCards !== false
   );
   section.appendChild(showContinueMoviesHeroCards);
@@ -2184,7 +2184,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showContinueSeriesHeroCards = createCheckbox(
     'showContinueSeriesHeroCards',
-    labels?.showContinueSeriesHeroCards || 'Hero kartını göster (İzlemeye Devam Et - Diziler)',
+    labels?.showContinueSeriesHeroCards || 'Show hero card (İzlemeye Devam Et - Diziler)',
     config.showContinueSeriesHeroCards !== false
   );
   section.appendChild(showContinueSeriesHeroCards);
@@ -2238,7 +2238,7 @@ export function createStudioHubsPanel(config, labels) {
   const movieLibTitle = document.createElement("div");
   movieLibTitle.style.fontWeight = "700";
   movieLibTitle.style.margin = "6px 0";
-  movieLibTitle.textContent = labels?.movieLibSelectHeading || "Gösterilecek Film Kütüphaneleri";
+  movieLibTitle.textContent = labels?.movieLibSelectHeading || "Showilecek Film Kütüphaneleri";
   movieLibBox.appendChild(movieLibTitle);
 
   const tvLibBox = document.createElement("div");
@@ -2259,7 +2259,7 @@ export function createStudioHubsPanel(config, labels) {
   const tvLibTitle = document.createElement("div");
   tvLibTitle.style.fontWeight = "700";
   tvLibTitle.style.margin = "6px 0";
-  tvLibTitle.textContent = labels?.tvLibSelectHeading || "Gösterilecek Dizi Kütüphaneleri";
+  tvLibTitle.textContent = labels?.tvLibSelectHeading || "Showilecek Dizi Kütüphaneleri";
   tvLibBox.appendChild(tvLibTitle);
 
   function readJsonArr(k) {
@@ -2595,7 +2595,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const showOtherLibrariesHeroCards = createCheckbox(
     "showOtherLibrariesHeroCards",
-    labels?.showOtherLibrariesHeroCards || "Hero kartını göster (Diğer Kütüphaneler)",
+    labels?.showOtherLibrariesHeroCards || "Show hero card (Diğer Kütüphaneler)",
     config.showOtherLibrariesHeroCards !== false
   );
   section.appendChild(showOtherLibrariesHeroCards);
@@ -2755,19 +2755,19 @@ export function createStudioHubsPanel(config, labels) {
   const becauseYouWatchedSection = createSection(
     labels?.becauseYouWatchedSettings ||
     config.languageLabels?.becauseYouWatchedSettings ||
-    'İzlediğin İçin Öneriler'
+    'Matches Based on What You Watched'
   );
 
   const enableBecauseYouWatched = createCheckbox(
     'enableBecauseYouWatched',
-    labels?.enableBecauseYouWatched || 'Öneri Bazlı Koleksiyonları Etkinleştir',
+    labels?.enableBecauseYouWatched || 'Enable Match-Based Collections',
     config.enableBecauseYouWatched !== false
   );
   becauseYouWatchedSection.appendChild(enableBecauseYouWatched);
 
   const showPersonalRecsHeroCards = createCheckbox(
     'showPersonalRecsHeroCards',
-    labels?.showPersonalRecsHeroCards || 'Hero kartını göster (İzlediğin İçin Öneriler)',
+    labels?.showPersonalRecsHeroCards || 'Show hero card (Matches Based on What You Watched)',
     config.showPersonalRecsHeroCards !== false
   );
   becauseYouWatchedSection.appendChild(showPersonalRecsHeroCards);
@@ -2775,7 +2775,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const bywRowCountWrap = createNumberInput(
     'becauseYouWatchedRowCount',
-    labels?.becauseYouWatchedRowCount || 'Ekranda gösterilecek Öneri sırası sayısı',
+    labels?.becauseYouWatchedRowCount || 'Number of match rows to display',
     Number.isFinite(config.becauseYouWatchedRowCount) ? config.becauseYouWatchedRowCount : 1,
     1,
     50
@@ -2784,7 +2784,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const bywCardCountWrap = createNumberInput(
     'becauseYouWatchedCardCount',
-    labels?.becauseYouWatchedCardCount || 'Her öneri sırası için kart sayısı',
+    labels?.becauseYouWatchedCardCount || 'Card count per recommendation row',
     Number.isFinite(config.becauseYouWatchedCardCount) ? config.becauseYouWatchedCardCount : 10,
     1,
     20
@@ -2794,26 +2794,26 @@ export function createStudioHubsPanel(config, labels) {
   const genreSection = createSection(
     labels?.genreHubsSettings ||
     config.languageLabels?.genreHubsSettings ||
-    'Tür Bazlı Koleksiyonlar'
+    'Genre-Based Collections'
   );
 
   const enableGenreHubs = createCheckbox(
     'enableGenreHubs',
-    labels?.enableGenreHubs || 'Tür Bazlı Koleksiyonları Etkinleştir',
+    labels?.enableGenreHubs || 'Genre-Based Collectionsı Etkinleştir',
     !!config.enableGenreHubs
   );
   genreSection.appendChild(enableGenreHubs);
 
   const showGenreHubsHeroCards = createCheckbox(
     'showGenreHubsHeroCards',
-    labels?.showGenreHubsHeroCards || 'Hero kartını göster (Tür Bazlı Koleksiyonlar)',
+    labels?.showGenreHubsHeroCards || 'Show hero card (Genre-Based Collections)',
     config.showGenreHubsHeroCards !== false
   );
   genreSection.appendChild(showGenreHubsHeroCards);
 
   const rowsCountWrap = createNumberInput(
     'studioHubsGenreRowsCount',
-    labels?.studioHubsGenreRowsCount || 'Ekranda gösterilecek Tür sırası sayısı',
+    labels?.studioHubsGenreRowsCount || 'Number of genre rows to display',
     Number.isFinite(config.studioHubsGenreRowsCount) ? config.studioHubsGenreRowsCount : 4,
     1,
     50
@@ -2822,7 +2822,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const perRowCountWrap = createNumberInput(
     'studioHubsGenreCardCount',
-    labels?.studioHubsGenreCardCount || 'Her Tür sırası için kart sayısı',
+    labels?.studioHubsGenreCardCount || 'Card count per genre row',
     Number.isFinite(config.studioHubsGenreCardCount) ? config.studioHubsGenreCardCount : 10,
     1,
     20
@@ -2856,7 +2856,7 @@ export function createStudioHubsPanel(config, labels) {
         genreHidden.value = JSON.stringify(names);
       }
     } catch (e) {
-      console.warn("Tür listesi ayarlara eklenemedi:", e);
+      console.warn("Genre list could not be added to settings:", e);
     }
   })();
 
@@ -2882,18 +2882,18 @@ export function createStudioHubsPanel(config, labels) {
     if (e.target.closest(".dnd-btn-up") || e.target.closest(".dnd-btn-down")) refreshGenreHidden();
   });
 
-  const dirSection = createSection(labels?.directorRowsSettings || 'Yönetmen Koleksiyon Ayarları');
+  const dirSection = createSection(labels?.directorRowsSettings || 'Director Collections Settings');
 
   const enableDirectorRows = createCheckbox(
     'enableDirectorRows',
-    labels?.enableDirectorRows || 'Yönetmen Koleksiyonlarını Etkinleştir',
+    labels?.enableDirectorRows || 'Director Collectionsnı Etkinleştir',
     !!config.enableDirectorRows
   );
   dirSection.appendChild(enableDirectorRows);
 
   const showDirectorRowsHeroCards = createCheckbox(
     'showDirectorRowsHeroCards',
-    labels?.showDirectorRowsHeroCards || 'Hero kartını göster (Yönetmen Koleksiyonları)',
+    labels?.showDirectorRowsHeroCards || 'Show hero card (Director Collections)',
     config.showDirectorRowsHeroCards !== false
   );
   dirSection.appendChild(showDirectorRowsHeroCards);
@@ -2908,7 +2908,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const dirCount = createNumberInput(
     'directorRowsCount',
-    labels?.directorRowsCount || 'Yönetmen sayısı',
+    labels?.directorRowsCount || 'Director count',
     Number.isFinite(config.directorRowsCount) ? config.directorRowsCount : 5,
     1, 50
   );
@@ -2924,7 +2924,7 @@ export function createStudioHubsPanel(config, labels) {
 
   const directorRowsMinItemsPerDirector = createNumberInput(
     'directorRowsMinItemsPerDirector',
-    labels?.directorRowsMinItemsPerDirector || 'Minimum Yönetmen İçerik Sayısı',
+    labels?.directorRowsMinItemsPerDirector || 'Minimum Director Item Count',
     Number.isFinite(config.directorRowsMinItemsPerDirector) ? config.directorRowsMinItemsPerDirector : 10,
     1, 20
   );

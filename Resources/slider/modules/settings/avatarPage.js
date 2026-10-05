@@ -248,7 +248,7 @@ export function createAvatarPanel(config, labels) {
 
   const refreshTimeInput = createNumberInput(
     'avatarRefreshTime',
-    labels.avatarRefreshTime || 'Değişim Süresi (dakika)',
+    labels.avatarRefreshTime || 'Değişim Duration (dakika)',
     config.avatarRefreshTime || 10,
     1,
     1440
@@ -302,7 +302,7 @@ export function createAvatarPanel(config, labels) {
   const description = document.createElement('div');
   description.className = 'description-text';
   description.textContent = labels.avatarOverlayDescription ||
-    'Bu özellik etkinleştirildiğinde, profil resmi olmayan kullanıcıların kullanıcı isimlerinden avatar oluşturur.';
+    'When this feature is enabled, it creates avatars from usernames for users without a profile picture.';
   section.appendChild(description);
 
   randomAvatarCheckbox.querySelector('input').addEventListener('change', (e) => {

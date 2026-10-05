@@ -1,4 +1,4 @@
-import { fetchItemDetails, getSessionInfo } from "../../Plugins/JMSFusion/runtime/api.js";
+import { fetchItemDetails, getSessionInfo } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { createScopedJsonDb, prepareLegacyIndexedDbForDeletion } from "./scopedJsonCache.js";
 
 const DB_NAME = "jms-slider-cache";

@@ -1,6 +1,6 @@
 import { createSection, createCheckbox, createTextInput } from './shared.js';
 import { showNotification } from "../player/ui/notification.js";
-import { getServerBase } from "../../../Plugins/JMSFusion/runtime/api.js";
+import { getServerBase } from "../../../Plugins/JMSFusionV2/runtime/api.js";
 
 const LS_JOB_KEY = 'jmsf_trailer_job_running';
 const TRAILER_RESOLUTION_OPTIONS = [640, 720, 1080, 1440, 2160];
@@ -329,22 +329,22 @@ function translateLogLine(line, L) {
     { re: /Kullanıcı bulunamadı/i,      out: L.shUserNotFound },
     { re: /Eşzamanlı indirme limiti:\s*(\d+)/i,
       out: (m) => fmtStr(L.shConcurrentDownloadLimit, { n: m[1] }) },
-    { re: /\[DEBUG\]\s*İşleniyor:\s*(.+?)\s*\(IMDb:\s*(.*?),\s*TMDb:\s*(.*?),\s*Tür:\s*(.+?)\)/i,
+    { re: /\[DEBUG\]\s*İşleniyor:\s*(.+?)\s*\(IMDb:\s*(.*?),\s*TMDb:\s*(.*?),\s*Genre:\s*(.+?)\)/i,
       out: (m) => fmtStr(L.shProcessing, { name: m[1], imdb: m[2] || '-', tmdb: m[3] || '-', type: m[4] }) },
     { re: /Zaten var: .*theme\.mp4 kuruldu\/korundu/i, out: L.shAlreadyExistsThemeDone },
     { re: /Zaten var:/i,               out: L.shAlreadyExists },
-    { re: /Üzerine yazılacak:/i,       out: L.shOverwriteReplace },
+    { re: /Will overwrite:/i,       out: L.shOverwriteReplace },
     { re: /if-better modu/i,           out: L.shIfBetterMode },
     { re: /TMDb ID yok/i,              out: L.shTmdbMissing },
     { re: /Series TMDb yok|Series TMDb/i, out: L.shSeriesTmdbMissing },
-    { re: /Tür desteklenmiyor/i,       out: L.shUnsupportedType },
+    { re: /Genre desteklenmiyor/i,       out: L.shUnsupportedType },
     { re: /Yol yok/i,                  out: L.shNoPath },
     { re: /Aynı klasör bu çalıştırmada zaten işlendi:\s*(.+?)\s*->\s*(.+?)\s*\(([^()]*)\)\s*$/i,
       out: (m) => fmtStr(L.shDirAlreadyHandled, { dir: m[1], name: m[2], year: m[3] }) },
     { re: /Yazılamayan klasör,\s*atlanıyor:\s*(.+?)\s*->\s*(.+?)\s*\(([^()]*)\)\s*$/i,
       out: (m) => fmtStr(L.shDirNotWritable, { dir: m[1], name: m[2], year: m[3] }) },
     { re: /Hedefte yetersiz boş alan/i, out: L.shInsufficientSpaceDest },
-    { re: /Çalışma klasöründe yetersiz boş alan/i, out: L.shInsufficientSpaceWork },
+    { re: /Insufficient free space in working directory/i, out: L.shInsufficientSpaceWork },
     { re: /Denenen #(\d+):\s*([a-z]+):([A-Za-z0-9_\-]+)/i,
       out: (m) => fmtStr(L.shTryingCandidate, { n: m[1], site: m[2], key: m[3] }) },
     { re: /\[INDIR\]\s*(.+?)\s*\((.*?)\)\s*->\s*(.+?)\s*\[([a-z]+):([A-Za-z0-9_\-]+)\]\s*\((?:best mp4|source quality)\)/i,
@@ -357,7 +357,7 @@ function translateLogLine(line, L) {
       out: (m) => fmtStr(L.shYtDlpStdout, { line: m[1] }) },
     { re: /Diskte yer kalmamış/i, out: L.shNoSpaceLeft },
     { re: /Dosya çok küçük/i,          out: L.shFileTooSmall },
-    { re: /Süre kısa/i,                out: L.shDurationShort },
+    { re: /Duration kısa/i,                out: L.shDurationShort },
     { re: /Yeni trailer daha iyi bulundu.*değiştiriliyor/i, out: L.shIfBetterNewIsBetter },
     { re: /Mevcut trailer daha iyi\/eşdeğer.*yenisi silindi/i, out: L.shIfBetterOldIsBetter },
     { re: /mv başarısız,\s*yazılamıyor:\s*(.+)$/i,
@@ -430,63 +430,63 @@ export function createTrailersPanel(config, labels) {
     enableThemeLink: labels?.enableThemeLink || 'backdrops/theme.mp4 symlink/kopya oluştur (ENABLE_THEME_LINK)',
     themeLinkMode: labels?.themeLinkMode || 'THEME_LINK_MODE',
     saveSettings: labels?.saveSettings || 'Kaydet',
-    runNow: labels?.runNow || 'Şimdi Çalıştır',
+    runNow: labels?.runNow || 'Run Now',
     saving: labels?.saving || 'Kaydediliyor...',
-    running: labels?.running || 'Çalışıyor...',
-    preparing: labels?.preparing || 'Hazırlanıyor...',
+    running: labels?.running || 'Running...',
+    preparing: labels?.preparing || 'Preparing...',
     settingsSaved: labels?.settingsSaved || 'Ayarlar kaydedildi.',
     atLeastOneOption: labels?.atLeastOneOption || 'En az bir seçenek işaretlenmeli.',
     done: labels?.done || 'İşlem tamamlandı.',
-    runError: labels?.runError || 'Çalıştırma hatası.',
+    runError: labels?.runError || 'Execution error.',
     saveError: labels?.saveError || 'Ayarlar kaydedilemedi: ',
     summaryDownloaderTitle: labels?.summaryDownloaderTitle || 'İndirici (trailers.sh)',
     summaryUrlNfoTitle: labels?.summaryUrlNfoTitle || 'NFO (trailersurl.sh)',
-    summarySuccess: labels?.summarySuccess || 'Başarılı',
-    summaryFailed: labels?.summaryFailed || 'Başarısız',
+    summarySuccess: labels?.summarySuccess || 'Successful',
+    summaryFailed: labels?.summaryFailed || 'Failed',
     summaryTotal: labels?.summaryTotal || 'Toplam',
     overwriteSkip: labels?.overwriteSkip || 'Atla (skip)',
-    overwriteReplace: labels?.overwriteReplace || 'Üzerine yaz (replace)',
+    overwriteReplace: labels?.overwriteReplace || 'Overwrite (replace)',
     overwriteIfBetter: labels?.overwriteIfBetter || 'Daha iyiyse değiştir (if-better)',
-    modeSymlink: labels?.modeSymlink || 'Sembolik bağ (symlink)',
-    modeHardlink: labels?.modeHardlink || 'Sıkı bağ (hardlink)',
+    modeSymlink: labels?.modeSymlink || 'Symbolic link (symlink)',
+    modeHardlink: labels?.modeHardlink || 'Hard link (hardlink)',
     modeCopy: labels?.modeCopy || 'Kopyala (copy)',
-    settingsReadOnly: labels?.settingsReadOnly || 'Yönetici olmayan kullanıcılar ayarları değiştiremez',
-    confirmTitle: labels?.confirmTitle || 'Uzun Süreli İşlem',
-    confirmBody: labels?.confirmBody || 'Bu işlem uzun sürebilir. Devam etmek istiyor musunuz?',
-    confirmOk: labels?.confirmOk || 'Evet, Başlat',
-    confirmCancel: labels?.confirmCancel || 'Vazgeç',
-    confirm: labels?.confirm || 'Başlat',
-    cancel: labels?.cancel || 'İptal Et',
+    settingsReadOnly: labels?.settingsReadOnly || 'Non-admin users cannot change settings',
+    confirmTitle: labels?.confirmTitle || 'Long-Running Operation',
+    confirmBody: labels?.confirmBody || 'This operation may take a while. Do you want to continue?',
+    confirmOk: labels?.confirmOk || 'Yes, Start',
+    confirmCancel: labels?.confirmCancel || 'Cancel',
+    confirm: labels?.confirm || 'Start',
+    cancel: labels?.cancel || 'Cancel',
     copy: labels?.copy || 'Kopyala',
-    log: labels?.log || 'Canlı Log',
+    log: labels?.log || 'Live Log',
     clean: labels?.clean || 'Temizle',
     close: labels?.close || 'Kapat',
-    adim: labels?.adim || 'Yürütülen',
-    copied: labels?.copied || 'Panoya Kopyalandı',
-    copyFailed: labels?.copyFailed || 'Kopyalanamadı',
-    showLog: labels?.showLog || "Log'u Göster",
-    hideLog: labels?.hideLog || "Log'u Gizle",
+    adim: labels?.adim || 'Executed',
+    copied: labels?.copied || 'Copied to clipboard',
+    copyFailed: labels?.copyFailed || 'Copy failed',
+    showLog: labels?.showLog || "Show Log",
+    hideLog: labels?.hideLog || "Log'u Hide",
     noLogToCopy: labels?.noLogToCopy || 'Kopyalanacak log yok',
-    progressTitle: labels?.progressTitle || 'Fragman Görevi Çalışıyor',
-    progressStartedAtLabel: labels?.progressStartedAtLabel || 'Başlangıç',
-    progressStepLabel: labels?.progressStepLabel || 'Adım',
-    progressItemsLabel: labels?.progressItemsLabel || 'Öğe',
-    progressItemsPending: labels?.progressItemsPending || 'Hazırlanıyor...',
+    progressTitle: labels?.progressTitle || 'Trailer Task Running',
+    progressStartedAtLabel: labels?.progressStartedAtLabel || 'Start Time',
+    progressStepLabel: labels?.progressStepLabel || 'Step',
+    progressItemsLabel: labels?.progressItemsLabel || 'Item',
+    progressItemsPending: labels?.progressItemsPending || 'Preparing...',
     stopButton: labels?.stopButton || 'Bitir',
     stopping: labels?.stopping || 'Durduruluyor...',
-    cancelled: labels?.cancelled || 'İş iptal edildi.',
-    alreadyRunning: labels?.alreadyRunning || 'Zaten çalışan bir iş var; ilerlemeye bağlanılıyor.',
+    cancelled: labels?.cancelled || 'Operation cancelled.',
+    alreadyRunning: labels?.alreadyRunning || 'A job is already running; attaching to progress.',
     ctrlApiUserHeaderRequired: labels?.ctrlApiUserHeaderRequired || 'X-Emby-UserId header gerekli.',
     ctrlApiTokenHeaderRequired: labels?.ctrlApiTokenHeaderRequired || 'X-Emby-Token header gerekli.',
-    ctrlApiExecutionDisabled: labels?.ctrlApiExecutionDisabled || 'Script çalıştırma kapalı.',
-    ctrlApiNoTaskEnabled: labels?.ctrlApiNoTaskEnabled || 'Hiçbir görev etkin değil.',
-    ctrlApiPluginConfigUnavailable: labels?.ctrlApiPluginConfigUnavailable || 'Plugin konfigürasyonu kullanılamıyor.',
-    ctrlApiPluginConfigHint: labels?.ctrlApiPluginConfigHint || 'Docker içinde /config/plugins ve /config/plugins/configurations yazılabilir olmalı; plugin gerçekten yüklü mü kontrol et.',
-    ctrlApiCancelInProgress: labels?.ctrlApiCancelInProgress || 'İş iptal ediliyor...',
-    ctrlApiNoRunningJob: labels?.ctrlApiNoRunningJob || 'Koşan iş yok.',
-    ctrlApiUnexpectedError: labels?.ctrlApiUnexpectedError || 'Beklenmeyen hata oluştu.',
-    ctrlLastCancelRequested: labels?.ctrlLastCancelRequested || 'İş iptal istendi.',
-    ctrlLastStepStarting: labels?.ctrlLastStepStarting || '{step} başlıyor...',
+    ctrlApiExecutionDisabled: labels?.ctrlApiExecutionDisabled || 'Script execution is disabled.',
+    ctrlApiNoTaskEnabled: labels?.ctrlApiNoTaskEnabled || 'No task is enabled.',
+    ctrlApiPluginConfigUnavailable: labels?.ctrlApiPluginConfigUnavailable || 'Plugin configuration is unavailable.',
+    ctrlApiPluginConfigHint: labels?.ctrlApiPluginConfigHint || 'Inside Docker, /config/plugins and /config/plugins/configurations must be writable; verify the plugin is actually installed.',
+    ctrlApiCancelInProgress: labels?.ctrlApiCancelInProgress || 'Cancelling operation...',
+    ctrlApiNoRunningJob: labels?.ctrlApiNoRunningJob || 'No running job.',
+    ctrlApiUnexpectedError: labels?.ctrlApiUnexpectedError || 'An unexpected error occurred.',
+    ctrlLastCancelRequested: labels?.ctrlLastCancelRequested || 'Cancellation requested.',
+    ctrlLastStepStarting: labels?.ctrlLastStepStarting || '{step} is starting...',
     ctrlLastStepFinished: labels?.ctrlLastStepFinished || '{step} bitti.',
     ctrlLastFinishedDuration: labels?.ctrlLastFinishedDuration || 'Bitti ✓ ({seconds} sn)',
     logInfo: labels?.logInfo || '[INFO]',
@@ -496,10 +496,10 @@ export function createTrailersPanel(config, labels) {
     logSkip: labels?.logSkip || '[ATLA]',
     logDownload: labels?.logDownload || '[INDIR]',
     logDebug: labels?.logDebug || '[DEBUG]',
-    shRequiresBash: labels?.shRequiresBash || "Bu betik bash gerektirir. 'bash trailers.sh' ile çalıştırın.",
-    shWorkdirCreateFailed: labels?.shWorkdirCreateFailed || 'Çalışma klasörü oluşturulamadı',
-    shDependencyMissing: labels?.shDependencyMissing || 'Eksik bağımlılık: {bin}',
-    shFfprobeMissing: labels?.shFfprobeMissing || 'ffprobe yok; süre/boyut kontrolü sınırlı',
+    shRequiresBash: labels?.shRequiresBash || "This script requires bash. Run it with 'bash trailers.sh'.",
+    shWorkdirCreateFailed: labels?.shWorkdirCreateFailed || 'Failed to create working directory',
+    shDependencyMissing: labels?.shDependencyMissing || 'Missing dependency: {bin}',
+    shFfprobeMissing: labels?.shFfprobeMissing || 'ffprobe missing; duration/size checks are limited',
     shSessionTokenMissing: labels?.shSessionTokenMissing || 'Jellyfin oturum tokeni alınamadı',
     shSetTmdbApiKey: labels?.shSetTmdbApiKey || 'TMDB_API_KEY ayarlanmalı',
     shSetApiKeys: labels?.shSetApiKeys || 'JF_API_KEY ve TMDB_API_KEY ayarlanmalı',
@@ -508,19 +508,19 @@ export function createTrailersPanel(config, labels) {
     shYtDlpPrepareFailed: labels?.shYtDlpPrepareFailed || 'yt-dlp hazırlanamadı',
     shDenoPrepareFailed: labels?.shDenoPrepareFailed || 'deno hazırlanamadı',
     shConcurrentDownloadLimit: labels?.shConcurrentDownloadLimit || 'Eşzamanlı indirme limiti: {n}',
-    shProcessing: labels?.shProcessing || 'İşleniyor: {name} (IMDb: {imdb}, TMDb: {tmdb}, Tür: {type})',
+    shProcessing: labels?.shProcessing || 'İşleniyor: {name} (IMDb: {imdb}, TMDb: {tmdb}, Genre: {type})',
     shAlreadyExistsThemeDone: labels?.shAlreadyExistsThemeDone || 'Zaten var, theme.mp4 kuruldu/korundu',
     shAlreadyExists: labels?.shAlreadyExists || 'Zaten var',
-    shOverwriteReplace: labels?.shOverwriteReplace || 'Üzerine yazılacak',
+    shOverwriteReplace: labels?.shOverwriteReplace || 'Will overwrite',
     shIfBetterMode: labels?.shIfBetterMode || 'if-better modu: karşılaştırma için indirilecek',
     shTmdbMissing: labels?.shTmdbMissing || 'TMDb ID yok',
     shSeriesTmdbMissing: labels?.shSeriesTmdbMissing || 'Dizi TMDb ID yok',
-    shUnsupportedType: labels?.shUnsupportedType || 'Tür desteklenmiyor',
+    shUnsupportedType: labels?.shUnsupportedType || 'Genre desteklenmiyor',
     shNoPath: labels?.shNoPath || 'Yol yok',
     shDirAlreadyHandled: labels?.shDirAlreadyHandled || 'Aynı klasör bu çalıştırmada zaten işlendi: {dir} -> {name} ({year})',
     shDirNotWritable: labels?.shDirNotWritable || 'Yazılamayan klasör, atlanıyor: {dir} -> {name} ({year})',
     shInsufficientSpaceDest: labels?.shInsufficientSpaceDest || 'Hedefte yetersiz boş alan',
-    shInsufficientSpaceWork: labels?.shInsufficientSpaceWork || 'Çalışma klasöründe yetersiz boş alan',
+    shInsufficientSpaceWork: labels?.shInsufficientSpaceWork || 'Insufficient free space in working directory',
     shTryingCandidate: labels?.shTryingCandidate || 'Denenen aday #{n}: {site}:{key}',
     shDownloading: labels?.shDownloading || '{name} ({year}) indiriliyor → {out} [{site}:{key}]',
     shYtDlpRetryFail: labels?.shYtDlpRetryFail || 'yt-dlp denemesi başarısız (#{n})',
@@ -528,7 +528,7 @@ export function createTrailersPanel(config, labels) {
     shYtDlpStdout: labels?.shYtDlpStdout || 'yt-dlp çıktı: {line}',
     shNoSpaceLeft: labels?.shNoSpaceLeft || 'Diskte yer kalmadı',
     shFileTooSmall: labels?.shFileTooSmall || 'Dosya çok küçük',
-    shDurationShort: labels?.shDurationShort || 'Süre kısa',
+    shDurationShort: labels?.shDurationShort || 'Duration kısa',
     shIfBetterNewIsBetter: labels?.shIfBetterNewIsBetter || 'Yeni trailer daha iyi (if-better): değiştiriliyor',
     shIfBetterOldIsBetter: labels?.shIfBetterOldIsBetter || 'Mevcut trailer daha iyi/eşdeğer: yenisi silindi',
     shMoveFailed: labels?.shMoveFailed || 'Taşıma başarısız, hedefe yazılamıyor: {path}',
@@ -551,7 +551,7 @@ export function createTrailersPanel(config, labels) {
     rxFinishedProcessed: labels?.rxFinishedProcessed || 'BİTTİ:\\s*işlenen\\s*=\\s*(\\d+)',
     rxSummaryOkFail: labels?.rxSummaryOkFail || 'ÖZET\\s*->\\s*indirilen\\s*=\\s*(\\d+)\\s*,\\s*başarısız\\s*=\\s*(\\d+)',
     urlNfoTotal: labels?.urlNfoTotal || 'Toplam işlenen öğe',
-    urlNfoOk: labels?.urlNfoOk || 'Başarılı (NFO eklendi)',
+    urlNfoOk: labels?.urlNfoOk || 'Successful (NFO eklendi)',
     urlNfoNotFound: labels?.urlNfoNotFound || 'Trailer bulunamadı',
     urlNfoFailWrite: labels?.urlNfoFailWrite || 'NFO yazma hatası',
     urlNfoFailRefresh: labels?.urlNfoFailRefresh || 'Refresh hatası',
@@ -753,7 +753,7 @@ export function createTrailersPanel(config, labels) {
   async function connectIfRunning({ forceOpen = false } = {}) {
     try {
       const headers = await getAuthHeaders();
-      const res = await fetch('/JMSFusion/trailers/status', { method: 'GET', headers });
+      const res = await fetch('/JMSFusionV2/trailers/status', { method: 'GET', headers });
       const data = await res.json().catch(() => ({}));
       if (data && data.ok === true && data.running) {
         if (forceOpen || modal.overlay.style.display === 'none') openProgressUi();
@@ -768,7 +768,7 @@ export function createTrailersPanel(config, labels) {
   async function pollStatus() {
     try {
       const headers = await getAuthHeaders();
-      const res = await fetch('/JMSFusion/trailers/status', { method: 'GET', headers });
+      const res = await fetch('/JMSFusionV2/trailers/status', { method: 'GET', headers });
       const data = await res.json().catch(() => ({}));
       if (!data || data.ok !== true) return;
 
@@ -851,7 +851,7 @@ export function createTrailersPanel(config, labels) {
       return m ? parseIntSafe(m[1]) : 0;
     };
     const total = pick(L.urlNfoTotal, 'Toplam işlenen öğe');
-    const ok = pick(L.urlNfoOk, 'Başarılı (NFO eklendi)');
+    const ok = pick(L.urlNfoOk, 'Successful (NFO eklendi)');
     const notFound = pick(L.urlNfoNotFound, 'Trailer bulunamadı');
     const failWrite = pick(L.urlNfoFailWrite, 'NFO yazma hatası');
     const failRefresh = pick(L.urlNfoFailRefresh, 'Refresh hatası');
@@ -939,7 +939,7 @@ export function createTrailersPanel(config, labels) {
       updateProgressUi({ running: true, progress: 5, currentStep: L.preparing });
 
       const headers = await getAuthHeaders();
-      const res = await fetch('/JMSFusion/trailers/run', { method: 'POST', headers, body: JSON.stringify(body) });
+      const res = await fetch('/JMSFusionV2/trailers/run', { method: 'POST', headers, body: JSON.stringify(body) });
       const txt = await res.text();
       let data = {}; try { data = JSON.parse(txt); } catch {}
 
@@ -967,7 +967,7 @@ export function createTrailersPanel(config, labels) {
     modal.btnStop.textContent = L.stopping;
     try {
       const headers = await getAuthHeaders();
-      await fetch('/JMSFusion/trailers/cancel', { method: 'POST', headers });
+      await fetch('/JMSFusionV2/trailers/cancel', { method: 'POST', headers });
       startPolling();
       setTimeout(() => pollStatus(), 300);
     } catch {}
@@ -1101,7 +1101,7 @@ export function createTrailersPanel(config, labels) {
 
   async function loadLatestTrailerConfig() {
     const headers = await getAuthHeaders();
-    const res = await fetch('/JMSFusion/config', { method: 'GET', headers });
+    const res = await fetch('/JMSFusionV2/config', { method: 'GET', headers });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const latestPayload = await res.json();
@@ -1279,7 +1279,7 @@ export function createTrailersPanel(config, labels) {
           pushIf('ThemeLinkMode', document.getElementById('ThemeLinkMode')?.value || 'symlink');
 
           const headers = await getAuthHeaders();
-          const res = await fetch('/JMSFusion/config', { method: 'POST', headers, body: JSON.stringify(payload) });
+          const res = await fetch('/JMSFusionV2/config', { method: 'POST', headers, body: JSON.stringify(payload) });
           const txt = await res.text();
           let data = {};
           try { data = JSON.parse(txt); } catch {}

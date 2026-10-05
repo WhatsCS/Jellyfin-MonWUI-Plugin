@@ -17,7 +17,7 @@ import { togglePlayPause } from "./player/playback.js";
 import { faIconHtml } from "../faIcons.js";
 import { loadCSS } from "../playerStyles.js";
 import { apiUrl } from "./core/auth.js";
-import { getEmbyHeaders, getSessionInfo } from "../../../Plugins/JMSFusion/runtime/api.js";
+import { getEmbyHeaders, getSessionInfo } from "../../../Plugins/JMSFusionV2/runtime/api.js";
 import { applyHeaderIconButtonMode, findHeaderMountTarget, getHeaderMountWaitSelector } from "../headerCompat.js";
 
 export { isMobileDevice } from "../playerStyles.js";
@@ -204,7 +204,7 @@ async function postRemoteGmmpState(payload, { keepalive = false } = {}) {
   }
 
   try {
-    const response = await fetch(apiUrl("/Plugins/JMSFusion/gmmp/state"), {
+    const response = await fetch(apiUrl("/Plugins/JMSFusionV2/gmmp/state"), {
       method: "POST",
       headers: buildGmmpSyncHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(payload),
@@ -349,7 +349,7 @@ async function pollRemoteGmmpCommands() {
 
   gmmpRemoteCommandBusy = true;
   try {
-    const url = new URL(apiUrl("/Plugins/JMSFusion/gmmp/commands"));
+    const url = new URL(apiUrl("/Plugins/JMSFusionV2/gmmp/commands"));
     if (sessionId) {
       url.searchParams.set("sessionId", sessionId);
     }
@@ -747,7 +747,7 @@ async function fetchGmmpNativePlaybackItemDetails(itemId) {
   if (!id) return null;
 
   try {
-    const api = await import("../../../Plugins/JMSFusion/runtime/api.js");
+    const api = await import("../../../Plugins/JMSFusionV2/runtime/api.js");
     if (typeof api?.fetchItemDetails === "function") {
       return await api.fetchItemDetails(id);
     }

@@ -4,7 +4,7 @@ const DEFAULT_TRAILER_COUNT = 2;
 const MAX_TRAILER_COUNT = 5;
 const CINEMA_PREROLL_LANGUAGE_OPTIONS = Object.freeze([
   { value: "auto", label: "🌐 Auto" },
-  { value: "tr-TR", label: "🇹🇷 Türkçe" },
+  { value: "tr-TR", label: "🇹🇷 Turkish" },
   { value: "en-US", label: "🇺🇸 English (US)" },
   { value: "en-GB", label: "🇬🇧 English (UK)" },
   { value: "de-DE", label: "🇩🇪 Deutsch" },
@@ -132,7 +132,7 @@ export function createCinemaPreRollPanel(config, labels) {
   panel.id = "cinema-preroll-panel";
   panel.className = "settings-panel";
 
-  const section = createSection(labels.cinemaPreRollTab || "Sinema Ön Gösterimleri");
+  const section = createSection(labels.cinemaPreRollTab || "Sinema Ön Showimleri");
 
   const enableCheckbox = createCheckbox(
     "cinemaPreRollEnabled",
@@ -247,7 +247,7 @@ export function createCinemaPreRollPanel(config, labels) {
     },
     {
       value: "custom",
-      label: labels.cinemaPreRollRegionModeCustom || "Ülke seç - Aşağıdaki ülkeyi kullan"
+      label: labels.cinemaPreRollRegionModeCustom || "Country seç - Aşağıdaki ülkeyi kullan"
     }
   ].forEach((entry) => {
     const option = document.createElement("option");
@@ -262,7 +262,7 @@ export function createCinemaPreRollPanel(config, labels) {
   appendDescriptionText(
     subOptions,
     labels.cinemaPreRollRegionModeHint ||
-      "Küresel modda TMDb isteğine bölge parametresi eklenmez. Ülke modunda yalnızca seçilen ülkenin vizyon ve gelecek listeleri kullanılır."
+      "Küresel modda TMDb isteğine bölge parametresi eklenmez. Country modunda yalnızca seçilen ülkenin vizyon ve gelecek listeleri kullanılır."
   );
 
   const customRegionRow = document.createElement("div");

@@ -24,7 +24,7 @@ export function updateConfig(updatedConfig, options = {}) {
       Object.keys(updatedConfig || {}).every((key) => USER_ALLOWED_KEYS.has(key));
 
     if (!onlyAllowed) {
-      console.warn("[JMSFusion] Global settings forced - update blocked (non-admin).");
+      console.warn("[JMSFusionV2] Global settings forced - update blocked (non-admin).");
       return;
     }
   }

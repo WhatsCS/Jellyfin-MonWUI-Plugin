@@ -1,4 +1,4 @@
-const API_ROOT = "/Plugins/JMSFusion/parental-pin";
+const API_ROOT = "/Plugins/JMSFusionV2/parental-pin";
 const POLICY_CACHE_MS = 15_000;
 const DEFAULT_MAX_ATTEMPTS = 5;
 const DEFAULT_LOCKOUT_MINUTES = 15;
@@ -182,7 +182,7 @@ function getAuthorizationHeaderSafe() {
 async function getRuntimeApiSafe() {
   try {
     if (!runtimeApiPromise) {
-      runtimeApiPromise = import("../../Plugins/JMSFusion/runtime/api.js");
+      runtimeApiPromise = import("../../Plugins/JMSFusionV2/runtime/api.js");
     }
     return await runtimeApiPromise;
   } catch {

@@ -4,20 +4,20 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 
-namespace Jellyfin.Plugin.JMSFusion
+namespace Jellyfin.Plugin.JMSFusionV2
 {
     public static class IndexPatcher
     {
         private const string BeginMark = "<!-- SL-INJECT BEGIN -->";
         private const string EndMark   = "<!-- SL-INJECT END -->";
-        private static string GetBackupPath(string path) => path + ".jmsfusion.bak";
+        private static string GetBackupPath(string path) => path + ".JMSFusionV2.bak";
 
         private static string BuildBlock(string? pathBase = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine(BeginMark);
             sb.AppendLine(AssetVersioning.BuildBootstrapScript());
-            sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../Plugins/JMSFusion/runtime/storage-preload.js")}""></script>");
+            sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../Plugins/JMSFusionV2/runtime/storage-preload.js")}""></script>");
             sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../slider/main.js")}""></script>");
             sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../slider/modules/player/main.js")}""></script>");
             sb.AppendLine(EndMark);
@@ -49,12 +49,12 @@ namespace Jellyfin.Plugin.JMSFusion
             }
             catch (UnauthorizedAccessException ex)
             {
-                logger.LogWarning(ex, "[JMSFusion] No write permission: {Path}", path);
+                logger.LogWarning(ex, "[JMSFusionV2] No write permission: {Path}", path);
                 return false;
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "[JMSFusion] Write probe failed: {Path}", path);
+                logger.LogWarning(ex, "[JMSFusionV2] Write probe failed: {Path}", path);
                 return false;
             }
         }
@@ -67,12 +67,12 @@ namespace Jellyfin.Plugin.JMSFusion
                 if (!File.Exists(backupPath))
                 {
                     File.Copy(path, backupPath);
-                    logger.LogInformation("[JMSFusion] Backup created: {BackupPath}", backupPath);
+                    logger.LogInformation("[JMSFusionV2] Backup created: {BackupPath}", backupPath);
                 }
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "[JMSFusion] Backup creation failed for: {Path}", path);
+                logger.LogWarning(ex, "[JMSFusionV2] Backup creation failed for: {Path}", path);
             }
         }
 
@@ -87,11 +87,11 @@ namespace Jellyfin.Plugin.JMSFusion
                 }
 
                 File.Delete(backupPath);
-                logger.LogInformation("[JMSFusion] Removed backup: {BackupPath}", backupPath);
+                logger.LogInformation("[JMSFusionV2] Removed backup: {BackupPath}", backupPath);
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "[JMSFusion] Failed removing backup for: {Path}", path);
+                logger.LogWarning(ex, "[JMSFusionV2] Failed removing backup for: {Path}", path);
             }
         }
 
@@ -119,12 +119,12 @@ namespace Jellyfin.Plugin.JMSFusion
                         ms.CopyTo(gzStream);
                     }
                     File.WriteAllBytes(gz, outMs.ToArray());
-                    logger.LogInformation("[JMSFusion] index.html.gz updated");
+                    logger.LogInformation("[JMSFusionV2] index.html.gz updated");
                 }
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "[JMSFusion] Failed updating index.html.gz");
+                logger.LogWarning(ex, "[JMSFusionV2] Failed updating index.html.gz");
             }
 
             try
@@ -139,12 +139,12 @@ namespace Jellyfin.Plugin.JMSFusion
                         ms.CopyTo(brStream);
                     }
                     File.WriteAllBytes(br, outMs.ToArray());
-                    logger.LogInformation("[JMSFusion] index.html.br updated");
+                    logger.LogInformation("[JMSFusionV2] index.html.br updated");
                 }
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "[JMSFusion] Failed updating index.html.br");
+                logger.LogWarning(ex, "[JMSFusionV2] Failed updating index.html.br");
             }
         }
 
@@ -152,14 +152,14 @@ namespace Jellyfin.Plugin.JMSFusion
         {
             try
             {
-                logger.LogInformation("[JMSFusion] Checking web root: {WebRoot}", webRootPath);
+                logger.LogInformation("[JMSFusionV2] Checking web root: {WebRoot}", webRootPath);
 
                 var indexPath = Path.Combine(webRootPath, "index.html");
-                logger.LogInformation("[JMSFusion] Index path: {IndexPath}", indexPath);
+                logger.LogInformation("[JMSFusionV2] Index path: {IndexPath}", indexPath);
 
                 if (!File.Exists(indexPath))
                 {
-                    logger.LogWarning("[JMSFusion] index.html not found at: {Path}", indexPath);
+                    logger.LogWarning("[JMSFusionV2] index.html not found at: {Path}", indexPath);
                     return false;
                 }
 
@@ -176,12 +176,12 @@ namespace Jellyfin.Plugin.JMSFusion
                     var desiredBlock = block.Trim();
                     if (string.Equals(currentBlock, desiredBlock, StringComparison.Ordinal))
                     {
-                        logger.LogInformation("[JMSFusion] index.html patch is already up to date");
+                        logger.LogInformation("[JMSFusionV2] index.html patch is already up to date");
                         return true;
                     }
 
                     html = html.Remove(start, end - start).Insert(start, block);
-                    logger.LogInformation("[JMSFusion] Existing inject block refreshed");
+                    logger.LogInformation("[JMSFusionV2] Existing inject block refreshed");
                 }
                 else
                 {
@@ -190,7 +190,7 @@ namespace Jellyfin.Plugin.JMSFusion
                     if (headEndPos >= 0)
                     {
                         html = html.Insert(headEndPos, Environment.NewLine + block + Environment.NewLine);
-                        logger.LogInformation("[JMSFusion] Found </head> tag at position: {Position}", headEndPos);
+                        logger.LogInformation("[JMSFusionV2] Found </head> tag at position: {Position}", headEndPos);
                     }
                     else
                     {
@@ -198,34 +198,34 @@ namespace Jellyfin.Plugin.JMSFusion
                         if (bodyEndPos >= 0)
                         {
                             html = html.Insert(bodyEndPos, Environment.NewLine + block + Environment.NewLine);
-                            logger.LogInformation("[JMSFusion] Found </body> tag at position: {Position}", bodyEndPos);
+                            logger.LogInformation("[JMSFusionV2] Found </body> tag at position: {Position}", bodyEndPos);
                         }
                         else
                         {
                             html += Environment.NewLine + block + Environment.NewLine;
-                            logger.LogWarning("[JMSFusion] Neither </head> nor </body> tag found, appended to end");
+                            logger.LogWarning("[JMSFusionV2] Neither </head> nor </body> tag found, appended to end");
                         }
                     }
                 }
 
                 EnsureBackup(indexPath, logger);
                 File.WriteAllText(indexPath, html, Encoding.UTF8);
-                logger.LogInformation("[JMSFusion] index.html updated successfully");
+                logger.LogInformation("[JMSFusionV2] index.html updated successfully");
                 var verify = File.ReadAllText(indexPath, Encoding.UTF8);
                 if (verify.Contains(BeginMark, StringComparison.OrdinalIgnoreCase) &&
                     verify.Contains(EndMark, StringComparison.OrdinalIgnoreCase))
                 {
-                    logger.LogInformation("[JMSFusion] Patch verification successful");
+                    logger.LogInformation("[JMSFusionV2] Patch verification successful");
                     WriteCompressedCopiesIfPresent(logger, webRootPath, verify);
                     return true;
                 }
 
-                logger.LogError("[JMSFusion] Patch verification FAILED");
+                logger.LogError("[JMSFusionV2] Patch verification FAILED");
                 return false;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "[JMSFusion] Failed to patch index.html");
+                logger.LogError(ex, "[JMSFusionV2] Failed to patch index.html");
                 return false;
             }
         }
@@ -237,7 +237,7 @@ namespace Jellyfin.Plugin.JMSFusion
                 var indexPath = Path.Combine(webRootPath, "index.html");
                 if (!File.Exists(indexPath))
                 {
-                    logger.LogWarning("[JMSFusion] Unpatch: index.html not found: {Path}", indexPath);
+                    logger.LogWarning("[JMSFusionV2] Unpatch: index.html not found: {Path}", indexPath);
                     return false;
                 }
 
@@ -248,7 +248,7 @@ namespace Jellyfin.Plugin.JMSFusion
 
                 if (!hasInjectBlock)
                 {
-                    logger.LogInformation("[JMSFusion] Unpatch: inject block not found (already clean)");
+                    logger.LogInformation("[JMSFusionV2] Unpatch: inject block not found (already clean)");
                     if (hasBackup)
                     {
                         if (IsWritable(indexPath, logger))
@@ -268,7 +268,7 @@ namespace Jellyfin.Plugin.JMSFusion
                     try
                     {
                         File.Copy(backupPath, indexPath, overwrite: true);
-                        logger.LogInformation("[JMSFusion] Unpatch: restored from backup: {BackupPath}", backupPath);
+                        logger.LogInformation("[JMSFusionV2] Unpatch: restored from backup: {BackupPath}", backupPath);
                         var restored = File.ReadAllText(indexPath, Encoding.UTF8);
                         WriteCompressedCopiesIfPresent(logger, webRootPath, restored);
                         DeleteBackupsIfPresent(logger, webRootPath);
@@ -276,28 +276,28 @@ namespace Jellyfin.Plugin.JMSFusion
                     }
                     catch (Exception ex)
                     {
-                        logger.LogWarning(ex, "[JMSFusion] Unpatch: failed to restore backup, falling back to inline removal");
+                        logger.LogWarning(ex, "[JMSFusionV2] Unpatch: failed to restore backup, falling back to inline removal");
                     }
                 }
 
                 var (s, e) = FindInjectRange(html);
                 if (s < 0 || e < 0)
                 {
-                    logger.LogInformation("[JMSFusion] Unpatch: inject block not found (already clean)");
+                    logger.LogInformation("[JMSFusionV2] Unpatch: inject block not found (already clean)");
                     DeleteBackupsIfPresent(logger, webRootPath);
                     return true;
                 }
 
                 html = html.Remove(s, e - s);
                 File.WriteAllText(indexPath, html, Encoding.UTF8);
-                logger.LogInformation("[JMSFusion] Unpatch: inject block removed");
+                logger.LogInformation("[JMSFusionV2] Unpatch: inject block removed");
                 WriteCompressedCopiesIfPresent(logger, webRootPath, html);
                 DeleteBackupsIfPresent(logger, webRootPath);
                 return true;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "[JMSFusion] EnsureUnpatched failed");
+                logger.LogError(ex, "[JMSFusionV2] EnsureUnpatched failed");
                 return false;
             }
         }

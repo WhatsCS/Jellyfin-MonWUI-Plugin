@@ -10,11 +10,11 @@ using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Library;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/watchlist")]
-    [Route("Plugins/JMSFusion/watchlist")]
+    [Route("JMSFusionV2/watchlist")]
+    [Route("Plugins/JMSFusionV2/watchlist")]
     public class WatchlistController : ControllerBase
     {
         private static readonly object SyncRoot = new();
@@ -134,7 +134,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 if (changed)
@@ -222,7 +222,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 var created = false;
@@ -287,7 +287,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 var removedAfterPlayed = IsTrue(Request.Query["played"].FirstOrDefault()) || IsTrue(Request.Query["completed"].FirstOrDefault());
@@ -375,7 +375,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
 
@@ -459,7 +459,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
 
@@ -1281,7 +1281,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         {
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 if (changed)
@@ -1357,7 +1357,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return Math.Max(0, Math.Min(SmartMaxPerBucket, normalized));
         }
 
-        private static bool TrimOwnerItems(JMSFusionConfiguration cfg, string ownerUserId)
+        private static bool TrimOwnerItems(JMSFusionV2Configuration cfg, string ownerUserId)
         {
             var ownerItems = cfg.WatchlistEntries
                 .Where(entry => Same(entry.OwnerUserId, ownerUserId))
@@ -1379,7 +1379,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return removed;
         }
 
-        private static bool TrimOwnerShares(JMSFusionConfiguration cfg, string ownerUserId)
+        private static bool TrimOwnerShares(JMSFusionV2Configuration cfg, string ownerUserId)
         {
             var shares = cfg.WatchlistShares
                 .Where(share => Same(share.OwnerUserId, ownerUserId))
@@ -1399,7 +1399,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 removeIds.Contains(Clean(share.Id))) > 0;
         }
 
-        private static bool NormalizeConfig(JMSFusionConfiguration cfg)
+        private static bool NormalizeConfig(JMSFusionV2Configuration cfg)
         {
             var changed = false;
 
@@ -1714,7 +1714,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return changed;
         }
 
-        private static bool RegisterHistoryAdd(JMSFusionConfiguration cfg, WatchlistEntry entry, UserContext user, long addedAtUtc)
+        private static bool RegisterHistoryAdd(JMSFusionV2Configuration cfg, WatchlistEntry entry, UserContext user, long addedAtUtc)
         {
             var history = cfg.WatchlistHistoryEntries.FirstOrDefault(candidate =>
                 Same(candidate.OwnerUserId, user.UserId) &&
@@ -1758,7 +1758,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return true;
         }
 
-        private static bool RegisterHistoryRemoval(JMSFusionConfiguration cfg, WatchlistEntry entry, UserContext user, bool removedAfterPlayed)
+        private static bool RegisterHistoryRemoval(JMSFusionV2Configuration cfg, WatchlistEntry entry, UserContext user, bool removedAfterPlayed)
         {
             var history = cfg.WatchlistHistoryEntries.FirstOrDefault(candidate =>
                 Same(candidate.OwnerUserId, user.UserId) &&
@@ -2024,7 +2024,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return clean[..MaxNoteLength];
         }
 
-        private static void TouchRevision(JMSFusionConfiguration cfg)
+        private static void TouchRevision(JMSFusionV2Configuration cfg)
         {
             cfg.WatchlistRevision = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
@@ -2037,7 +2037,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 "";
 
             var userName =
-                Request.Headers["X-JMSFusion-UserName"].FirstOrDefault() ??
+                Request.Headers["X-JMSFusionV2-UserName"].FirstOrDefault() ??
                 Request.Headers["X-Emby-UserName"].FirstOrDefault() ??
                 "";
 

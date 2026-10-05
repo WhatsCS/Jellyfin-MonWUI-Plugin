@@ -3067,8 +3067,8 @@ export function initSubtitleCustomizer() {
         btn.classList.remove("btnSubtitles", "hide");
         btn.classList.add(BTN_CLASS, "autoSize");
         btn.setAttribute("is", subtitleBtn?.getAttribute("is") || "paper-icon-button-light");
-        btn.setAttribute("aria-label", L("subtitleCustomizerOpenButton", "Altyazı ayarları"));
-        btn.title = L("subtitleCustomizerOpenButton", "Altyazı ayarları");
+        btn.setAttribute("aria-label", L("subtitleCustomizerOpenButton", "Subtitle Settings"));
+        btn.title = L("subtitleCustomizerOpenButton", "Subtitle Settings");
         btn.innerHTML = faIconHtml("sliders", "xlargePaperIconButton jms-subtitle-icon");
         btn.addEventListener("click", openDialog);
 

@@ -1,5 +1,5 @@
 import { getConfig } from "../../config.js";
-import { getEmbyHeaders, getSessionInfo } from "../../../../Plugins/JMSFusion/runtime/api.js";
+import { getEmbyHeaders, getSessionInfo } from "../../../../Plugins/JMSFusionV2/runtime/api.js";
 import { musicPlayerState } from "./state.js";
 
 const RADIO_BROWSER_MIRRORS = [
@@ -1561,7 +1561,7 @@ function readSharedStationsFromConfig(configData) {
 }
 
 async function fetchJmsConfig() {
-  const response = await fetch("/JMSFusion/config", {
+  const response = await fetch("/JMSFusionV2/config", {
     method: "GET",
     cache: "no-store",
     headers: getEmbyHeaders({
@@ -1576,7 +1576,7 @@ async function fetchJmsConfig() {
     throw new Error(`HTTP ${response.status}`);
   }
 
-  setSharedBackendMode("jmsfusion");
+  setSharedBackendMode("JMSFusionV2");
   return response.json().then((data) => {
     const unwrapped = data?.cfg;
     return unwrapped && typeof unwrapped === "object" ? unwrapped : (data || {});
@@ -1616,7 +1616,7 @@ export function getRadioPersistenceInfo() {
     mode: sharedBackendMode === "unknown" ? "auto" : sharedBackendMode,
     staticPath: STATIC_SHARED_RADIO_PATH,
     localKey: LOCAL_SHARED_RADIO_KEY,
-    supportsServerWrite: sharedBackendMode === "jmsfusion"
+    supportsServerWrite: sharedBackendMode === "JMSFusionV2"
   };
 }
 
@@ -1639,7 +1639,7 @@ function withContributorMetadata(station) {
 async function persistSharedRadioStations(stations) {
   const sharedRecords = stations.map(toSharedRecord);
 
-  const response = await fetch("/JMSFusion/config", {
+  const response = await fetch("/JMSFusionV2/config", {
     method: "POST",
     cache: "no-store",
     headers: getEmbyHeaders({
@@ -1664,7 +1664,7 @@ export async function fetchSharedRadioStations() {
     musicPlayerState.radioSharedStations = stations;
     return stations;
   } catch (error) {
-    if (sharedBackendMode !== "jmsfusion") {
+    if (sharedBackendMode !== "JMSFusionV2") {
       return loadManualSharedStations();
     }
 

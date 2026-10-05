@@ -1,4 +1,4 @@
-import { makeApiRequest, fetchItemDetailsFull, getDetailsUrl, playNow, fetchLocalTrailers, pickBestLocalTrailer, getVideoStreamUrl, updateFavoriteStatus, getEmbyHeaders, getSessionInfo } from "../../Plugins/JMSFusion/runtime/api.js";
+import { makeApiRequest, fetchItemDetailsFull, getDetailsUrl, playNow, fetchLocalTrailers, pickBestLocalTrailer, getVideoStreamUrl, updateFavoriteStatus, getEmbyHeaders, getSessionInfo } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { withServer } from "./jfUrl.js";
 import { getConfig, getDetailsModalRuntimeConfig } from "./config.js";
 import { getLanguageLabels } from "../language/index.js";
@@ -547,7 +547,7 @@ function ensureLocalCommentStyles() {
 }
 
 const LS_TMDB_LANG = 'jms_tmdb_reviews_lang';
-const LOCAL_COMMENTS_ENDPOINT = "/Plugins/JMSFusion/comments";
+const LOCAL_COMMENTS_ENDPOINT = "/Plugins/JMSFusionV2/comments";
 const LOCAL_COMMENT_MAX_LENGTH = 2000;
 const LOCAL_COMMENT_STYLE_ID = "jms-details-modal-comments-style";
 
@@ -597,7 +597,7 @@ function buildLocalCommentHeaders(extra = {}) {
   });
 
   if (userId) headers["X-Emby-UserId"] = userId;
-  if (userName) headers["X-JMSFusion-UserName"] = userName;
+  if (userName) headers["X-JMSFusionV2-UserName"] = userName;
 
   return headers;
 }
@@ -670,7 +670,7 @@ function formatLocalCommentDate(ts) {
 
 function renderLocalCommentsHtml(comments = [], { currentUserId = "", deleteBusyId = "" } = {}) {
   if (!comments.length) {
-    return `<div style="color:rgba(255,255,255,.72);font-size:13px;line-height:1.6;">${config.languageLabels.localCommentsEmpty || "Henüz yerel yorum yok. İlk yorumu sen yaz."}</div>`;
+    return `<div style="color:rgba(255,255,255,.72);font-size:13px;line-height:1.6;">${config.languageLabels.localCommentsEmpty || "No local comments yet. Be the first to comment."}</div>`;
   }
 
   return `
@@ -1411,7 +1411,7 @@ async function loadTmdbReviewsInto(root, displayItem, { signal } = {}) {
             countSpan.textContent = totalCount.toString();
 
             if (!all.length) {
-                container.innerHTML = `<div style="color:rgba(255,255,255,.7);font-size:13px;line-height:1.5;">${config.languageLabels.noReviews || 'Henüz yorum yok.'}</div>`;
+                container.innerHTML = `<div style="color:rgba(255,255,255,.7);font-size:13px;line-height:1.5;">${config.languageLabels.noReviews || 'No Comments Yet.'}</div>`;
                 container.setAttribute('data-loaded', 'true');
                 return;
             }
@@ -2780,7 +2780,7 @@ function getAudioImageUrlMini(track, { maxWidth = 260, fallbackAlbumId = "" } = 
 function renderMiniCards(items = []) {
   ensureSerrMissingVisualStyles();
   if (!items.length) {
-    return `<div class="jmsdm-empty-state" style="color:rgba(255,255,255,.6);font-size:14px;padding:20px;text-align:center;">${config.languageLabels.contentNotFound || "Henüz benzer içerik bulunamadı."}</div>`;
+    return `<div class="jmsdm-empty-state" style="color:rgba(255,255,255,.6);font-size:14px;padding:20px;text-align:center;">${config.languageLabels.contentNotFound || "No similar content found yet."}</div>`;
   }
   items.forEach((item) => {
     if (isSerrMissingSyntheticItem(item) && item?.Id) _serrMissingPreviewItems.set(String(item.Id), item);
@@ -3724,7 +3724,7 @@ export async function openDetailsModal({ itemId, item: preloadedItem = null, det
   const epName = isEpisode ? safeText(baseItem.Name, "") : "";
   const name = (isEpisode && epName && epName !== nameBase) ? `${nameBase} — ${epName}` : nameBase;
 
-  const overview = safeText(displayItem.Overview, config.languageLabels.noDescription || "Açıklama yok.");
+  const overview = safeText(displayItem.Overview, config.languageLabels.noDescription || "No Description.");
   const year = displayItem.ProductionYear ? String(displayItem.ProductionYear) : "";
   const rating = formatOfficialRatingLabel(displayItem.OfficialRating) || "";
   const community = displayItem.CommunityRating ? String(displayItem.CommunityRating.toFixed?.(1) ?? displayItem.CommunityRating) : "";
@@ -3925,8 +3925,8 @@ export async function openDetailsModal({ itemId, item: preloadedItem = null, det
     ? []
     : [
         { label: label("watchlistPreviewVideoTrack", "Video"), value: videoQuality },
-        { label: label("watchlistPreviewAudioCount", "Ses"), value: audioTracks.length ? `${audioTracks.length} ${label("watchlistPreviewTrackSuffix", "parça")}` : "" },
-        { label: label("watchlistPreviewSubtitleCount", "Altyazı"), value: subtitleTracks.length ? `${subtitleTracks.length} ${label("watchlistPreviewTrackSuffix", "parça")}` : "" }
+        { label: label("watchlistPreviewAudioCount", "Audio"), value: audioTracks.length ? `${audioTracks.length} ${label("watchlistPreviewTrackSuffix", "track")}` : "" },
+        { label: label("watchlistPreviewSubtitleCount", "Subtitles"), value: subtitleTracks.length ? `${subtitleTracks.length} ${label("watchlistPreviewTrackSuffix", "track")}` : "" }
       ];
   const creditFields = isBoxSet || isTrailerItem
     ? []
@@ -4401,7 +4401,7 @@ wireMiniCardDelegation();
       notifyDetailsModalPlay(baseItem.Id);
     } catch (err) {
       console.error("Modal play error:", err);
-      window.showMessage?.(config.languageLabels.playStartFailed || "Oynatma başlatılamadı", "error");
+      window.showMessage?.(config.languageLabels.playStartFailed || "Failed to start playback", "error");
     } finally {
       playBtn.disabled = false;
     }

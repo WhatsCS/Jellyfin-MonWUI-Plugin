@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.JMSFusion.Core
+namespace Jellyfin.Plugin.JMSFusionV2.Core
 {
     public sealed class ScopedCacheJsonService
     {
@@ -167,7 +167,7 @@ namespace Jellyfin.Plugin.JMSFusion.Core
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "[JMSFusion] Scoped cache JSON invalid, returning empty payload for {CacheType} {Scope}", cacheType, scope);
+                    _logger.LogWarning(ex, "[JMSFusionV2] Scoped cache JSON invalid, returning empty payload for {CacheType} {Scope}", cacheType, scope);
                     return EmptyPayload;
                 }
             }
@@ -180,7 +180,7 @@ namespace Jellyfin.Plugin.JMSFusion.Core
         public async Task<bool> WriteAsync(string cacheType, string scope, string rawJson, CancellationToken cancellationToken)
         {
             var filePath = GetFilePath(cacheType, scope);
-            var directory = Path.GetDirectoryName(filePath) ?? JMSFusionPlugin.Instance.GetStorageDirectory("scoped-cache", cacheType);
+            var directory = Path.GetDirectoryName(filePath) ?? JMSFusionV2Plugin.Instance.GetStorageDirectory("scoped-cache", cacheType);
             Directory.CreateDirectory(directory);
 
             string normalizedJson;
@@ -188,13 +188,15 @@ namespace Jellyfin.Plugin.JMSFusion.Core
             {
                 using var doc = JsonDocument.Parse(string.IsNullOrWhiteSpace(rawJson) ? EmptyPayload : rawJson);
                 normalizedJson = doc.RootElement.GetRawText();
+                if (IsSliderCache(cacheType))
+                {
+                    normalizedJson = NormalizeCachePayload(cacheType, normalizedJson);
+                }
             }
             catch (Exception ex)
             {
                 throw new ArgumentException("Cache payload must be valid JSON.", nameof(rawJson), ex);
             }
-
-            normalizedJson = NormalizeCachePayload(cacheType, normalizedJson);
 
             var gate = _locks.GetOrAdd(filePath, static _ => new SemaphoreSlim(1, 1));
             await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -875,7 +877,7 @@ namespace Jellyfin.Plugin.JMSFusion.Core
         {
             var normalizedScope = NormalizeScope(scope);
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(normalizedScope))).ToLowerInvariant();
-            var directory = JMSFusionPlugin.Instance.GetStorageDirectory("scoped-cache", cacheType);
+            var directory = JMSFusionV2Plugin.Instance.GetStorageDirectory("scoped-cache", cacheType);
             return Path.Combine(directory, $"{hash}.json");
         }
 

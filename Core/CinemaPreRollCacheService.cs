@@ -9,7 +9,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Globalization;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.JMSFusion.Core;
+namespace Jellyfin.Plugin.JMSFusionV2.Core;
 
 public sealed class CinemaPreRollCacheService
 {
@@ -235,7 +235,7 @@ public sealed class CinemaPreRollCacheService
         CancellationToken ct = default)
     {
         var locale = BuildLocaleRequest(language, region, regionMode, fallbackMode, fallbackRegion);
-        var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+        var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
 
         var fileModel = ReadCacheFile(plugin);
         if (!forceRefresh && TryGetFreshLocaleSnapshot(fileModel, locale.CacheKey, out var fresh))
@@ -304,12 +304,12 @@ public sealed class CinemaPreRollCacheService
         {
             Timeout = TimeSpan.FromSeconds(45)
         };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("JMSFusion-CinemaPreRollCache/1.0");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("JMSFusionV2-CinemaPreRollCache/1.0");
         return client;
     }
 
     private async Task<LocaleCacheModel?> RefreshLocaleSnapshotAsync(
-        JMSFusionConfiguration config,
+        JMSFusionV2Configuration config,
         LocaleRequest locale,
         LocaleCacheModel? existingSnapshot,
         CancellationToken ct)
@@ -1403,7 +1403,7 @@ public sealed class CinemaPreRollCacheService
             .ToList();
     }
 
-    private CacheFileModel ReadCacheFile(JMSFusionPlugin plugin)
+    private CacheFileModel ReadCacheFile(JMSFusionV2Plugin plugin)
     {
         var filePath = GetCacheFilePath(plugin);
         if (!File.Exists(filePath))
@@ -1433,7 +1433,7 @@ public sealed class CinemaPreRollCacheService
         }
     }
 
-    private void WriteCacheFile(JMSFusionPlugin plugin, CacheFileModel model)
+    private void WriteCacheFile(JMSFusionV2Plugin plugin, CacheFileModel model)
     {
         var filePath = GetCacheFilePath(plugin);
         var tmpPath = $"{filePath}.tmp";
@@ -1448,7 +1448,7 @@ public sealed class CinemaPreRollCacheService
         File.Move(tmpPath, filePath, true);
     }
 
-    private static string GetCacheFilePath(JMSFusionPlugin plugin)
+    private static string GetCacheFilePath(JMSFusionV2Plugin plugin)
     {
         return Path.Combine(plugin.GetStorageDirectory(), CacheFileName);
     }

@@ -60,7 +60,7 @@ export function createSliderPanel(config, labels) {
 
   const languages = [
     { value: 'auto', label: labels.optionAuto || '🌐 Otomatik (Tarayıcı dili)' },
-    { value: 'tur',  label: labels.optionTurkish || '🇹🇷 Türkçe' },
+    { value: 'tur',  label: labels.optionTurkish || '🇹🇷 Turkish' },
     { value: 'eng',  label: labels.optionEnglish || '🇬🇧 English' },
     { value: 'spa',  label: labels.optionEspanol || '🇪🇸 Español' },
     { value: 'deu',  label: labels.optionGerman  || '🇩🇪 Deutsch' },
@@ -90,13 +90,13 @@ export function createSliderPanel(config, labels) {
   const canEditGlobalTmdb = config?.currentUserIsAdmin === true;
 
   const tmdbTitle = document.createElement('h3');
-  tmdbTitle.textContent = labels.tmdbReviewsTitle || 'TMDb Yorumları';
+  tmdbTitle.textContent = labels.tmdbReviewsTitle || 'TMDb Reviews';
 
   const tmdbKeyField = (() => {
     const w = document.createElement('div');
     w.className = 'fsetting-item';
     const l = document.createElement('label');
-    l.textContent = labels.tmdbApiKeyForReviews || 'TMDb API Key (yorumlar için)';
+    l.textContent = labels.tmdbApiKeyForReviews || 'TMDb API Key (for reviews)';
     l.htmlFor = 'tmdbKeyForReviews';
     const i = document.createElement('input');
     i.type = 'password';
@@ -107,13 +107,13 @@ export function createSliderPanel(config, labels) {
     i.disabled = !canEditGlobalTmdb;
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = (labels.showSecret || 'Göster');
+    btn.textContent = (labels.showSecret || 'Show');
     btn.style.cssText = 'margin-left:8px; padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.15); background:transparent; color:inherit; cursor:pointer;';
     btn.disabled = !canEditGlobalTmdb;
     btn.onclick = () => {
       const hidden = i.type === 'password';
       i.type = hidden ? 'text' : 'password';
-      btn.textContent = hidden ? (labels.hideSecret || 'Gizle') : (labels.showSecret || 'Göster');
+      btn.textContent = hidden ? (labels.hideSecret || 'Hide') : (labels.showSecret || 'Show');
     };
 
     const row = document.createElement('div');
@@ -135,7 +135,7 @@ export function createSliderPanel(config, labels) {
     labels.tmdbReviewsLang || 'Yorum Dili',
     lsGet(LS_TMDB_LANG, 'tr-TR'),
     [
-      { value: 'tr-TR', label: '🇹🇷 Türkçe (tr-TR)' },
+      { value: 'tr-TR', label: '🇹🇷 Turkish (tr-TR)' },
       { value: 'en-US', label: '🇺🇸 English (en-US)' },
       { value: 'es-ES', label: '🇪🇸 Español (es-ES)' },
       { value: 'de-DE', label: '🇩🇪 Deutsch (de-DE)' },
@@ -182,13 +182,13 @@ export function createSliderPanel(config, labels) {
 
   const enableSliderCheckbox = createCheckbox(
     'enableSlider',
-    labels.enableSlider || 'Slider’ı Etkinleştir',
+    labels.enableSlider || 'Enable Slider',
     (config.enableSlider !== false)
   );
 
   const onlyShowSliderOnHomeTabCheckbox = createCheckbox(
     'onlyShowSliderOnHomeTab',
-    labels.onlyShowSliderOnHomeTab || 'Sadece AnaSayfa Sekmesinde Göster',
+    labels.onlyShowSliderOnHomeTab || 'Show Only on Home Tab',
     (config.onlyShowSliderOnHomeTab !== false)
   );
 
@@ -204,7 +204,7 @@ export function createSliderPanel(config, labels) {
 
   const peakDiagonalCheckbox = createCheckbox(
     'peakDiagonal',
-    labels.peakDiagonal || 'Diagonal Görünüm',
+    labels.peakDiagonal || 'Diagonal View',
     (activeCssVariant === 'peakslider') && !!config.peakDiagonal
   );
 
@@ -322,7 +322,7 @@ export function createSliderPanel(config, labels) {
   const sliderDiv = document.createElement('div');
   sliderDiv.className = 'fsetting-item';
   const sliderLabel = document.createElement('h3');
-  sliderLabel.textContent = labels.sliderDuration || 'Slider Süresi (ms):';
+  sliderLabel.textContent = labels.sliderDuration || 'Slider Duration (ms):';
   const sliderInput = document.createElement('input');
   sliderInput.type = 'number';
   sliderInput.value = config.sliderDuration || 15000;
@@ -338,7 +338,7 @@ export function createSliderPanel(config, labels) {
 
   const showSecondsCheckbox = createCheckbox(
     'showProgressAsSeconds',
-    (labels.showProgressAsSeconds || "İlerlemeyi Saniye Olarak Göster"),
+    (labels.showProgressAsSeconds || "İlerlemeyi Saniye Olarak Show"),
     config.showProgressAsSeconds || false
   );
   sliderDiv.appendChild(showSecondsCheckbox);
@@ -377,7 +377,7 @@ export function createSliderPanel(config, labels) {
 
   const disableAllPlaybackCheckbox = createCheckbox(
     'disableAllPlayback',
-    labels.selectNone || 'Hiçbiri',
+    labels.selectNone || 'None',
     config.disableAllPlayback || false
   );
 
@@ -483,7 +483,7 @@ export function createSliderPanel(config, labels) {
   const delayDiv = document.createElement('div');
   delayDiv.className = 'fsetting-item trailer-delay-container';
   const delayLabel = document.createElement('label');
-  delayLabel.textContent = labels.gecikmeInput || 'Yerleşik Fragman Gecikme Süresi (ms):';
+  delayLabel.textContent = labels.gecikmeInput || 'Yerleşik Fragman Delay Duration (ms):';
   const delayInput = document.createElement('input');
   delayInput.type = 'number';
   delayInput.value = config.gecikmeSure || 500;
@@ -500,7 +500,7 @@ export function createSliderPanel(config, labels) {
   backgroundOptionsDiv.className = 'fsetting-item';
 
   const backgroundTitle = document.createElement('h3');
-  backgroundTitle.textContent = labels.backgroundOptions || 'Slider Görsel Gösterim Ayarları';
+  backgroundTitle.textContent = labels.backgroundOptions || 'Slider Görsel Showim Ayarları';
   backgroundOptionsDiv.appendChild(backgroundTitle);
   sliderDiv.appendChild(backgroundOptionsDiv);
 
@@ -526,7 +526,7 @@ export function createSliderPanel(config, labels) {
   const backdropDiv = document.createElement('div');
   backdropDiv.className = 'fsetting-item backdrop-container';
   const backdropLabel = document.createElement('label');
-  backdropLabel.textContent = labels.slideBackgroundImageType || 'Slider Arka Plan Görsel Türü:';
+  backdropLabel.textContent = labels.slideBackgroundImageType || 'Slider Arka Plan Image Type:';
   const backdropSelect = createImageTypeSelect('backdropImageType', config.backdropImageType || 'backdropUrl', true);
   backdropLabel.htmlFor = 'backdropSelect';
   backdropSelect.id = 'backdropSelect';
@@ -629,7 +629,7 @@ export function createSliderPanel(config, labels) {
 
   const minSizeDesc = document.createElement('div');
   minSizeDesc.className = 'description-text';
-  minSizeDesc.textContent = labels.minImageSizeDescription || 'Seçilecek görselin minimum dosya boyutunu KB cinsinden belirtir.';
+  minSizeDesc.textContent = labels.minImageSizeDescription || 'Specifies the minimum file size in KB for the image to be selected.';
 
   minSizeLabel.htmlFor = 'minSizeInput';
   minSizeInput.id = 'minSizeInput';
@@ -649,7 +649,7 @@ export function createSliderPanel(config, labels) {
 
   const maxSizeDesc = document.createElement('div');
   maxSizeDesc.className = 'description-text';
-  maxSizeDesc.textContent = labels.maxImageSizeDescription || 'Seçilecek görselin maksimum dosya boyutunu KB cinsinden belirtir.';
+  maxSizeDesc.textContent = labels.maxImageSizeDescription || 'Specifies the maximum file size in KB for the image to be selected.';
 
   maxSizeLabel.htmlFor = 'maxSizeInput';
   maxSizeInput.id = 'maxSizeInput';
@@ -672,19 +672,19 @@ export function createSliderPanel(config, labels) {
 
   const dotNavCheckbox = createCheckbox(
     'showDotNavigation',
-    labels.showDotNavigation || 'Dot Navigasyonu Göster',
+    labels.showDotNavigation || 'Show Dot Navigation',
     config.showDotNavigation
   );
   sliderDiv.appendChild(dotNavCheckbox);
 
   const posterDotsDesc = document.createElement('div');
   posterDotsDesc.className = 'description-text';
-  posterDotsDesc.textContent = labels.posterDotsDescription || 'Dot navigasyonu poster boyutuna getirir ( Slider Alanınıda konumlandırma gerektirir )';
+  posterDotsDesc.textContent = labels.posterDotsDescription || 'Brings dot navigation to poster size ( Slider Area also requires positioning )';
   sliderDiv.appendChild(posterDotsDesc);
 
   const posterDotsCheckbox = createCheckbox(
     'dotPosterMode',
-    labels.dotPosterMode || 'Poster Boyutlu Dot Navigasyonu',
+    labels.dotPosterMode || 'Poster-Sized Dot Navigation',
     config.dotPosterMode
   );
   sliderDiv.appendChild(posterDotsCheckbox);
@@ -772,7 +772,7 @@ export function createSliderPanel(config, labels) {
   dotBgDiv.className = 'fsetting-item';
   dotBgDiv.classList.add('dot-bg-container');
   const dotBgLabel = document.createElement('label');
-  dotBgLabel.textContent = labels.dotBackgroundImageType || 'Dot Arka Plan Görsel Türü:';
+  dotBgLabel.textContent = labels.dotBackgroundImageType || 'Dot Arka Plan Image Type:';
   const dotBgSelect = createImageTypeSelect(
     'dotBackgroundImageType',
     config.dotBackgroundImageType || 'useSlideBackground',

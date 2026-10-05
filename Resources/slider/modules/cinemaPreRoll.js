@@ -294,9 +294,9 @@ function cinemaSerrRequestErrorMessage(error) {
   const code = getText(error?.payload?.code || error?.payload?.errorCode);
   const message = getText(error?.message || error?.payload?.error);
   if (code === "serrAlreadyAvailable" || code === "already_available" || /already available in jellyfin/i.test(message)) {
-    return serrLabel("serrAlreadyAvailable", "Bu içerik Jellyfin'de zaten mevcut.");
+    return serrLabel("serrAlreadyAvailable", "This content is already available in Jellyfin.");
   }
-  return message || serrLabel("serrRequestFailed", "Seerr isteği oluşturulamadı.");
+  return message || serrLabel("serrRequestFailed", "Failed to create Seerr request.");
 }
 
 function isCurrentCinemaSerrTrailer(overlay, tmdbId) {
@@ -2126,12 +2126,12 @@ async function fetchNativePlaybackItemDetails(itemId) {
   if (!id) return null;
 
   try {
-    const api = await import("../../Plugins/JMSFusion/runtime/api.js");
+    const api = await import("../../Plugins/JMSFusionV2/runtime/api.js");
     if (typeof api?.fetchItemDetails === "function") {
       return await api.fetchItemDetails(id);
     }
   } catch (error) {
-    console.warn("[JMSFusion] Cinema pre-roll native item lookup failed:", error);
+    console.warn("[JMSFusionV2] Cinema pre-roll native item lookup failed:", error);
   }
 
   return null;
@@ -2250,7 +2250,7 @@ async function runNativePreRollBeforePlay(original, target, args, label) {
         return false;
       }
     } catch (error) {
-      console.warn(`[JMSFusion] Cinema pre-roll native hook skipped (${label || "playbackManager"}):`, error);
+      console.warn(`[JMSFusionV2] Cinema pre-roll native hook skipped (${label || "playbackManager"}):`, error);
     }
 
     markNativePreRollAttemptIds(context.itemId, itemId);
@@ -2388,7 +2388,7 @@ export async function maybePlayCinemaPreRollSession({ item } = {}) {
   const runtimeCacheKey = buildTrailerRuntimeCacheKey(locale);
   const [queueSource, ytReady] = await Promise.all([
     fetchNowPlayingTrailerPool().catch((error) => {
-      console.warn("[JMSFusion] Cinema pre-roll TMDb fetch failed:", error);
+      console.warn("[JMSFusionV2] Cinema pre-roll TMDb fetch failed:", error);
       return [];
     }),
     ensureYouTubeApi().catch(() => false)

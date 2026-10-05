@@ -1,5 +1,5 @@
 import { getConfig } from "./config.js";
-import { getSessionInfo, makeApiRequest, getAuthHeader, playNow, fetchItemDetails, getEmbyHeaders, jms } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, makeApiRequest, getAuthHeader, playNow, fetchItemDetails, getEmbyHeaders, jms } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { openSettings } from "./settingsLoader.js";
 import { getProviderUrl } from './utils.js';
 import { applyContainerStyles } from './positionUtils.js';
@@ -469,15 +469,15 @@ async function startNowPlayback(itemId, sessionId) {
     });
 
     if (!response.ok) {
-      throw new Error(`${config.languageLabels.castoynatmahata}: ${response.statusText}`);
+      throw new Error(`${config.languageLabels.castplaybackerror}: ${response.statusText}`);
     }
 
     await castShowNotification(config.languageLabels.castbasarili, 'success');
     return true;
   } catch (error) {
-    console.error("Oynatma hatası:", error);
+    console.error("Playback error:", error);
     const config = getConfig();
-    await castShowNotification(`${config.languageLabels.castoynatmahata}: ${error.message}`, 'error');
+    await castShowNotification(`${config.languageLabels.castplaybackerror}: ${error.message}`, 'error');
     return false;
   }
 }

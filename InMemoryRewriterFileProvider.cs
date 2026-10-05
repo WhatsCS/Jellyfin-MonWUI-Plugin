@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.JMSFusion
+namespace Jellyfin.Plugin.JMSFusionV2
 {
     public sealed class InMemoryRewriterFileProvider : IFileProvider
     {
@@ -19,7 +19,7 @@ namespace Jellyfin.Plugin.JMSFusion
         {
             _underlying = provider ?? throw new ArgumentNullException(nameof(provider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogInformation("[JMSFusion] Registered in-memory transformer over static files");
+            _logger.LogInformation("[JMSFusionV2] Registered in-memory transformer over static files");
         }
 
         public IFileProvider GetDefaultWebRootProvider()
@@ -40,7 +40,7 @@ namespace Jellyfin.Plugin.JMSFusion
             if (_diagLogged < MaxDiagLogs && lower.Contains("index.html"))
             {
                 _diagLogged++;
-                _logger.LogInformation("[JMSFusion][DIAG] GetFileInfo subpath='{Subpath}'", subpath);
+                _logger.LogInformation("[JMSFusionV2][DIAG] GetFileInfo subpath='{Subpath}'", subpath);
             }
 
             var shouldRewrite =
@@ -58,7 +58,7 @@ namespace Jellyfin.Plugin.JMSFusion
                 if (_diagLogged < MaxDiagLogs)
                 {
                     _diagLogged++;
-                    _logger.LogInformation("[JMSFusion][DIAG] original file NOT FOUND for '{Subpath}'", subpath);
+                    _logger.LogInformation("[JMSFusionV2][DIAG] original file NOT FOUND for '{Subpath}'", subpath);
                 }
                 return original;
             }
@@ -91,7 +91,7 @@ namespace Jellyfin.Plugin.JMSFusion
                 if (_diagLogged < MaxDiagLogs)
                 {
                     _diagLogged++;
-                    _logger.LogInformation("[JMSFusion][DIAG] loaded html ({Len} chars) from '{Subpath}'", html.Length, subpath);
+                    _logger.LogInformation("[JMSFusionV2][DIAG] loaded html ({Len} chars) from '{Subpath}'", html.Length, subpath);
                 }
 
                 if (html.Contains("<!-- SL-INJECT BEGIN -->", StringComparison.OrdinalIgnoreCase) &&
@@ -100,18 +100,18 @@ namespace Jellyfin.Plugin.JMSFusion
                     if (_diagLogged < MaxDiagLogs)
                     {
                         _diagLogged++;
-                        _logger.LogInformation("[JMSFusion][DIAG] markers already present, returning original for '{Subpath}'", subpath);
+                        _logger.LogInformation("[JMSFusionV2][DIAG] markers already present, returning original for '{Subpath}'", subpath);
                     }
                     return original;
                 }
 
-                var snippet = JMSFusionPlugin.Instance?.BuildScriptsHtml("") ?? "";
+                var snippet = JMSFusionV2Plugin.Instance?.BuildScriptsHtml("") ?? "";
                 if (string.IsNullOrEmpty(snippet))
                 {
                     if (_diagLogged < MaxDiagLogs)
                     {
                         _diagLogged++;
-                        _logger.LogWarning("[JMSFusion][DIAG] snippet is empty; returning original for '{Subpath}'", subpath);
+                        _logger.LogWarning("[JMSFusionV2][DIAG] snippet is empty; returning original for '{Subpath}'", subpath);
                     }
                     return original;
                 }
@@ -142,12 +142,12 @@ namespace Jellyfin.Plugin.JMSFusion
                     resultBytes = Encoding.UTF8.GetBytes(html);
                 }
 
-                _logger.LogInformation("[JMSFusion] In-memory rewritten: {Path} ({Bytes} bytes)", subpath, resultBytes.Length);
+                _logger.LogInformation("[JMSFusionV2] In-memory rewritten: {Path} ({Bytes} bytes)", subpath, resultBytes.Length);
                 return new RewritingFileInfo(original, resultBytes);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "[JMSFusion] In-memory rewrite failed for {Path}. Falling back to original.", subpath);
+                _logger.LogWarning(ex, "[JMSFusionV2] In-memory rewrite failed for {Path}. Falling back to original.", subpath);
                 return original;
             }
         }

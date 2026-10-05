@@ -5,7 +5,7 @@ import {
   getQualitySnapshot
 } from './cacheManager.js';
 
-import { fetchItemDetails, fetchItemsBulk } from '../../Plugins/JMSFusion/runtime/api.js';
+import { fetchItemDetails, fetchItemsBulk } from '../../Plugins/JMSFusionV2/runtime/api.js';
 import { ensureVideoQualityBadgeStyles, getVideoQualityText } from "./containerUtils.js";
 import { getConfig } from "./config.js";
 

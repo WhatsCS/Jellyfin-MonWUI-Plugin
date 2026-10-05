@@ -360,7 +360,7 @@ function getSharedUserSettingsSnapshot(targetProfile) {
       return existingPromise.promise;
     }
 
-    const promise = fetch(`/Plugins/JMSFusion/UserSettings?profile=${encodeURIComponent(profile)}&ts=${Date.now()}`, {
+    const promise = fetch(`/Plugins/JMSFusionV2/UserSettings?profile=${encodeURIComponent(profile)}&ts=${Date.now()}`, {
       method: "GET",
       cache: "no-store",
       headers: { "Accept": "application/json" }
@@ -1571,11 +1571,11 @@ export async function publishAdminSnapshotIfForced() {
       "";
 
     if (!token) {
-      console.warn("[JMSFusion] Auto publish skipped (no token).");
+      console.warn("[JMSFusionV2] Auto publish skipped (no token).");
       return { attempted: true, forced: true, ok: false, reason: "no-token", profile: targetProfile };
     }
 
-    const pr = await fetch(`/Plugins/JMSFusion/UserSettings/Publish?ts=${Date.now()}&profile=${targetProfile}`, {
+    const pr = await fetch(`/Plugins/JMSFusionV2/UserSettings/Publish?ts=${Date.now()}&profile=${targetProfile}`, {
       method: "POST",
       cache: "no-store",
       headers: {
@@ -1586,14 +1586,14 @@ export async function publishAdminSnapshotIfForced() {
     });
 
     if (!pr.ok) {
-      console.warn("[JMSFusion] Auto publish failed:", pr.status);
+      console.warn("[JMSFusionV2] Auto publish failed:", pr.status);
       return { attempted: true, forced: true, ok: false, reason: "http-error", status: pr.status, profile: targetProfile };
     }
 
-    console.log("[JMSFusion] Auto publish success.");
+    console.log("[JMSFusionV2] Auto publish success.");
     return { attempted: true, forced: true, ok: true, profile: targetProfile };
   } catch (e) {
-    console.warn("[JMSFusion] Auto publish error:", e);
+    console.warn("[JMSFusionV2] Auto publish error:", e);
     return {
       attempted: true,
       forced: true,
@@ -1654,7 +1654,7 @@ export function buildJfUrl(pathOrUrl) {
 
     if (!data?.forceGlobal) {
       if (!managedStorageActive && _restoreBackupIfAny()) {
-        console.log("[JMSFusion] Restored user settings (global off).");
+        console.log("[JMSFusionV2] Restored user settings (global off).");
       }
       return;
     }
@@ -1663,7 +1663,7 @@ export function buildJfUrl(pathOrUrl) {
       window.ApiClient?._currentUser?.Policy?.IsAdministrator === true;
 
     if (isAdmin) {
-      console.log("[JMSFusion] Admin user – skipping forced global apply.");
+      console.log("[JMSFusionV2] Admin user – skipping forced global apply.");
       return;
     }
 
@@ -1678,6 +1678,6 @@ export function buildJfUrl(pathOrUrl) {
     }
 
     __globalApplied = true;
-    console.log("[JMSFusion] Global user settings applied (forced).");
+    console.log("[JMSFusionV2] Global user settings applied (forced).");
   } catch {}
 })();

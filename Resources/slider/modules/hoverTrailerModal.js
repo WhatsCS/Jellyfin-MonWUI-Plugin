@@ -1,6 +1,6 @@
 import { getConfig } from './config.js';
 import { getLanguageLabels, getDefaultLanguage } from '../language/index.js';
-import { playNow, getVideoStreamUrl, fetchItemDetails, fetchPlayableItemDetails, updateFavoriteStatus, goToDetailsPage, fetchLocalTrailers, pickBestLocalTrailer, getCachedUserTopGenres } from '../../Plugins/JMSFusion/runtime/api.js';
+import { playNow, getVideoStreamUrl, fetchItemDetails, fetchPlayableItemDetails, updateFavoriteStatus, goToDetailsPage, fetchLocalTrailers, pickBestLocalTrailer, getCachedUserTopGenres } from '../../Plugins/JMSFusionV2/runtime/api.js';
 import {
   getYoutubeEmbedUrl,
   isValidUrl,
@@ -759,10 +759,10 @@ export function createVideoModal({ showButtons = true, context = 'monwui-dot' } 
   playButton.addEventListener('click', async (e) => {
     e.stopPropagation();
     const itemId = modal.dataset.itemId;
-    if (!itemId) { alert("Oynatma başarısız: itemId bulunamadı"); return; }
+    if (!itemId) { alert("Playback failed: itemId not found"); return; }
     closeVideoModal();
     try { await playNow(itemId); }
-    catch (error) { console.error("Oynatma hatası:", error); alert("Oynatma başarısız: " + error.message); }
+    catch (error) { console.error("Playback error:", error); alert("Playback failed: " + error.message); }
     finally { closeVideoModal(); }
   });
 
@@ -1023,7 +1023,7 @@ export function createVideoModal({ showButtons = true, context = 'monwui-dot' } 
     applyPreviewTrailerAudioToVideo(video, { config: getConfig(), soundOn: modalState._soundOn });
     video.addEventListener('loadedmetadata', () => {
       video.currentTime = 10 * 60;
-      Promise.resolve(video.play()).catch(e => { if (e.name !== 'AbortError') console.warn('Video oynatma hatası:', e); });
+      Promise.resolve(video.play()).catch(e => { if (e.name !== 'AbortError') console.warn('Video playback error:', e); });
     }, { once: true });
   };
 

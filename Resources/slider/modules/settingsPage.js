@@ -52,8 +52,8 @@ export function createSettingsModal() {
     const config = getConfig();
     const currentLang = config.defaultLanguage || getDefaultLanguage();
     const labels = getLanguageLabels(currentLang) || {};
-    const monwuiTabLabel = labels.sliderSettings || 'MonWUI Ayarları';
-    const sliderTabLabel = labels.sliderPageLabel || 'Slider Ayarları';
+    const monwuiTabLabel = labels.sliderSettings || 'MonWUI Settings';
+    const sliderTabLabel = labels.sliderPageLabel || 'Slider Settings';
 
     const modal = document.createElement('div');
     modal.id = 'settings-modal';
@@ -147,27 +147,27 @@ export function createSettingsModal() {
 
     const mainTab = createTab('monwui', 'fa-sliders', monwuiTabLabel, true);
     const sliderTab = createTab('slider', 'fa-gear', sliderTabLabel, false);
-    const queryTab = createTab('query', 'fa-code', labels.queryStringInput || 'Api Sorgu Ayarları');
-    const musicTab = createTab('music', 'fa-music', labels.gmmpSettings || 'GMMP Ayarları');
-    const studioTab = createTab('studio', 'fa-building', labels.studioHubsSettings || 'Stüdyo Koleksiyonları Ayarları');
-    const profileChooserTab = createTab('profile-chooser', 'fa-user-group', labels.profileChooserHeader || 'Kim İzliyor Ayarları');
-    const pauseTab = createTab('pause', 'fa-pause', labels.pauseSettings || 'Duraklatma Ekranı Ayarları');
-    const watchlistSettingsTab = createTab('watchlist-settings', 'fa-bookmark', labels.watchlistSettingsTab || 'İzleme Listesi Ayarları');
-    const hoverTab = createTab('hover', 'fa-play-circle', labels.hoverTrailer || 'HoverTrailer Ayarları');
-    const cinemaPreRollTab = createTab('cinema-preroll', 'fa-clapperboard', labels.cinemaPreRollTab || 'Sinema Ön Gösterimleri');
-    const trailersTab = createTab('trailers', 'fa-video', labels.trailersHeader || 'Fragman İndirme / NFO Ayarları');
-    const notificationsTab = createTab('notifications', 'fa-bell', labels.notificationsSettings || 'Bildirim Ayarları');
+    const queryTab = createTab('query', 'fa-code', labels.queryStringInput || 'API Query Settings');
+    const musicTab = createTab('music', 'fa-music', labels.gmmpSettings || 'GMMP Settings');
+    const studioTab = createTab('studio', 'fa-building', labels.studioHubsSettings || 'Studio Collections Settings');
+    const profileChooserTab = createTab('profile-chooser', 'fa-user-group', labels.profileChooserHeader || 'Who\'s Watching Settings');
+    const pauseTab = createTab('pause', 'fa-pause', labels.pauseSettings || 'Pause Screen Settings');
+    const watchlistSettingsTab = createTab('watchlist-settings', 'fa-bookmark', labels.watchlistSettingsTab || 'Watchlist Settings');
+    const hoverTab = createTab('hover', 'fa-play-circle', labels.hoverTrailer || 'Hover Trailer Settings');
+    const cinemaPreRollTab = createTab('cinema-preroll', 'fa-clapperboard', labels.cinemaPreRollTab || 'Cinema Pre-roll');
+    const trailersTab = createTab('trailers', 'fa-video', labels.trailersHeader || 'Trailer Download / NFO Settings');
+    const notificationsTab = createTab('notifications', 'fa-bell', labels.notificationsSettings || 'Notification Settings');
     const serrTab = config?.currentUserIsAdmin
       ? createTab('serr', 'fa-clapperboard', labels.serrSettingsTab || 'Seerr & Arr Entegrasyonu')
       : null;
-    const detailsModalTab = createTab('details-modal', 'fa-circle-info', labels.detailsModalSettingsTab || 'Detaylar Modülü Ayarları');
-    const avatarTab = createTab('avatar', 'fa-user', labels.avatarCreateInput || 'Avatar Ayarları');
+    const detailsModalTab = createTab('details-modal', 'fa-circle-info', labels.detailsModalSettingsTab || 'Details Module Settings');
+    const avatarTab = createTab('avatar', 'fa-user', labels.avatarCreateInput || 'Avatar Settings');
     const parentalPinTab = config?.currentUserIsAdmin
-      ? createTab('parental-pin', 'fa-key', labels.parentalPinTab || 'PIN Kontrolü Ayarları')
+      ? createTab('parental-pin', 'fa-key', labels.parentalPinTab || 'PIN Control Settings')
       : null;
-    const positionTab = createTab('position', 'fa-arrows-up-down-left-right', labels.positionSettings || 'Konumlandırma Ayarları');
-    const dbManagementTab = createTab('db-management', 'fa-database', labels.dbManagementTab || 'DB Yönetimi');
-    const exporterTab = createTab('exporter', 'fa-download', labels.backupRestore || 'Yedekle ve Geri Yükle');
+    const positionTab = createTab('position', 'fa-arrows-up-down-left-right', labels.positionSettings || 'Position Settings');
+    const dbManagementTab = createTab('db-management', 'fa-database', labels.dbManagementTab || 'Database Management');
+    const exporterTab = createTab('exporter', 'fa-download', labels.backupRestore || 'Backup & Restore');
     const aboutTab = createTab('about', 'fa-circle-info', labels.aboutHeader || 'Hakkında');
 
     const tabs = [
@@ -293,7 +293,7 @@ export function createSettingsModal() {
     resetBtn.className = 'reset-btn';
     resetBtn.onclick = () => {
         createConfirmationModal(
-            labels.resetConfirm || 'Tüm ayarları varsayılan değerlere sıfırlamak istediğinize emin misiniz?',
+            labels.resetConfirm || 'Are you sure you want to reset all settings to default values?',
             resetAllSettings,
             labels
         );
@@ -454,7 +454,7 @@ themeToggleBtn.onclick = async () => {
     const publishResult = await publishAdminSnapshotIfForced();
     if (cfg?.forceGlobalUserSettings && cfg?.currentUserIsAdmin && publishResult?.attempted && !publishResult?.ok) {
       showNotification(
-        `<i class="fas fa-triangle-exclamation" style="margin-right: 8px;"></i> ${labels?.forceGlobalPublishFailed || 'Global kullanıcı ayarları publish edilemedi.'}`,
+        `<i class="fas fa-triangle-exclamation" style="margin-right: 8px;"></i> ${labels?.forceGlobalPublishFailed || 'Global user settings could not be published.'}`,
         4200,
         'error'
       );

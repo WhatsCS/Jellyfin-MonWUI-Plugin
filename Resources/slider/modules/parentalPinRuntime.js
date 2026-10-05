@@ -1669,7 +1669,7 @@ async function tryRouteMusicPlaybackToGmmp(item, itemId) {
       return !!(await gmmp?.playFolderById?.(id, { revealPlayer: true }).catch(() => false));
     }
   } catch (error) {
-    console.warn("[JMSFusion] GMMP music route failed:", error);
+    console.warn("[JMSFusionV2] GMMP music route failed:", error);
   }
 
   return false;
@@ -1845,12 +1845,12 @@ async function fetchNativePlaybackItemDetails(itemId) {
   if (!id) return null;
 
   try {
-    const api = await import("../../Plugins/JMSFusion/runtime/api.js");
+    const api = await import("../../Plugins/JMSFusionV2/runtime/api.js");
     if (typeof api?.fetchItemDetails === "function") {
       return await api.fetchItemDetails(id);
     }
   } catch (error) {
-    console.warn("[JMSFusion] Parental PIN native item lookup failed:", error);
+    console.warn("[JMSFusionV2] Parental PIN native item lookup failed:", error);
   }
 
   return null;
@@ -2068,7 +2068,7 @@ function installNativePlayInterceptor() {
 
   const runPlayNow = async (itemId) => {
     try {
-      const apiModule = await import("../../Plugins/JMSFusion/runtime/api.js");
+      const apiModule = await import("../../Plugins/JMSFusionV2/runtime/api.js");
       await apiModule?.playNow?.(itemId);
     } catch (error) {
       console.error("Native Jellyfin play interception failed:", error);
@@ -2443,7 +2443,7 @@ export async function ensureParentalPinBeforePlayback(item, { bypassItemId = nul
 
     const confirmed = await showPinPrompt({
       itemName: item?.Name || labels.untitled || "Untitled",
-      officialRating: officialRating || labels.derecelendirmeyok || "No rating",
+      officialRating: officialRating || labels.derecelendirmeyok || "No Rating",
       threshold,
       ruleLabel: officialRating
         ? formatThresholdLabel(threshold, labels)

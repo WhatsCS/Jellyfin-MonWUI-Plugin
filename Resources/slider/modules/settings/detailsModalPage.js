@@ -5,13 +5,13 @@ export function createDetailsModalPanel(config, labels) {
   panel.id = "details-modal-panel";
   panel.className = "settings-panel";
 
-  const section = createSection(labels.detailsModalSettingsTab || "Detaylar Modülü Ayarları");
+  const section = createSection(labels.detailsModalSettingsTab || "Details Module Settings");
 
   const description = document.createElement("div");
   description.className = "description-text";
   description.textContent =
     labels.detailsModalSettingsDescription ||
-    "Detaylar modülü aktifken hangi alanların gösterileceğini buradan kontrol edebilirsin.";
+    "You can control which fields are shown when the details module is enabled.";
   section.appendChild(description);
 
   const fieldsWrap = document.createElement("div");
@@ -19,13 +19,13 @@ export function createDetailsModalPanel(config, labels) {
 
   fieldsWrap.appendChild(createCheckbox(
     "detailsModalTmdbReviewsEnabled",
-    labels.detailsModalTmdbReviewsEnabled || "TMDb yorum alanını göster",
+    labels.detailsModalTmdbReviewsEnabled || "Show TMDb reviews section",
     config.detailsModalTmdbReviewsEnabled !== false
   ));
 
   fieldsWrap.appendChild(createCheckbox(
     "detailsModalLocalCommentsEnabled",
-    labels.detailsModalLocalCommentsEnabled || "Topluluk Yorumları alanını göster",
+    labels.detailsModalLocalCommentsEnabled || "Community Comments alanını göster",
     config.detailsModalLocalCommentsEnabled === true
   ));
 
@@ -35,7 +35,7 @@ export function createDetailsModalPanel(config, labels) {
   localCommentsHint.className = "description-text";
   localCommentsHint.textContent =
     labels.detailsModalLocalCommentsHint ||
-    "Topluluk Yorumları alanı varsayılan olarak kapalı gelir.";
+    "Community Comments alanı varsayılan olarak kapalı gelir.";
   section.appendChild(localCommentsHint);
 
   panel.appendChild(section);

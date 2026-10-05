@@ -5,15 +5,15 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Jellyfin.Plugin.JMSFusion;
-using Jellyfin.Plugin.JMSFusion.Core;
+using Jellyfin.Plugin.JMSFusionV2;
+using Jellyfin.Plugin.JMSFusionV2.Core;
 using MediaBrowser.Controller.Library;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/trailers")]
+    [Route("JMSFusionV2/trailers")]
     public class TrailersController : ControllerBase
     {
         private const string ApiUserHeaderRequiredCode = "trailers.api.user_header_required";
@@ -168,7 +168,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         {
             try
             {
-                var cfg = JMSFusionPlugin.Instance?.Configuration;
+                var cfg = JMSFusionV2Plugin.Instance?.Configuration;
                 if (cfg is null)
                 {
                     return ApiError(
@@ -393,7 +393,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         [HttpGet("diag")]
         public IActionResult Diag()
         {
-            var cfg = JMSFusionPlugin.Instance?.Configuration;
+            var cfg = JMSFusionV2Plugin.Instance?.Configuration;
             var hasYtDlp = _trailerService.HasCommand("yt-dlp");
             var hasDeno = _trailerService.HasCommand("deno");
             var hasFfprobe = _trailerService.HasCommand("ffprobe");

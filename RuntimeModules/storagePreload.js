@@ -1,5 +1,5 @@
-const USER_SETTINGS_URL = "/Plugins/JMSFusion/UserSettings";
-const SAVE_URL = "/Plugins/JMSFusion/UserSettings/Publish";
+const USER_SETTINGS_URL = "/Plugins/JMSFusionV2/UserSettings";
+const SAVE_URL = "/Plugins/JMSFusionV2/UserSettings/Publish";
 const SAVE_DEBOUNCE_MS = 500;
 
 const EXPLICIT_KEYS = new Set([
@@ -232,7 +232,7 @@ async function persistSnapshot(snapshot, options = {}) {
     lastPersistedJson = payloadJson;
     return result;
   }).catch(error => {
-    console.warn("[JMSFusion] Managed storage persist failed:", error);
+    console.warn("[JMSFusionV2] Managed storage persist failed:", error);
     throw error;
   }).finally(() => {
     const runQueued = saveQueued;
@@ -330,7 +330,7 @@ async function loadServerSnapshot() {
     applySnapshotToStorage(snapshot);
     bridge.bootstrapOverride = { forceGlobal, global: snapshot, rev, profile };
   } catch (error) {
-    console.warn("[JMSFusion] Managed storage preload failed:", error);
+    console.warn("[JMSFusionV2] Managed storage preload failed:", error);
     bridge.bootstrapOverride = { forceGlobal: false, global: {}, rev: 0, profile };
   } finally {
     snapshotLoaded = true;

@@ -11,7 +11,7 @@ using System.Collections.Concurrent;
 using MediaBrowser.Common.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.JMSFusion.Core;
+namespace Jellyfin.Plugin.JMSFusionV2.Core;
 
 public sealed class TrailerAutomationService
 {
@@ -32,7 +32,7 @@ public sealed class TrailerAutomationService
     private const int MaxTrailerResolution = 2160;
     private const string DefaultIncludeLangsWide = "tr,en,hi,de,ru,fr,it,es,ar,fa,pt,zh,ja,ko,nl,pl,sv,cs,uk,el,null";
     private const string DefaultWorkDirName = "trailers-dl";
-    private const string DefaultToolDirName = "jmsfusion-tools";
+    private const string DefaultToolDirName = "JMSFusionV2-tools";
     private const long BetterMinSizeDelta = 1_048_576;
     private const double BetterMinDurationDelta = 3d;
     private const long MinTrailerBytes = 2L * 1024L * 1024L;
@@ -254,14 +254,14 @@ public sealed class TrailerAutomationService
             {
                 var tools = await EnsureManagedToolSuiteAsync(CancellationToken.None).ConfigureAwait(false);
                 _logger.LogInformation(
-                    "[JMSFusion] Tool bootstrap hazır. yt-dlp={YtDlpVersion} deno={DenoVersion} root={ToolRoot}",
+                    "[JMSFusionV2] Tool bootstrap hazır. yt-dlp={YtDlpVersion} deno={DenoVersion} root={ToolRoot}",
                     FirstNonEmpty(tools.YtDlp.InstalledVersion, "unknown"),
                     FirstNonEmpty(tools.Deno.InstalledVersion, "unknown"),
                     tools.ToolRoot);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "[JMSFusion] Tool bootstrap başarısız.");
+                _logger.LogWarning(ex, "[JMSFusionV2] Tool bootstrap başarısız.");
             }
         });
     }
@@ -1964,10 +1964,10 @@ public sealed class TrailerAutomationService
     {
         var candidates = new[]
         {
-            CombinePath(_applicationPaths.DataPath, "jmsfusion", DefaultToolDirName),
-            CombinePath(_applicationPaths.ProgramDataPath, "jmsfusion", DefaultToolDirName),
-            CombinePath(_applicationPaths.PluginsPath, "JMSFusion", DefaultToolDirName),
-            CombinePath(_applicationPaths.CachePath, "jmsfusion", DefaultToolDirName),
+            CombinePath(_applicationPaths.DataPath, "JMSFusionV2", DefaultToolDirName),
+            CombinePath(_applicationPaths.ProgramDataPath, "JMSFusionV2", DefaultToolDirName),
+            CombinePath(_applicationPaths.PluginsPath, "JMSFusionV2", DefaultToolDirName),
+            CombinePath(_applicationPaths.CachePath, "JMSFusionV2", DefaultToolDirName),
             CombinePath(_applicationPaths.TempDirectory, DefaultToolDirName),
             Path.Combine(Path.GetTempPath(), DefaultToolDirName)
         };
@@ -2018,7 +2018,7 @@ public sealed class TrailerAutomationService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "[JMSFusion] ffmpeg/ffprobe yönetilen indirme başarısız.");
+                    _logger.LogWarning(ex, "[JMSFusionV2] ffmpeg/ffprobe yönetilen indirme başarısız.");
                 }
             }
 
@@ -2220,13 +2220,13 @@ public sealed class TrailerAutomationService
         try
         {
             using var req = new HttpRequestMessage(HttpMethod.Get, apiUrl);
-            req.Headers.TryAddWithoutValidation("User-Agent", "JMSFusion/2.0");
+            req.Headers.TryAddWithoutValidation("User-Agent", "JMSFusionV2/2.0");
             req.Headers.TryAddWithoutValidation("Accept", "application/vnd.github+json");
 
             using var resp = await Http.SendAsync(req, ct).ConfigureAwait(false);
             if (!resp.IsSuccessStatusCode)
             {
-                _logger.LogWarning("[JMSFusion] Release sorgusu başarısız: {ApiUrl} status={StatusCode}", apiUrl, (int)resp.StatusCode);
+                _logger.LogWarning("[JMSFusionV2] Release sorgusu başarısız: {ApiUrl} status={StatusCode}", apiUrl, (int)resp.StatusCode);
                 return null;
             }
 
@@ -2235,7 +2235,7 @@ public sealed class TrailerAutomationService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "[JMSFusion] Release bilgisi alınamadı: {ApiUrl}", apiUrl);
+            _logger.LogWarning(ex, "[JMSFusionV2] Release bilgisi alınamadı: {ApiUrl}", apiUrl);
             return null;
         }
     }
@@ -2475,7 +2475,7 @@ public sealed class TrailerAutomationService
     private async Task DownloadToFileAsync(string url, string destinationPath, CancellationToken ct)
     {
         using var req = new HttpRequestMessage(HttpMethod.Get, url);
-        req.Headers.TryAddWithoutValidation("User-Agent", "JMSFusion/2.0");
+        req.Headers.TryAddWithoutValidation("User-Agent", "JMSFusionV2/2.0");
 
         using var resp = await Http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
         resp.EnsureSuccessStatusCode();
