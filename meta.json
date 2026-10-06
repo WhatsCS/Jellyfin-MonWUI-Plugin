@@ -1,6 +1,6 @@
 {
   "category": "General",
-  "description": "JMSFusionV2 injects your custom JS modules into the Jellyfin web UI (response rewrite) and serves them from an external directory or embedded /Resources/slider.",
+  "description": "JMSFusionV2 is an independent WhatsCS fork of MonWUI / JMSFusion, originally developed by G-grbz and upstream contributors. It injects custom JS modules into Jellyfin Web and serves external or embedded assets.",
   "name": "JMSFusionV2",
   "owner": "WhatsCS",
   "version": "3.7.0.2",

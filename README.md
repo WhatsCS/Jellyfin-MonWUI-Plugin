@@ -1,3 +1,5 @@
+<h1 align="center">Jellyfin MonWUI — WhatsCS Fork</h1>
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/29947627-b2ff-4ecd-8a2b-4df932aca657" alt="JMSFusionV2 logo" width="200" />
 </p>
@@ -9,11 +11,6 @@
 </p>
 
 <p align="center">
-  <img
-    alt="Archived"
-    src="https://img.shields.io/badge/Status-Archived-6b7280?style=for-the-badge"
-  />
-
   <a href="https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/blob/main/LICENSE">
     <img
       alt="License"
@@ -24,11 +21,15 @@
 
 ---
 
-> [!IMPORTANT]
-> **This project has been archived and is no longer maintained.**
->
-> No further updates, compatibility fixes, feature development, or active support are planned.
-> Existing installations may continue to work, but compatibility with future Jellyfin releases is not guaranteed.
+> [!NOTE]
+> **This is an independent fork, not the original project.**
+> MonWUI / JMSFusion was created by [G-grbz](https://github.com/G-grbz).
+> This repository builds on that work with changes by [WhatsCS](https://github.com/WhatsCS) and fork contributors, and is displayed in Jellyfin as **JMSFusionV2**.
+> Fork changes and releases are separate from upstream; attribution does not imply endorsement by the original developer.
+
+**Original project:** [G-grbz/Jellyfin-MonWUI-Plugin](https://github.com/G-grbz/Jellyfin-MonWUI-Plugin) · **This fork:** [WhatsCS/Jellyfin-MonWUI-Plugin](https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin)
+
+Please report issues with this fork to [this repository's issue tracker](https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/issues), rather than asking the original developer to support fork-specific changes.
 
 <p align="center">
   <a href="#overview">Overview</a> •
@@ -46,11 +47,11 @@
 
 ## Overview
 
-**Jellyfin MonWUI Plugin**, displayed in Jellyfin as **JMSFusionV2**, is an all-in-one frontend enhancement layer built around a modular slider system located in `Resources/slider/`.
+**Jellyfin MonWUI Plugin** is a frontend enhancement layer originally developed by **G-grbz**. This fork, displayed in Jellyfin as **JMSFusionV2**, builds on its modular slider system and broader Jellyfin Web enhancements.
 
 Rather than applying a single visual modification, JMSFusionV2 expands the Jellyfin Web experience across home screen presentation, metadata, hover interactions, profile management, music playback, pause behavior, library discovery, notifications, and centralized UI configuration.
 
-The project was designed to make Jellyfin feel more polished, personal, and cinematic while keeping the interface cohesive.
+The features described below include work inherited from the original project; they are not a list of features newly created by this fork.
 
 ---
 
@@ -74,7 +75,7 @@ JMSFusionV2 works by injecting JavaScript and CSS into the **Jellyfin Web UI**.
 
 In short, if a client does not render the server's `/web/index.html`, JMSFusionV2 cannot modify its interface.
 
-Because the project is archived, compatibility with newer Jellyfin server or client releases is not guaranteed.
+Compatibility with newer Jellyfin server or client releases is not guaranteed.
 
 ---
 
@@ -180,24 +181,27 @@ If browser-cached JMSFusionV2 assets remain visible after uninstalling, clear th
 
 ## Acknowledgment
 
-The original idea behind the **JMS slider concept**, which influenced parts of JMSFusionV2, was created by **BobHasNoSoul**.
+- **[G-grbz](https://github.com/G-grbz)** — original creator and developer of [MonWUI / JMSFusion](https://github.com/G-grbz/Jellyfin-MonWUI-Plugin), whose work forms the foundation of this fork.
+- **[Upstream contributors](https://github.com/G-grbz/Jellyfin-MonWUI-Plugin/graphs/contributors)** — contributions to the original project.
+- **[BobHasNoSoul](https://github.com/BobHasNoSoul)** — creator of the original **JMS slider concept**, as acknowledged by upstream.
+- **[WhatsCS](https://github.com/WhatsCS) and [fork contributors](https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/graphs/contributors)** — changes made in this independent fork.
 
-https://github.com/BobHasNoSoul
+Credit for the original project remains with its authors. Fork attribution covers fork contributions, not ownership of the upstream work.
 
 ---
 
 ## License
 
-JMSFusionV2 is released under the **GNU General Public License v3.0**.
+This fork continues under the original project's **GNU General Public License v3.0**. It does not relicense the upstream work or replace its authorship.
 
-See [LICENSE](LICENSE) for details.
+The license text in [LICENSE](LICENSE) is unchanged. Existing copyright and attribution notices remain applicable; third-party components retain their respective licenses and notices.
+
+When redistributing this project or modified versions, comply with the GPLv3 terms, including preserving required notices, identifying modifications, and providing corresponding source as required by the license.
 
 ---
 
 ## Disclaimer
 
 This software is provided **"as is"**, without warranty of any kind.
-
-The repository is preserved for historical, educational, and reference purposes. Since development has ended, users should not expect compatibility fixes for future Jellyfin releases.
 
 Use at your own risk.

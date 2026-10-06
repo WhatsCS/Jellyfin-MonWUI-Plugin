@@ -4,7 +4,7 @@
 
 - This guide applies to the whole repository. Preserve unrelated local changes; inspect `git status --short` before editing.
 - JMSFusionV2 / MonWUI is a Jellyfin plugin: an ASP.NET Core backend plus JavaScript ES modules injected into Jellyfin Web. GMMP is the browser music player. This is not a standalone web application.
-- [README.md](README.md) identifies the project as archived. Do not imply ongoing support or compatibility with newer Jellyfin versions.
+- This repository is the WhatsCS fork of [G-grbz's original MonWUI / JMSFusion project](https://github.com/G-grbz/Jellyfin-MonWUI-Plugin). Preserve original-author and contributor credit, distinguish fork changes from upstream work, and retain GPLv3 licensing and existing notices. Do not imply upstream endorsement or unverified compatibility with newer Jellyfin versions.
 - [JMSFusion.csproj](JMSFusion.csproj) targets .NET 9 and references Jellyfin 10.11.0. Assembly and root namespace are `Jellyfin.Plugin.JMSFusionV2`; retain legacy names in routes and storage keys unless a migration is intended.
 
 ## Build and validation
