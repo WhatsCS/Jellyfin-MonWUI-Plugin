@@ -218,15 +218,15 @@ function notify(message, type = "info") {
 
 function statusLabel(status) {
   switch (text(status).toLowerCase()) {
-    case "pending": return L("serrStatusPending", "Onay bekliyor");
-    case "approved": return L("serrStatusApproved", "Onaylandı");
-    case "processing": return L("serrStatusProcessing", "İşleniyor");
+    case "pending": return L("serrStatusPending", "Pending approval");
+    case "approved": return L("serrStatusApproved", "Approved");
+    case "processing": return L("serrStatusProcessing", "Processing");
     case "completed":
-    case "available": return L("serrStatusCompleted", "Tamamlandı");
-    case "declined": return L("serrStatusDeclined", "Reddedildi");
-    case "failed": return L("serrStatusFailed", "Hatalı");
-    case "withdrawn": return L("serrStatusWithdrawn", "Geri çekildi");
-    default: return L("serrStatusApproved", "Onaylandı");
+    case "available": return L("serrStatusCompleted", "Completed");
+    case "declined": return L("serrStatusDeclined", "Declined");
+    case "failed": return L("serrStatusFailed", "Failed");
+    case "withdrawn": return L("serrStatusWithdrawn", "Withdrawn");
+    default: return L("serrStatusApproved", "Approved");
   }
 }
 
@@ -243,24 +243,24 @@ function statusMessage(result) {
     const status = lowerStatusLabel(result?.duplicateStatus || result?.request?.Status || result?.request?.status);
     const own = result?.duplicateOwnedByCurrentUser === true;
     const fallback = own
-      ? "Bu istek zaten sizin tarafınızdan oluşturuldu ve {status}."
-      : "Bu istek başka bir kullanıcı tarafından oluşturuldu ve {status}.";
+      ? "You already created this request and its status is {status}."
+      : "Another user created this request and its status is {status}.";
     return L(own ? "serrDuplicateOwnRequest" : "serrDuplicateOtherRequest", fallback).replace("{status}", status);
   }
-  if (result?.pendingApproval) return L("serrRequestPendingToast", "İstek yönetici onayına gönderildi.");
-  if (result?.request?.episodeOnly || result?.request?.EpisodeOnly) return L("serrRequestCreatedToast", "İstek oluşturuldu.");
-  return L("serrRequestApprovedToast", "İstek Seerr'e gönderildi.");
+  if (result?.pendingApproval) return L("serrRequestPendingToast", "Request sent for admin approval.");
+  if (result?.request?.episodeOnly || result?.request?.EpisodeOnly) return L("serrRequestCreatedToast", "Request created.");
+  return L("serrRequestApprovedToast", "Request sent.");
 }
 
 function statusType(result) {
   return result?.duplicate || result?.ok === false ? "error" : "success";
 }
 
-function requestErrorMessage(error, fallback = L("serrRequestFailed", "Seerr isteği oluşturulamadı.")) {
+function requestErrorMessage(error, fallback = L("serrRequestFailed", "Unable to create the request.")) {
   const code = text(error?.payload?.code || error?.payload?.errorCode);
   const message = text(error?.message || error?.payload?.error);
   if (code === "serrAlreadyAvailable" || code === "already_available" || /already available in jellyfin/i.test(message)) {
-    return L("serrAlreadyAvailable", "Bu içerik Jellyfin'de zaten mevcut.");
+    return L("serrAlreadyAvailable", "This item is already available in Jellyfin.");
   }
   return message || fallback;
 }
@@ -272,9 +272,9 @@ function isJellyfinAlreadyAvailableError(error) {
 }
 
 function arrStatusMessage(result) {
-  if (result?.service === "sonarr") return L("arrEpisodeRequestSent", "Bölüm isteği Sonarr'a gönderildi.");
-  if (result?.service === "radarr") return L("arrMovieRequestSent", "Film isteği Radarr'a gönderildi.");
-  return L("arrRequestSent", "Arr isteği gönderildi.");
+  if (result?.service === "sonarr") return L("arrEpisodeRequestSent", "Episode request sent to Sonarr.");
+  if (result?.service === "radarr") return L("arrMovieRequestSent", "Movie request sent to Radarr.");
+  return L("arrRequestSent", "Arr request sent.");
 }
 
 function hasSerrRequestId(result) {
@@ -445,7 +445,7 @@ function withSyntheticRequestState(items = [], requestState = null) {
   });
 }
 
-function markButtonRequested(button, title = L("serrStatusRequested", "İstendi")) {
+function markButtonRequested(button, title = L("serrStatusRequested", "Requested")) {
   if (!button) return;
   button.disabled = true;
   button.setAttribute("aria-disabled", "true");
@@ -637,7 +637,7 @@ export async function requestSerrMissingSyntheticItem(item, { button } = {}) {
   if (type === "season") {
     const seasonNumber = Number(item?.IndexNumber);
     if (!isRequestableSeasonNumber(seasonNumber)) {
-      notify(L("serrRequestFailed", "Seerr isteği oluşturulamadı."), "error");
+      notify(L("serrRequestFailed", "Unable to create the request."), "error");
       return null;
     }
     if (confirmRequests) {
@@ -671,7 +671,7 @@ export async function requestSerrMissingSyntheticItem(item, { button } = {}) {
     const seasonNumber = Number(item?.ParentIndexNumber);
     const episodeNumber = Number(item?.IndexNumber);
     if (!isRequestableEpisodeSeasonNumber(seasonNumber) || !Number.isFinite(episodeNumber) || episodeNumber < 0) {
-      notify(L("serrRequestFailed", "Seerr isteği oluşturulamadı."), "error");
+      notify(L("serrRequestFailed", "Unable to create the request."), "error");
       return null;
     }
     if (confirmRequests) {
@@ -717,7 +717,7 @@ function normalizeCollectionRequestItem(collection = {}) {
     collection?.Title ||
     collection?.originalName ||
     collection?.original_name,
-    L("boxset", "Koleksiyon")
+    L("boxset", "Collection")
   );
   return {
     Id: text(collection?.Id || collection?.id || `tmdb-collection-${mediaId || normalizeKey(title)}`),
@@ -736,19 +736,19 @@ export async function openSerrCollectionRequestModal(collection = {}, { source =
   if (!moduleEnabled()) return null;
   const access = await getSerrAccess().catch(() => null);
   if (!access?.enabled || !accessCanHandleDetails(access, "boxset")) {
-    throw new Error(L("serrDisabled", "Seerr entegrasyonu etkin değil."));
+    throw new Error(L("serrDisabled", "Seerr integration is disabled."));
   }
 
   const collectionItem = normalizeCollectionRequestItem(collection);
   const collectionId = tmdbId(collectionItem);
   if (!collectionId) {
-    throw new Error(L("serrTmdbMissing", "TMDb ID bulunamadı. Seerr araması ile devam edin."));
+    throw new Error(L("serrTmdbMissing", "TMDb ID not found. Continue with Seerr & Arr search."));
   }
 
   const details = await getSerrCollectionDetails(collectionId, { language: serrLanguage(access) }).catch(() => null);
   const expected = normalizeSerrCollectionDetails(details);
   if (!expected.parts.length) {
-    throw new Error(L("serrNoResults", "Seerr'de sonuç bulunamadı."));
+    throw new Error(L("serrNoResults", "No results found in Seerr & Arr."));
   }
 
   const [unavailableMovies, requestState] = await Promise.all([
@@ -766,7 +766,7 @@ export async function openSerrCollectionRequestModal(collection = {}, { source =
   };
   const missingMovies = unavailableMovies.filter((movie) => !isMovieRequested(plan, movie));
   if (!missingMovies.length) {
-    notify(L("serrCollectionNothingToRequest", "Bu boxset içinde Jellyfin'de olmayan ya da bekleyen film yok."), "success");
+    notify(L("serrCollectionNothingToRequest", "There are no missing or pending movies to request in this boxset."), "success");
     return { empty: true };
   }
 
@@ -1490,7 +1490,7 @@ function normalizeSerrSeason(raw) {
   if (!isRequestableSeasonNumber(seasonNumber)) return null;
   const name = text(
     readFirst(raw, "name", "title", "displayName"),
-    `${L("season", "Sezon")} ${seasonNumber}`
+    `${L("season", "Season")} ${seasonNumber}`
   );
   const episodeCount = readNumber(raw, "episodeCount", "episode_count", "episodesCount", "episode_count_total");
   return {
@@ -1512,7 +1512,7 @@ function normalizeSerrEpisode(raw, fallbackSeasonNumber) {
   const finalSeason = Number.isFinite(seasonNumber) ? seasonNumber : Number(fallbackSeasonNumber);
   const episodeNumber = readNumber(raw, "episodeNumber", "episode_number", "episode");
   if (!isRequestableEpisodeSeasonNumber(finalSeason) || !Number.isFinite(episodeNumber) || episodeNumber < 0) return null;
-  const name = text(readFirst(raw, "name", "title"), `${L("episode", "Bölüm")} ${episodeNumber}`);
+  const name = text(readFirst(raw, "name", "title"), `${L("episode", "Episode")} ${episodeNumber}`);
   return {
     Id: `${SYNTHETIC_PREFIX}-episode-${finalSeason}-${episodeNumber}`,
     Type: "Episode",
@@ -1532,7 +1532,7 @@ function normalizeSerrCollectionMovie(raw) {
   if (!Number.isFinite(mediaId) || mediaId <= 0) return null;
   const title = text(
     readFirst(raw, "title", "name", "originalTitle", "original_title", "originalName", "original_name"),
-    L("serrMovie", "Film")
+    L("serrMovie", "Movie")
   );
   return {
     Id: `${SYNTHETIC_PREFIX}-movie-${mediaId}`,
@@ -1782,7 +1782,7 @@ function buildMissingPlan(seriesItem, seasons, episodes, pageItem) {
     if (!syntheticSeasons.has(group.seasonNumber)) {
       syntheticSeasons.set(group.seasonNumber, {
         Id: `season-${group.seasonNumber}`,
-        Name: `${L("season", "Sezon")} ${group.seasonNumber}`,
+        Name: `${L("season", "Season")} ${group.seasonNumber}`,
         IndexNumber: group.seasonNumber
       });
     }
@@ -1839,7 +1839,7 @@ function buildMissingPlan(seriesItem, seasons, episodes, pageItem) {
     seasons: Array.from(syntheticSeasons.values()).sort((a, b) => Number(a?.IndexNumber || 0) - Number(b?.IndexNumber || 0)),
     missingSeasons: Array.from(missingSeasonNumbers)
       .sort((a, b) => a - b)
-      .map((n) => syntheticSeasons.get(n) || { Name: `${L("season", "Sezon")} ${n}`, IndexNumber: n }),
+      .map((n) => syntheticSeasons.get(n) || { Name: `${L("season", "Season")} ${n}`, IndexNumber: n }),
     missingSeasonEpisodes,
     missingEpisodes: partialMissingEpisodes
   };
@@ -1885,7 +1885,7 @@ function mergeSeriesPlan(base, external) {
 
 function seasonLabel(season) {
   const n = Number(season?.IndexNumber);
-  return text(season?.Name, Number.isFinite(n) ? `${L("season", "Sezon")} ${n}` : L("season", "Sezon"));
+  return text(season?.Name, Number.isFinite(n) ? `${L("season", "Season")} ${n}` : L("season", "Season"));
 }
 
 function episodeLabel(episode) {
@@ -1895,7 +1895,7 @@ function episodeLabel(episode) {
     Number.isFinite(s) ? `S${String(s).padStart(2, "0")}` : "",
     Number.isFinite(e) ? `E${String(e).padStart(2, "0")}` : ""
   ].filter(Boolean).join("");
-  return [prefix, text(episode?.Name, L("episode", "Bölüm"))].filter(Boolean).join(" - ");
+  return [prefix, text(episode?.Name, L("episode", "Episode"))].filter(Boolean).join(" - ");
 }
 
 function episodeOriginalTitle(episode) {
@@ -1905,7 +1905,7 @@ function episodeOriginalTitle(episode) {
     episode?.OriginalName ||
     episode?.originalName ||
     episode?.Name,
-    L("episode", "Bölüm")
+    L("episode", "Episode")
   );
 }
 
@@ -1916,7 +1916,7 @@ function episodeRequestTitle(series, episode) {
     series?.OriginalName ||
     series?.originalName ||
     series?.Name,
-    L("serrTv", "Dizi")
+    L("serrTv", "Series")
   );
   return [seriesTitle, episodeCode(episode), episodeOriginalTitle(episode)]
     .filter(Boolean)
@@ -1956,7 +1956,7 @@ function ensureSelectionModal() {
     <div class="monwui-serr-card" role="dialog" aria-modal="true">
       <div class="monwui-serr-head">
         <h2 class="monwui-serr-title"></h2>
-        <button type="button" class="monwui-serr-close" data-serr-native-close aria-label="${escapeHtml(L("close", "Kapat"))}">
+        <button type="button" class="monwui-serr-close" data-serr-native-close aria-label="${escapeHtml(L("close", "Close"))}">
           <i class="fas fa-times" aria-hidden="true"></i>
         </button>
       </div>
@@ -1965,10 +1965,10 @@ function ensureSelectionModal() {
       <div class="monwui-serr-choice-list"></div>
       <div class="monwui-serr-footer">
         <button type="button" class="monwui-serr-btn" data-serr-native-submit>
-          <i class="fas fa-paper-plane" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestButton", "İste"))}</span>
+          <i class="fas fa-paper-plane" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestButton", "Request"))}</span>
         </button>
         <button type="button" class="monwui-serr-btn monwui-serr-4k-btn" data-serr-native-submit-4k hidden>
-          <i class="fas fa-film" aria-hidden="true"></i><span>${escapeHtml(L("serrRequest4KButton", "4K İste"))}</span>
+          <i class="fas fa-film" aria-hidden="true"></i><span>${escapeHtml(L("serrRequest4KButton", "Request 4K"))}</span>
         </button>
       </div>
     </div>
@@ -1992,23 +1992,23 @@ function ensureSelectionModal() {
 }
 
 function selectionModalTitle(mode, titleMode, submitMode = mode) {
-  if (submitMode === "collection") return L("serrNativeCollectionModalTitle", "Boxset İsteği");
-  if (mode === "movie" || titleMode === "movie") return L("serrNativeMovieModalTitle", "Seerr Film İsteği");
-  if (titleMode === "season") return L("serrNativeSeasonModalTitle", "Seerr Sezon İsteği");
-  return L("serrNativeEpisodeModalTitle", "Seerr Bölüm İsteği");
+  if (submitMode === "collection") return L("serrNativeCollectionModalTitle", "Boxset Request");
+  if (mode === "movie" || titleMode === "movie") return L("serrNativeMovieModalTitle", "Movie Request");
+  if (titleMode === "season") return L("serrNativeSeasonModalTitle", "Season Request");
+  return L("serrNativeEpisodeModalTitle", "Episode Request");
 }
 
 function selectionModalHint(mode, titleMode, submitMode) {
   if (submitMode === "collection") {
-    return L("serrCollectionConfirmHint", "Boxset içindeki Jellyfin'de olmayan filmleri kontrol edin.");
+    return L("serrCollectionConfirmHint", "Review the movies missing from Jellyfin in this boxset.");
   }
   if (mode === "movie" || submitMode === "movie") {
-    return L("serrMovieConfirmHint", "Film isteği gönderilmeden önce içeriği kontrol edin.");
+    return L("serrMovieConfirmHint", "Review the movie before sending the request.");
   }
   if (titleMode === "season" || submitMode === "season") {
-    return L("serrSeasonConfirmHint", "Sezon isteği gönderilmeden önce kapsamı kontrol edin.");
+    return L("serrSeasonConfirmHint", "Review the season scope before sending the request.");
   }
-  return L("serrEpisodeConfirmHint", "Bölüm isteği gönderilmeden önce seçimi kontrol edin.");
+  return L("serrEpisodeConfirmHint", "Review the episode selection before sending the request.");
 }
 
 function selectionImagePath(item, mode) {
@@ -2037,10 +2037,10 @@ function selectionHeroInfo({ mode, titleMode, submitMode, plan, items }) {
     const count = Array.isArray(items) ? items.length : 0;
     return {
       mode: "movie",
-      title: text(collection?.Name || collection?.OriginalTitle, L("boxset", "BoxSet")),
+      title: text(collection?.Name || collection?.OriginalTitle, L("boxset", "Collection")),
       chips: [
-        L("boxset", "BoxSet"),
-        count ? `${count} ${L("serrMovie", "Film")}` : "",
+        L("boxset", "Collection"),
+        count ? `${count} ${L("serrMovie", "Movie")}` : "",
         tmdbId(collection) ? `TMDb ${tmdbId(collection)}` : ""
       ].filter(Boolean),
       overview: text(collection?.Overview || collection?.overview),
@@ -2052,9 +2052,9 @@ function selectionHeroInfo({ mode, titleMode, submitMode, plan, items }) {
     const year = Number(first?.ProductionYear || readYear(first, "PremiereDate"));
     return {
       mode: "movie",
-      title: text(first?.Name || first?.OriginalTitle, L("serrMovie", "Film")),
+      title: text(first?.Name || first?.OriginalTitle, L("serrMovie", "Movie")),
       chips: [
-        L("serrMovie", "Film"),
+        L("serrMovie", "Movie"),
         Number.isFinite(year) ? String(year) : "",
         tmdbId(first) ? `TMDb ${tmdbId(first)}` : ""
       ].filter(Boolean),
@@ -2070,16 +2070,16 @@ function selectionHeroInfo({ mode, titleMode, submitMode, plan, items }) {
       : Number(first?.IndexNumber);
     const count = Array.isArray(items) ? items.length : 0;
     const title = [
-      text(series?.Name || series?.OriginalTitle, L("serrTv", "Dizi")),
-      Number.isFinite(seasonNumber) ? `${L("season", "Sezon")} ${seasonNumber}` : ""
+      text(series?.Name || series?.OriginalTitle, L("serrTv", "Series")),
+      Number.isFinite(seasonNumber) ? `${L("season", "Season")} ${seasonNumber}` : ""
     ].filter(Boolean).join(" - ");
     return {
       mode: mode === "episode" ? "episode" : "season",
-      title: title || L("serrNativeSeasonModalTitle", "Seerr Sezon İsteği"),
+      title: title || L("serrNativeSeasonModalTitle", "Season Request"),
       chips: [
-        L("serrTv", "Dizi"),
-        Number.isFinite(seasonNumber) ? `${L("season", "Sezon")} ${seasonNumber}` : "",
-        count ? `${count} ${mode === "episode" ? L("episode", "Bölüm") : L("season", "Sezon")}` : L("serrNativeFullSeason", "Sezonun tamamı")
+        L("serrTv", "Series"),
+        Number.isFinite(seasonNumber) ? `${L("season", "Season")} ${seasonNumber}` : "",
+        count ? `${count} ${mode === "episode" ? L("episode", "Episode") : L("season", "Season")}` : L("serrNativeFullSeason", "Full season")
       ].filter(Boolean),
       overview: text(first?.Overview || first?.overview || series?.Overview || series?.overview),
       image: selectionImageUrl(first, mode === "episode" ? "episode" : "season"),
@@ -2092,9 +2092,9 @@ function selectionHeroInfo({ mode, titleMode, submitMode, plan, items }) {
     mode: "episode",
     title: episodeRequestTitle(series, first),
     chips: [
-      L("serrTv", "Dizi"),
+      L("serrTv", "Series"),
       episodeCode(first),
-      Number.isFinite(episodeSeason) ? `${L("season", "Sezon")} ${episodeSeason}` : ""
+      Number.isFinite(episodeSeason) ? `${L("season", "Season")} ${episodeSeason}` : ""
     ].filter(Boolean),
     overview: text(first?.Overview || first?.overview),
     image: selectionImageUrl(first, "episode"),
@@ -2113,7 +2113,7 @@ function renderSelectionHero(modal, options) {
       <span class="material-icons ${escapeHtml(info.icon)}" aria-hidden="true"></span>
     </div>
     <div class="monwui-serr-choice-summary">
-      <div class="monwui-serr-choice-eyebrow">${escapeHtml(L("serrRequestConfirmHint", "İstek onayı"))}</div>
+      <div class="monwui-serr-choice-eyebrow">${escapeHtml(L("serrRequestConfirmHint", "Request confirmation"))}</div>
       <div class="monwui-serr-choice-hero-title">${escapeHtml(info.title)}</div>
       <div class="monwui-serr-choice-chipbar">
         ${info.chips.map((chip) => `<span class="monwui-serr-choice-chip">${escapeHtml(chip)}</span>`).join("")}
@@ -2178,13 +2178,13 @@ function openSelectionModal({ mode, plan, items, titleMode = mode, visualOnly = 
       : (isMovieMode ? -1 : Number(item?.ParentIndexNumber));
     const episodeNumber = isSeasonMode ? -1 : Number(item?.IndexNumber);
     const name = isMovieMode
-      ? text(item?.Name || item?.OriginalTitle, L("serrMovie", "Film"))
+      ? text(item?.Name || item?.OriginalTitle, L("serrMovie", "Movie"))
       : (isSeasonMode ? seasonLabel(item) : episodeLabel(item));
     const meta = isSeasonMode
-      ? L("serrNativeFullSeason", "Sezonun tamamı")
+      ? L("serrNativeFullSeason", "Full season")
       : (isMovieMode
-        ? [L("serrMovie", "Film"), Number(item?.ProductionYear || readYear(item, "PremiereDate")) || ""].filter(Boolean).join(" - ")
-        : `${L("season", "Sezon")} ${Number.isFinite(seasonNumber) ? seasonNumber : ""}`);
+        ? [L("serrMovie", "Movie"), Number(item?.ProductionYear || readYear(item, "PremiereDate")) || ""].filter(Boolean).join(" - ")
+        : `${L("season", "Season")} ${Number.isFinite(seasonNumber) ? seasonNumber : ""}`);
     const rowMode = isMovieMode ? "movie" : (isSeasonMode ? "season" : "episode");
     const thumb = selectionImageUrl(item, rowMode);
     const thumbBg = thumb ? ` style="background-image:url('${thumb.replace(/'/g, "%27")}')"` : "";
@@ -2196,7 +2196,7 @@ function openSelectionModal({ mode, plan, items, titleMode = mode, visualOnly = 
           <span class="material-icons ${escapeHtml(icon)}" aria-hidden="true"></span>
         </span>
         <span>
-          <span class="monwui-serr-choice-name">${escapeHtml(name || `${L("content", "İçerik")} ${index + 1}`)}</span>
+          <span class="monwui-serr-choice-name">${escapeHtml(name || `${L("content", "Content")} ${index + 1}`)}</span>
           <span class="monwui-serr-choice-meta">${escapeHtml(meta)}</span>
         </span>
       </label>
@@ -2206,7 +2206,7 @@ function openSelectionModal({ mode, plan, items, titleMode = mode, visualOnly = 
   const handleSubmit = async (is4K = false) => {
     const checked = Array.from(list.querySelectorAll(visualOnly ? "input[type='checkbox']" : "input[type='checkbox']:checked"));
     if (!checked.length) {
-      notify(L("serrSelectAtLeastOne", "En az bir seçim yapın."), "error");
+      notify(L("serrSelectAtLeastOne", "Select at least one item."), "error");
       return;
     }
 
@@ -2268,7 +2268,7 @@ async function submitSelection({ plan, seasons, episodes, mode, button, originBu
   const series = plan?.seriesItem || {};
   const mediaId = tmdbId(series);
   if (!mediaId) {
-    notify(L("serrTmdbMissing", "TMDb ID bulunamadı. Seerr araması ile devam edin."), "error");
+    notify(L("serrTmdbMissing", "TMDb ID not found. Continue with Seerr & Arr search."), "error");
     return;
   }
 
@@ -2278,11 +2278,11 @@ async function submitSelection({ plan, seasons, episodes, mode, button, originBu
   try {
     if (button) {
       button.disabled = true;
-      button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestSending", "Gönderiliyor..."))}</span>`;
+      button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestSending", "Sending..."))}</span>`;
     }
     const countText = mode === "episode" && episodes.length
-      ? `${episodes.length} ${L("episode", "Bölüm")}`
-      : `${seasons.length} ${L("season", "Sezon")}`;
+      ? `${episodes.length} ${L("episode", "Episode")}`
+      : `${seasons.length} ${L("season", "Season")}`;
     const result = await createSerrRequest({
       mediaType: "tv",
       mediaId,
@@ -2291,13 +2291,13 @@ async function submitSelection({ plan, seasons, episodes, mode, button, originBu
       episodes,
       requestAllSeasons: false,
       is4K: is4K === true,
-      title: `${text(series?.Name, L("serrTv", "Dizi"))} - ${countText}`,
+      title: `${text(series?.Name, L("serrTv", "Series"))} - ${countText}`,
       source: source || "jellyfin-native-details",
       jellyfinItemId: ""
     });
 
     if (result?.ok === false) {
-      const err = new Error(result?.error || L("serrRequestFailed", "Seerr isteği oluşturulamadı."));
+      const err = new Error(result?.error || L("serrRequestFailed", "Unable to create the request."));
       err.payload = result;
       throw err;
     }
@@ -2432,8 +2432,8 @@ function fallbackEpisodeFromRow(row, plan) {
   const seasonNumber = Number(text(plan?.pageItem?.Type).toLowerCase() === "season" ? plan.pageItem.IndexNumber : NaN);
   return {
     Id: text(row?.getAttribute?.("data-id") || row?.dataset?.id),
-    Name: match?.[2] || title || L("episode", "Bölüm"),
-    OriginalTitle: match?.[2] || title || L("episode", "Bölüm"),
+    Name: match?.[2] || title || L("episode", "Episode"),
+    OriginalTitle: match?.[2] || title || L("episode", "Episode"),
     ParentIndexNumber: seasonNumber,
     IndexNumber: match?.[1] ? Number(match[1]) : NaN,
     Type: "Episode",
@@ -2454,8 +2454,8 @@ function fallbackEpisodeFromCard(card, plan) {
   const seasonNumber = Number(text(plan?.pageItem?.Type).toLowerCase() === "season" ? plan.pageItem.IndexNumber : NaN);
   return {
     Id: text(card?.getAttribute?.("data-id") || card?.dataset?.id),
-    Name: match?.[2] || rawTitle || L("episode", "Bölüm"),
-    OriginalTitle: match?.[2] || rawTitle || L("episode", "Bölüm"),
+    Name: match?.[2] || rawTitle || L("episode", "Episode"),
+    OriginalTitle: match?.[2] || rawTitle || L("episode", "Episode"),
     ParentIndexNumber: seasonNumber,
     IndexNumber: match?.[1] ? Number(match[1]) : NaN,
     Type: "Episode",
@@ -2487,8 +2487,8 @@ function createNativeEpisodeButton({ id, requested, className, onClick }) {
   btn.type = "button";
   btn.className = className;
   btn.setAttribute("data-episode-id", id);
-  btn.setAttribute("title", L("serrNativeRequestMissingEpisodes", "Eksik Bölüm İste"));
-  btn.setAttribute("aria-label", L("serrNativeRequestMissingEpisodes", "Eksik Bölüm İste"));
+  btn.setAttribute("title", L("serrNativeRequestMissingEpisodes", "Request Missing Episodes"));
+  btn.setAttribute("aria-label", L("serrNativeRequestMissingEpisodes", "Request Missing Episodes"));
   btn.innerHTML = `<span class="material-icons playlist_add" aria-hidden="true"></span>`;
   if (requested) markButtonRequested(btn);
   btn.addEventListener("click", onClick);
@@ -2607,7 +2607,7 @@ function findEpisodeCardsContainer() {
 
 function missingEpisodeCardTitle(episode) {
   const episodeNumber = Number(episode?.IndexNumber);
-  return `${Number.isFinite(episodeNumber) ? `${episodeNumber}. ` : ""}${text(episode?.Name, L("episode", "Bölüm"))}`;
+  return `${Number.isFinite(episodeNumber) ? `${episodeNumber}. ` : ""}${text(episode?.Name, L("episode", "Episode"))}`;
 }
 
 function missingPlaceholderEpisodes(plan) {
@@ -2634,11 +2634,11 @@ function renderMissingEpisodeCards(plan, container) {
     key: `episode:${Number(episode.ParentIndexNumber)}:${Number(episode.IndexNumber)}`,
     type: "Episode",
     title: missingEpisodeCardTitle(episode),
-    subtitle: `${L("season", "Sezon")} ${Number(episode?.ParentIndexNumber)}`,
+    subtitle: `${L("season", "Season")} ${Number(episode?.ParentIndexNumber)}`,
     poster: episode?.StillPath,
     icon: "playlist_add",
     requested: isEpisodeRequested(plan, episode),
-    buttonTitle: L("serrNativeRequestMissingEpisodes", "Eksik Bölüm İste"),
+    buttonTitle: L("serrNativeRequestMissingEpisodes", "Request Missing Episodes"),
     cardClassName: "card overflowBackdropCard card-hoverable card-withuserdata",
     padderClassName: "cardPadder-overflowBackdrop",
     onClick: async (event, controls = {}) => {
@@ -2867,8 +2867,8 @@ function createMissingPosterCard({
     card.setAttribute("data-serr-requested", "1");
     card.classList.add("monwui-serr-requested");
   }
-  const missingBadge = L("serrMissingBadge", "Eksik");
-  const actionTitle = requested ? L("serrStatusRequested", "İstendi") : buttonTitle;
+  const missingBadge = L("serrMissingBadge", "Missing");
+  const actionTitle = requested ? L("serrStatusRequested", "Requested") : buttonTitle;
   const actionIcon = requested
     ? `<span class="material-icons check" aria-hidden="true"></span>`
     : `<span class="material-icons cardOverlayButtonIcon cardOverlayButtonIcon-hover playlist_add" aria-hidden="true"></span>`;
@@ -2924,7 +2924,7 @@ function createMissingPosterCard({
 function createMissingEpisodeListItem({ plan, episode, requested = false }) {
   const seasonNumber = Number(episode?.ParentIndexNumber);
   const episodeNumber = Number(episode?.IndexNumber);
-  const title = `${Number.isFinite(episodeNumber) ? `${episodeNumber}. ` : ""}${text(episode?.Name, L("episode", "Bölüm"))}`;
+  const title = `${Number.isFinite(episodeNumber) ? `${episodeNumber}. ` : ""}${text(episode?.Name, L("episode", "Episode"))}`;
   const overview = text(episode?.Overview);
   const item = document.createElement("div");
   item.className = "listItem listItem-largeImage listItem-withContentWrapper monwui-serr-missing-listitem";
@@ -2935,10 +2935,10 @@ function createMissingEpisodeListItem({ plan, episode, requested = false }) {
   item.setAttribute("data-mediatype", "Video");
   item.setAttribute("data-serr-missing-key", `episode:${seasonNumber}:${episodeNumber}`);
   if (requested) item.setAttribute("data-serr-requested", "1");
-  const missingBadge = L("serrMissingBadge", "Eksik");
+  const missingBadge = L("serrMissingBadge", "Missing");
   const actionTitle = requested
-    ? L("serrStatusRequested", "İstendi")
-    : L("serrNativeRequestMissingEpisodes", "Eksik Bölüm İste");
+    ? L("serrStatusRequested", "Requested")
+    : L("serrNativeRequestMissingEpisodes", "Request Missing Episodes");
   const actionIcon = requested
     ? `<span class="material-icons check" aria-hidden="true"></span>`
     : `<span class="material-icons playlist_add" aria-hidden="true"></span>`;
@@ -2953,8 +2953,8 @@ function createMissingEpisodeListItem({ plan, episode, requested = false }) {
       <div class="listItemBody">
         <div class="listItemBodyText"><bdi>${escapeHtml(title)}</bdi></div>
         <div class="secondary listItemMediaInfo listItemBodyText">
-          <div class="mediaInfoItem">${escapeHtml(`${L("season", "Sezon")} ${Number.isFinite(seasonNumber) ? seasonNumber : ""}`)}</div>
-          <div class="mediaInfoItem">${escapeHtml(L("serrStatusRequested", "İstendi"))}</div>
+          <div class="mediaInfoItem">${escapeHtml(`${L("season", "Season")} ${Number.isFinite(seasonNumber) ? seasonNumber : ""}`)}</div>
+          <div class="mediaInfoItem">${escapeHtml(L("serrStatusRequested", "Requested"))}</div>
         </div>
         ${overview ? `<div class="secondary listItem-overview listItemBodyText"><bdi>${escapeHtml(overview)}</bdi></div>` : ""}
       </div>
@@ -2986,8 +2986,8 @@ function createMissingSeasonListItem({ plan, season, requested = false }) {
   const seasonNumber = Number(season?.IndexNumber);
   const title = seasonLabel(season);
   const subtitle = season?.ChildCount
-    ? `${season.ChildCount} ${L("episode", "Bölüm")}`
-    : L("serrNativeFullSeason", "Sezonun tamamı");
+    ? `${season.ChildCount} ${L("episode", "Episode")}`
+    : L("serrNativeFullSeason", "Full season");
   const item = document.createElement("div");
   item.className = "listItem listItem-largeImage listItem-withContentWrapper monwui-serr-missing-listitem";
   if (requested) item.classList.add("monwui-serr-requested");
@@ -2996,10 +2996,10 @@ function createMissingSeasonListItem({ plan, season, requested = false }) {
   item.setAttribute("data-type", "Season");
   item.setAttribute("data-serr-missing-key", `season:${seasonNumber}`);
   if (requested) item.setAttribute("data-serr-requested", "1");
-  const missingBadge = L("serrMissingBadge", "Eksik");
+  const missingBadge = L("serrMissingBadge", "Missing");
   const actionTitle = requested
-    ? L("serrStatusRequested", "İstendi")
-    : L("serrNativeRequestMissingSeasons", "Eksik Sezon İste");
+    ? L("serrStatusRequested", "Requested")
+    : L("serrNativeRequestMissingSeasons", "Request Missing Seasons");
   const actionIcon = requested
     ? `<span class="material-icons check" aria-hidden="true"></span>`
     : `<span class="material-icons folder" aria-hidden="true"></span>`;
@@ -3065,11 +3065,11 @@ function renderMissingSeasonCards(plan) {
       key: `season:${Number(season.IndexNumber)}`,
       type: "Season",
       title: seasonLabel(season),
-      subtitle: season?.ChildCount ? `${season.ChildCount} ${L("episode", "Bölüm")}` : L("serrNativeFullSeason", "Sezonun tamamı"),
+      subtitle: season?.ChildCount ? `${season.ChildCount} ${L("episode", "Episode")}` : L("serrNativeFullSeason", "Full season"),
       poster: season?.PosterPath,
       icon: "folder",
       requested: isSeasonRequested(plan, season),
-      buttonTitle: L("serrNativeRequestMissingSeasons", "Eksik Sezon İste"),
+      buttonTitle: L("serrNativeRequestMissingSeasons", "Request Missing Seasons"),
       onClick: async (event, controls = {}) => {
         await openSeasonCardRequest({ plan, season, button: controls.button });
       }
@@ -3122,12 +3122,12 @@ function renderMissingCollectionCards(plan) {
     return createMissingPosterCard({
       key: `movie:${tmdbId(movie)}`,
       type: "Movie",
-      title: text(movie?.Name, L("serrMovie", "Film")),
-      subtitle: Number.isFinite(year) ? String(year) : L("serrMovie", "Film"),
+      title: text(movie?.Name, L("serrMovie", "Movie")),
+      subtitle: Number.isFinite(year) ? String(year) : L("serrMovie", "Movie"),
       poster: movie?.PosterPath,
       icon: "movie",
       requested: isMovieRequested(plan, movie),
-      buttonTitle: L("serrRequestButton", "İste"),
+      buttonTitle: L("serrRequestButton", "Request"),
       cardClassName: "card portraitCard card-hoverable card-withuserdata",
       padderClassName: "cardPadder-portrait",
       onClick: async (event, controls = {}) => {
@@ -3166,11 +3166,11 @@ async function openSeasonCardRequest({ plan, season, button }) {
   const mediaId = tmdbId(plan?.seriesItem || {});
   const seasonNumber = Number(season?.IndexNumber);
   if (!mediaId) {
-    notify(L("serrTmdbMissing", "TMDb ID bulunamadı. Seerr araması ile devam edin."), "error");
+    notify(L("serrTmdbMissing", "TMDb ID not found. Continue with Seerr & Arr search."), "error");
     return;
   }
   if (!isRequestableSeasonNumber(seasonNumber)) {
-    notify(L("serrRequestFailed", "Seerr isteği oluşturulamadı."), "error");
+    notify(L("serrRequestFailed", "Unable to create the request."), "error");
     return;
   }
 
@@ -3216,7 +3216,7 @@ async function openSeasonCardRequest({ plan, season, button }) {
 async function submitSingleSeason({ plan, season, button }) {
   const seasonNumber = Number(season?.IndexNumber);
   if (!isRequestableSeasonNumber(seasonNumber)) {
-    notify(L("serrRequestFailed", "Seerr isteği oluşturulamadı."), "error");
+    notify(L("serrRequestFailed", "Unable to create the request."), "error");
     return;
   }
   await submitSelection({
@@ -3256,10 +3256,10 @@ async function submitCollectionMovie({ plan, movie, button }) {
 async function requestCollectionMovieBackend(movie, { source = "jellyfin-native-collection", access = null, is4K = false } = {}) {
   const mediaId = tmdbId(movie);
   if (!mediaId) {
-    throw new Error(L("serrTmdbMissing", "TMDb ID bulunamadı. Seerr araması ile devam edin."));
+    throw new Error(L("serrTmdbMissing", "TMDb ID not found. Continue with Seerr & Arr search."));
   }
 
-  const title = text(movie?.Name, L("serrMovie", "Film"));
+  const title = text(movie?.Name, L("serrMovie", "Movie"));
   try {
     const result = await createSerrRequest({
       mediaType: "movie",
@@ -3273,7 +3273,7 @@ async function requestCollectionMovieBackend(movie, { source = "jellyfin-native-
       jellyfinItemId: ""
     });
     if (result?.ok === false) {
-      const err = new Error(result?.error || L("serrRequestFailed", "Seerr isteği oluşturulamadı."));
+      const err = new Error(result?.error || L("serrRequestFailed", "Unable to create the request."));
       err.payload = result;
       throw err;
     }
@@ -3299,7 +3299,7 @@ async function submitMovieCollection({ plan = null, movies = [], button, originB
     list.push(movie);
   }
   if (!list.length) {
-    notify(L("serrSelectAtLeastOne", "En az bir seçim yapın."), "error");
+    notify(L("serrSelectAtLeastOne", "Select at least one item."), "error");
     return;
   }
 
@@ -3313,7 +3313,7 @@ async function submitMovieCollection({ plan = null, movies = [], button, originB
   try {
     if (button) {
       button.disabled = true;
-      button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestSending", "Gönderiliyor..."))}</span>`;
+      button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestSending", "Sending..."))}</span>`;
     }
 
     for (const movie of list) {
@@ -3333,17 +3333,17 @@ async function submitMovieCollection({ plan = null, movies = [], button, originB
           continue;
         }
         failed.push({
-          title: text(movie?.Name, L("serrMovie", "Film")),
+          title: text(movie?.Name, L("serrMovie", "Movie")),
           message: requestErrorMessage(error)
         });
       }
     }
 
     const parts = [];
-    if (completed) parts.push(`${completed} ${L("serrMovie", "Film")} ${L("serrBulkRequestSent", "isteği gönderildi")}.`);
-    if (skipped) parts.push(`${skipped} ${L("serrBulkRequestSkipped", "atlandı")}.`);
-    if (failed.length) parts.push(`${failed.length} ${L("serrBulkRequestFailed", "gönderilemedi")}.`);
-    notify(parts.join(" ") || L("serrRequestCreatedToast", "İstek oluşturuldu."), failed.length && !completed ? "error" : "success");
+    if (completed) parts.push(`${completed} ${L("serrMovie", "Movie")} ${L("serrBulkRequestSent", "request sent")}.`);
+    if (skipped) parts.push(`${skipped} ${L("serrBulkRequestSkipped", "skipped")}.`);
+    if (failed.length) parts.push(`${failed.length} ${L("serrBulkRequestFailed", "failed")}.`);
+    notify(parts.join(" ") || L("serrRequestCreatedToast", "Request created."), failed.length && !completed ? "error" : "success");
 
     if (completed) {
       try { window.dispatchEvent(new CustomEvent("monwui:serr-requests-changed")); } catch {}
@@ -3361,7 +3361,7 @@ async function submitMovieCollection({ plan = null, movies = [], button, originB
 async function submitMovieRequest({ movie, button, originButton = null, source = "jellyfin-native-movie-card", requestedItem = null, is4K = false }) {
   const mediaId = tmdbId(movie);
   if (!mediaId) {
-    notify(L("serrTmdbMissing", "TMDb ID bulunamadı. Seerr araması ile devam edin."), "error");
+    notify(L("serrTmdbMissing", "TMDb ID not found. Continue with Seerr & Arr search."), "error");
     return;
   }
 
@@ -3371,7 +3371,7 @@ async function submitMovieRequest({ movie, button, originButton = null, source =
   try {
     if (button) {
       button.disabled = true;
-      button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestSending", "Gönderiliyor..."))}</span>`;
+      button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestSending", "Sending..."))}</span>`;
     }
     const result = await createSerrRequest({
       mediaType: "movie",
@@ -3380,17 +3380,17 @@ async function submitMovieRequest({ movie, button, originButton = null, source =
       episodes: [],
       requestAllSeasons: false,
       is4K: is4K === true,
-      title: text(movie?.Name, L("serrMovie", "Film")),
+      title: text(movie?.Name, L("serrMovie", "Movie")),
       source,
       jellyfinItemId: ""
     });
     if (result?.ok === false) {
-      const err = new Error(result?.error || L("serrRequestFailed", "Seerr isteği oluşturulamadı."));
+      const err = new Error(result?.error || L("serrRequestFailed", "Unable to create the request."));
       err.payload = result;
       throw err;
     }
     if (accessHasSerr(access) && shouldFallbackMovieToArr(result)) {
-      await requestMovieFallbackFromArr(movie, { tmdbId: mediaId, title: text(movie?.Name, L("serrMovie", "Film")), is4K: is4K === true });
+      await requestMovieFallbackFromArr(movie, { tmdbId: mediaId, title: text(movie?.Name, L("serrMovie", "Movie")), is4K: is4K === true });
       if (requestedItem) requestedItem.__monwuiSerrRequested = true;
       if (originButton) markButtonRequested(originButton);
       completed = true;
@@ -3409,7 +3409,7 @@ async function submitMovieRequest({ movie, button, originButton = null, source =
   } catch (error) {
     if (accessHasSerr(access) && !isJellyfinAlreadyAvailableError(error)) {
       try {
-        await requestMovieFallbackFromArr(movie, { tmdbId: mediaId, title: text(movie?.Name, L("serrMovie", "Film")), is4K: is4K === true });
+        await requestMovieFallbackFromArr(movie, { tmdbId: mediaId, title: text(movie?.Name, L("serrMovie", "Movie")), is4K: is4K === true });
         if (requestedItem) requestedItem.__monwuiSerrRequested = true;
         if (originButton) markButtonRequested(originButton);
         completed = true;
@@ -3434,11 +3434,11 @@ async function submitSingleEpisode({ plan, episode, button }) {
   const seasonNumber = Number(episode?.ParentIndexNumber);
   const episodeNumber = Number(episode?.IndexNumber);
   if (!mediaId) {
-    notify(L("serrTmdbMissing", "TMDb ID bulunamadı. Seerr araması ile devam edin."), "error");
+    notify(L("serrTmdbMissing", "TMDb ID not found. Continue with Seerr & Arr search."), "error");
     return;
   }
   if (!isRequestableEpisodeSeasonNumber(seasonNumber) || !Number.isFinite(episodeNumber) || episodeNumber < 0) {
-    notify(L("serrRequestFailed", "Seerr isteği oluşturulamadı."), "error");
+    notify(L("serrRequestFailed", "Unable to create the request."), "error");
     return;
   }
 

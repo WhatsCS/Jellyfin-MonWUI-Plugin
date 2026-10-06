@@ -147,7 +147,7 @@ function buildSortLabel(keyword, labels) {
 
     switch (normalized.toLowerCase()) {
         case "datecreated":
-            return labels.sortOptionDateCreated || "Son Eklenenler";
+            return labels.sortOptionDateCreated || "Recently Added";
         case "premieredate":
             return labels.sortOptionPremiereDate || "PremiereDate";
         case "productionyear":
@@ -164,7 +164,7 @@ export function createQueryPanel(config, labels) {
     panel.id = "query-panel";
     panel.className = "settings-panel query-settings-panel";
 
-    const section = createSection(labels.queryStringInput || "Api Sorgu Ayarları");
+    const section = createSection(labels.queryStringInput || "API Query Settings");
     section.classList.add("query-settings-section");
     const parsedQuery = parseQueryParams(config.customQueryString);
     const initialContentTypes = readCsvParam(parsedQuery, "IncludeItemTypes", DEFAULT_CONTENT_TYPES);
@@ -175,7 +175,7 @@ export function createQueryPanel(config, labels) {
     randomContentDiv.className = "form-group query-toggle-card";
     const randomContentCheckbox = createCheckbox(
         "useRandomContent",
-        labels.useRandomContent || "Rastgele İçerik",
+        labels.useRandomContent || "Generate Random Content",
         false
     );
     randomContentDiv.appendChild(randomContentCheckbox);
@@ -185,7 +185,7 @@ export function createQueryPanel(config, labels) {
     manualListDiv.className = "form-group query-toggle-card";
     const useManualListCheckbox = createCheckbox(
         "useManualList",
-        labels.useManualList || "Özel Liste Hazırla",
+        labels.useManualList || "Prepare Custom List",
         config.useManualList
     );
     manualListDiv.appendChild(useManualListCheckbox);
@@ -196,7 +196,7 @@ export function createQueryPanel(config, labels) {
     manualListIdsDiv.style.display = config.useManualList ? "" : "none";
 
     const manualListIdsLabel = document.createElement("label");
-    manualListIdsLabel.textContent = labels.manualListIdsInput || "İçerik ID'leri (virgülle ayırın):";
+    manualListIdsLabel.textContent = labels.manualListIdsInput || "Content IDs (Separate with commas)";
 
     const manualListIdsInput = document.createElement("textarea");
     manualListIdsInput.className = "form-control";
@@ -219,7 +219,7 @@ export function createQueryPanel(config, labels) {
     limitDiv.className = "setting-item limit-container";
 
     const limitLabel = document.createElement("label");
-    limitLabel.textContent = labels.limit || "Slider Limiti:";
+    limitLabel.textContent = labels.limit || "Slider Limit:";
 
     const limitInput = document.createElement("input");
     limitInput.type = "number";
@@ -234,7 +234,7 @@ export function createQueryPanel(config, labels) {
 
     const limitDesc = document.createElement("div");
     limitDesc.className = "description-text";
-    limitDesc.textContent = labels.limitDesc || "Görünecek slider limiti";
+    limitDesc.textContent = labels.limitDesc || "Limit of visible slider items on screen";
 
     const queryBuilderContainer = document.createElement("div");
     queryBuilderContainer.className = "form-group query-builder-card";
@@ -242,10 +242,10 @@ export function createQueryPanel(config, labels) {
     queryBuilderContainer.style.alignItems = "stretch";
 
     const contentTypesTitle = createSubsectionTitle(
-        labels.queryContentTypesTitle || "Slider'da Showilecek İçerikler"
+        labels.queryContentTypesTitle || "Content to Show in the Slider"
     );
     const contentTypesDesc = createSubsectionDescription(
-        labels.queryContentTypesDesc || "Seçtiklerin IncludeItemTypes alanına otomatik eklenir."
+        labels.queryContentTypesDesc || "Selected items are automatically added to IncludeItemTypes."
     );
     const contentTypesGrid = document.createElement("div");
     contentTypesGrid.className = "form-group query-option-grid";
@@ -271,10 +271,10 @@ export function createQueryPanel(config, labels) {
     queryBuilderContainer.append(contentTypesTitle, contentTypesDesc, contentTypesGrid);
 
     const imageTypesTitle = createSubsectionTitle(
-        labels.queryImageTypesTitle || "Listelenecek İçeriklerin Mevcut Görsel Durumu"
+        labels.queryImageTypesTitle || "Required Available Images"
     );
     const imageTypesDesc = createSubsectionDescription(
-        labels.queryImageTypesDesc || "Seçtiklerin imageTypes alanına otomatik eklenir."
+        labels.queryImageTypesDesc || "Selected items are automatically added to imageTypes."
     );
     const imageTypesGrid = document.createElement("div");
     imageTypesGrid.className = "form-group query-option-grid";
@@ -303,9 +303,9 @@ export function createQueryPanel(config, labels) {
     sortingSection.style.flexDirection = "column";
     sortingSection.style.alignItems = "stretch";
 
-    const sortingHeading = createSubsectionTitle(labels.querySortingTitle || "Sıralama");
+    const sortingHeading = createSubsectionTitle(labels.querySortingTitle || "Sorting");
     const sortingDesc = createSubsectionDescription(
-        labels.querySortingDesc || "Boş bırakırsan Monwui kendi karıştırma mantığını kullanır. Anahtar kelimelere eklediğin manuel değerler de bu listede görünür."
+        labels.querySortingDesc || "Leave it empty to use Monwui's shuffle logic. Manual values added to the keywords field also appear here."
     );
     const sortSelect = document.createElement("select");
     sortSelect.id = "querySortBySelect";
@@ -314,13 +314,13 @@ export function createQueryPanel(config, labels) {
     sortingSection.append(sortingHeading, sortingDesc, sortSelect);
 
     const sortingLabel = document.createElement("label");
-    sortingLabel.textContent = labels.sortingKeywords || "Anahtar Kelimeler (virgül ile ayırınız)";
+    sortingLabel.textContent = labels.sortingKeywords || "Sorting Keywords (separate with commas)";
     sortingLabel.htmlFor = "sortingKeywordsInput";
 
     const sortingKeywordsDesc = document.createElement("div");
     sortingKeywordsDesc.className = "description-text";
     sortingKeywordsDesc.textContent = labels.sortingKeywordsDesc ||
-        "Buraya eklediğin manuel değerler sıralama listesindeki seçeneklere otomatik eklenir.";
+        "Manual values added here are automatically listed in the sorting options.";
 
     const sortingTextarea = document.createElement("textarea");
     sortingTextarea.id = "sortingKeywordsInput";
@@ -330,13 +330,13 @@ export function createQueryPanel(config, labels) {
 
     const queryStringLabel = document.createElement("label");
     queryStringLabel.className = "customQueryStringInput query-string-label";
-    queryStringLabel.textContent = labels.customQueryString || "Api Sorgu Önizlemesi:";
+    queryStringLabel.textContent = labels.customQueryString || "API Query Preview:";
     queryStringLabel.htmlFor = "customQueryPreviewInput";
 
     const queryStringDesc = document.createElement("div");
     queryStringDesc.className = "description-text";
     queryStringDesc.textContent = labels.customQueryStringNote ||
-        "Bu alan seçimlerine göre otomatik oluşturulur. Recursive=true ve hasOverview=true her zaman eklenir.";
+        "This field is generated automatically from your selections. Recursive=true and hasOverview=true are always included.";
 
     const queryStringHiddenInput = document.createElement("input");
     queryStringHiddenInput.type = "hidden";
@@ -365,7 +365,7 @@ export function createQueryPanel(config, labels) {
     balanceTypesDesc.className = "description-text";
     balanceTypesDesc.textContent =
         labels.balanceItemTypesDesc ||
-        "İşaretlenirse seçilen içerikler türlere (Movie, Series, BoxSet) göre eşit dağılmaya çalışır.";
+        "If checked, selected items will be evenly distributed across types (Movie, Series, BoxSet).";
 
     const onlyUnwatchedDiv = document.createElement("div");
     onlyUnwatchedDiv.className = "setting-item only-unwatched-container";
@@ -380,13 +380,13 @@ export function createQueryPanel(config, labels) {
     onlyUnwatchedDesc.className = "description-text";
     onlyUnwatchedDesc.textContent =
         labels.onlyUnwatchedRandomDesc ||
-        "Etkinse, Rastgele İçerik modunda yalnızca hiç oynatılmamış (IsPlayed=false) öğeler listelenir. Özel Liste etkilenmez.";
+        "If enabled, Random Content mode will only list items that have never been played. Custom List is not affected";
 
     const finalDesc = document.createElement("div");
     finalDesc.className = "description-text";
     finalDesc.innerHTML =
         labels.customQueryStringDescription ||
-        'Bu alanlar slider sorgusunu seçerek oluşturur. IncludeItemTypes, imageTypes ve sortBy değerleri seçtiklerine göre yazılır. Detaylar için <a href="https://api.jellyfin.org" target="_blank">burayı ziyaret edin.</a>.';
+        "These controls build the slider query for you. IncludeItemTypes, imageTypes, and sortBy are written automatically based on your selections. See https://api.jellyfin.org for details.";
 
     const sectionDivider = document.createElement("hr");
     sectionDivider.className = "query-section-divider";
@@ -399,7 +399,7 @@ export function createQueryPanel(config, labels) {
 
     const maxShufflingLimitLabel = document.createElement("label");
     maxShufflingLimitLabel.textContent =
-        labels.maxShufflingLimit || "Maksimum Karıştırılacak İçerik Limiti:";
+        labels.maxShufflingLimit || "Maximum Content Limit for Shuffle:";
 
     const maxShufflingLimitInput = document.createElement("input");
     maxShufflingLimitInput.type = "number";
@@ -416,14 +416,14 @@ export function createQueryPanel(config, labels) {
     maxShufflingLimitDesc.className = "description-text";
     maxShufflingLimitDesc.textContent =
         labels.maxShufflingLimitDesc ||
-        "Slider oluşturmak için seçilecek içerik limitidir örneğin 1000 belirlerseniz 1000 içerik içinden seçim yaparak slider oluşturulur.";
+        "Limit of content to be used for generating sliders. For example, if set to 1000, the slider is built by choosing from 1000 items.";
 
     const shuffleSeedLimitDiv = document.createElement("div");
     shuffleSeedLimitDiv.className = "setting-item shuffleSeedLimit-container";
 
     const shuffleSeedLimitLabel = document.createElement("label");
     shuffleSeedLimitLabel.textContent =
-        labels.shuffleSeedLimit || "shuffleSeedLimit (Tekrar Engelleme Limiti):";
+        labels.shuffleSeedLimit || "shuffleSeedLimit (Repeat Block Limit):";
 
     const shuffleSeedLimitInput = document.createElement("input");
     shuffleSeedLimitInput.type = "number";
@@ -440,13 +440,13 @@ export function createQueryPanel(config, labels) {
     shuffleSeedLimitDesc.className = "description-text";
     shuffleSeedLimitDesc.textContent =
         labels.shuffleSeedLimitDesc ||
-        'shuffleSeedLimit, aynı içeriklerin yeniden gösterilmesini önlemek amacıyla, karıştırma seçimleri sırasında kullanılan geçmiş belleğin maksimum uzunluğunu belirler. Bu limit aşıldığında karıştırma geçmişi otomatik olarak temizlenir.';
+        "shuffleSeedLimit defines the maximum memory length used during shuffle to prevent the same items from being shown again. Once this limit is exceeded, the shuffle history resets automatically. (This feature is only active if none of the keywords in the list are used in the API query string. That is, if the content query is ordered or fixed (e.g., 'most watched', 'recently added') or if 'Balance Content Types' is enabled, this filter becomes inactive and the shuffle history is not used.)";
 
     const playingLimitDiv = document.createElement("div");
     playingLimitDiv.className = "setting-item playing-limit-container";
 
     const playingLimitLabel = document.createElement("label");
-    playingLimitLabel.textContent = labels.playingLimit || "İzlenenlerden Getirilecek Miktar:";
+    playingLimitLabel.textContent = labels.playingLimit || "Continue Watching Limit";
 
     const playingLimitInput = document.createElement("input");
     playingLimitInput.type = "number";
@@ -470,7 +470,7 @@ export function createQueryPanel(config, labels) {
 
     const excludeEpisodesCheckbox = createCheckbox(
         "excludeEpisodesFromPlaying",
-        labels.excludeEpisodesFromPlaying || "Dizi Bölümlerini Hariç Tut",
+        labels.excludeEpisodesFromPlaying || "Exclude TV Episodes",
         config.excludeEpisodesFromPlaying || false
     );
     excludeEpisodesDiv.appendChild(excludeEpisodesCheckbox);
@@ -479,7 +479,7 @@ export function createQueryPanel(config, labels) {
     excludeEpisodesDesc.className = "description-text";
     excludeEpisodesDesc.textContent =
         labels.excludeEpisodesFromPlayingDesc ||
-        'İşaretlenirse "İzlenenler" listesinden bölümleri hariç tutar';
+        "If checked, excludes TV show episodes from 'Continue Watching' list";
 
     function getSelectedValues(inputs = []) {
         return inputs.filter((input) => input.checked).map((input) => input.value);
@@ -501,7 +501,7 @@ export function createQueryPanel(config, labels) {
 
         const noneOption = document.createElement("option");
         noneOption.value = "";
-        noneOption.textContent = labels.querySortNone || "Monwui Karıştırması";
+        noneOption.textContent = labels.querySortNone || "Monwui Shuffle";
         sortSelect.appendChild(noneOption);
 
         sortOptions.forEach((keyword) => {

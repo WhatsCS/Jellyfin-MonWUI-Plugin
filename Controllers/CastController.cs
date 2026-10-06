@@ -194,7 +194,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 return (null, Guid.Empty, Unauthorized(new
                 {
                     ok = false,
-                    error = "X-Emby-UserId gerekli."
+                    error = "X-Emby-UserId is required."
                 }));
             }
 
@@ -204,7 +204,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 return (null, Guid.Empty, Unauthorized(new
                 {
                     ok = false,
-                    error = "Kullanici bulunamadi."
+                    error = "User not found."
                 }));
             }
 

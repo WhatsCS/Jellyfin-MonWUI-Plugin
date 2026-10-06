@@ -51,7 +51,7 @@ export function updateConfig(updatedConfig, options = {}) {
         localStorage.removeItem(key);
       }
     } catch (err) {
-      console.warn("Config yazılamadı:", key, err);
+      console.warn("Could not write configuration:", key, err);
     }
   });
 

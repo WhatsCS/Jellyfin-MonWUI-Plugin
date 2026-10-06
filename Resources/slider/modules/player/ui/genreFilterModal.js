@@ -35,14 +35,14 @@ export async function showGenreFilterModal() {
       { headers: { "X-Emby-Token": token }, signal: fetchCtrl.signal }
     );
 
-    if (!response.ok) throw new Error("Türler alınamadı");
+    if (!response.ok) throw new Error("Could not fetch genres");
 
     const data = await response.json();
     const genres = data.Items || [];
 
     if (genres.length === 0) {
       showNotification(
-        `<i class="fas fa-exclamation-circle"></i> ${config.languageLabels?.noGenresFound || "Tür bulunamadı"}`,
+        `<i class="fas fa-exclamation-circle"></i> ${config.languageLabels?.noGenresFound || "No genres found"}`,
         2000,
         "error"
       );
@@ -52,9 +52,9 @@ export async function showGenreFilterModal() {
     buildModal(genres, token);
   } catch (err) {
     if (err?.name === "AbortError") return;
-    console.error("Tür filtresi açılırken hata:", err);
+    console.error("Error opening genre filter:", err);
     showNotification(
-      `<i class="fas fa-exclamation-triangle"></i> ${config.languageLabels?.genreFilterError || "Tür filtresi yüklenemedi"}`,
+      `<i class="fas fa-exclamation-triangle"></i> ${config.languageLabels?.genreFilterError || "Error occurred while opening genre filter"}`,
       2000,
       "error"
     );
@@ -80,7 +80,7 @@ function buildModal(genres, token) {
   header.className = "genre-filter-header";
 
   const title = document.createElement("h3");
-  title.innerHTML = `<i class="fas fa-filter"></i> ${config.languageLabels?.filterByGenre || "Türe göre filtrele"}`;
+  title.innerHTML = `<i class="fas fa-filter"></i> ${config.languageLabels?.filterByGenre || "Filter by genre"}`;
   header.appendChild(title);
 
   const closeBtn = document.createElement("button");
@@ -98,7 +98,7 @@ function buildModal(genres, token) {
 
   const searchInput = document.createElement("input");
   searchInput.type = "text";
-  searchInput.placeholder = config.languageLabels?.searchGenres || "Türlerde ara…";
+  searchInput.placeholder = config.languageLabels?.searchGenres || "Search genre...";
   searchInput.className = "genre-filter-search";
   searchInput.id = "genre-filter-search";
   searchInput.name = "genre-filter-search";
@@ -116,11 +116,11 @@ function buildModal(genres, token) {
 
   const selectAllBtn = document.createElement("button");
   selectAllBtn.className = "genre-filter-select-all";
-  selectAllBtn.innerHTML = `<i class="fas fa-check-double"></i> ${config.languageLabels?.selectAll || "Tümünü seç"}`;
+  selectAllBtn.innerHTML = `<i class="fas fa-check-double"></i> ${config.languageLabels?.selectAll || "Select all"}`;
 
   const selectNoneBtn = document.createElement("button");
   selectNoneBtn.className = "genre-filter-select-none";
-  selectNoneBtn.innerHTML = `<i class="far fa-square"></i> ${config.languageLabels?.selectNone || "Hiçbiri"}`;
+  selectNoneBtn.innerHTML = `<i class="far fa-square"></i> ${config.languageLabels?.selectNone || "None"}`;
 
   const clearFilterBtn = document.createElement("button");
   clearFilterBtn.className = "genre-filter-clear";
@@ -189,13 +189,13 @@ function buildModal(genres, token) {
     const { selectedText, total, selected } = getSelectedMeta(modal);
     let text;
     if (selected === 0 && Array.isArray(musicPlayerState.selectedGenres)) {
-      text = `${musicPlayerState.selectedGenres.length} ${config.languageLabels?.genresSelected || "tür seçildi"}`;
+      text = `${musicPlayerState.selectedGenres.length} ${config.languageLabels?.genresSelected || "genre(s) selected"}`;
     } else if (selected === 0) {
-      text = config.languageLabels?.noGenresSelected || "Seçim yok";
+      text = config.languageLabels?.noGenresSelected || "No genre selected";
     } else if (selected === total) {
-      text = config.languageLabels?.allGenresSelected || "Tüm türler seçildi";
+      text = config.languageLabels?.allGenresSelected || "All genres selected";
     } else {
-      text = `${selected} ${config.languageLabels?.genresSelected || "tür seçildi"}`;
+      text = `${selected} ${config.languageLabels?.genresSelected || "genre(s) selected"}`;
     }
     selectedCount.innerHTML = `<i class="fas fa-music"></i> ${text}`;
   };
@@ -277,7 +277,7 @@ function buildModal(genres, token) {
     });
     updateSelectedCount();
     showNotification(
-      `<i class="fas fa-check-circle"></i> ${cbs.length} ${config.languageLabels?.genresSelected || "tür seçildi"}`,
+      `<i class="fas fa-check-circle"></i> ${cbs.length} ${config.languageLabels?.genresSelected || "genre(s) selected"}`,
       2000,
       "success"
     );
@@ -287,7 +287,7 @@ function buildModal(genres, token) {
     modal.querySelectorAll(".genre-checkbox").forEach((cb) => (cb.checked = false));
     updateSelectedCount();
     showNotification(
-      `<i class="far fa-square"></i> ${config.languageLabels?.noGenresSelected || "Seçim yok"}`,
+      `<i class="far fa-square"></i> ${config.languageLabels?.noGenresSelected || "No genre selected"}`,
       2000,
       "info"
     );

@@ -3,7 +3,7 @@ set -euo pipefail
 
 FILE="meta.json"
 if [ ! -f "$FILE" ]; then
-  echo "❌ $FILE bulunamadı!"
+  echo "❌ $FILE not found!"
   exit 1
 fi
 
@@ -25,7 +25,7 @@ if command -v jq >/dev/null 2>&1; then
   fi
   mv "${FILE}.tmp" "$FILE"
 else
-  echo "⚠️ jq yok; sed ile güncelliyorum."
+  echo "⚠️ jq is unavailable; updating with sed."
   sed -E -i "s#\"timestamp\"\\s*:\\s*\"[^\"]*\"#\"timestamp\": \"$TS\"#g" "$FILE"
 
   if [ -n "$NEWVER" ]; then
@@ -49,7 +49,7 @@ fi
 
 rm -f "$CLEAN"
 
-echo "✅ meta.json güncellendi:"
+echo "✅ meta.json updated:"
 echo "   timestamp       = $TS"
 [ -n "$NEWVER" ] && {
   echo "   version         = $NEWVER"

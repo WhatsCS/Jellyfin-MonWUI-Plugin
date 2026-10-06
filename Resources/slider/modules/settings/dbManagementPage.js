@@ -23,7 +23,7 @@ function readFileAsText(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => resolve(String(event?.target?.result || ""));
-    reader.onerror = () => reject(reader.error || new Error("Dosya okunamadı."));
+    reader.onerror = () => reject(reader.error || new Error("Could not read file."));
     reader.readAsText(file);
   });
 }
@@ -226,7 +226,7 @@ function normalizeRestorePayload(rawBackup, entry, labels) {
       throw new Error(
         formatLabel(
           labels?.dbRestoreWrongDatabase ||
-            "Seçilen yedek {name} cache alanına ait değil.",
+            "The selected backup does not belong to the {name} cache area.",
           { name: entry.title }
         )
       );
@@ -234,7 +234,7 @@ function normalizeRestorePayload(rawBackup, entry, labels) {
 
     const data = rawBackup?.data;
     if (!data || typeof data !== "object" || Array.isArray(data)) {
-      throw new Error(labels?.dbRestoreInvalidFile || "Geçersiz cache yedek dosyası.");
+      throw new Error(labels?.dbRestoreInvalidFile || "Invalid cache backup file.");
     }
 
     return data;
@@ -249,7 +249,7 @@ function normalizeRestorePayload(rawBackup, entry, labels) {
     return rawBackup;
   }
 
-  throw new Error(labels?.dbRestoreInvalidFile || "Geçersiz cache yedek dosyası.");
+  throw new Error(labels?.dbRestoreInvalidFile || "Invalid cache backup file.");
 }
 
 function buildScopedCacheBackup(entry, scope, data) {
@@ -277,10 +277,10 @@ function getCacheEntries(labels) {
     {
       key: "slider-cache",
       cacheType: "sliderCache",
-      title: labels?.sliderCacheDbTitle || "Slider genel cache",
+      title: labels?.sliderCacheDbTitle || "Slider general cache",
       description:
         labels?.sliderCacheDbDescription ||
-        "Genel slider içerik detayları, sorgu sonuçları ve kısa süreli API cache kayıtları burada tutulur.",
+        "General slider item details, query results, and short-lived API cache entries are stored here.",
       prepare: async () => {
         const mod = await import("../sliderCache.js");
         await mod.prepareSliderCacheDbForDeletion?.();
@@ -289,10 +289,10 @@ function getCacheEntries(labels) {
     {
       key: "recent-rows",
       cacheType: "recentRows",
-      title: labels?.recentRowsDbTitle || "Son eklenen ve devam et kartları cache",
+      title: labels?.recentRowsDbTitle || "Recently added and continue cards cache",
       description:
         labels?.recentRowsDbDescription ||
-        "Son eklenenler, son bölümler, müzik satırları ve izlemeye devam kartlarında kullanılan cache verileri burada tutulur.",
+        "Cache data used for recently added rows, latest episodes, music rows, and continue watching cards is stored here.",
       prepare: async () => {
         const mod = await import("../recentRowsDb.js");
         await mod.prepareRecentRowsDbForDeletion?.();
@@ -301,7 +301,7 @@ function getCacheEntries(labels) {
     {
       key: "director-rows",
       cacheType: "directorRows",
-      title: labels?.directorRowsDbTitle || "Director kartları cache",
+      title: labels?.directorRowsDbTitle || "Director cards cache",
       description:
         labels?.directorRowsDbDescription ||
         "Director collection row data and content matching data used in director collection rows is stored here.",
@@ -313,10 +313,10 @@ function getCacheEntries(labels) {
     {
       key: "personal-recommendations",
       cacheType: "personalRecommendations",
-      title: labels?.personalRecommendationsDbTitle || "Kişisel öneriler cache",
+      title: labels?.personalRecommendationsDbTitle || "Personal recommendations cache",
       description:
         labels?.personalRecommendationsDbDescription ||
-        "\"Personalized Matches\" ve benzeri kişiselleştirilmiş öneri satırlarında kullanılan cache verileri burada tutulur.",
+        "Cache data used by personalized recommendation rows such as \"Recommended for You\" is stored here.",
       prepare: async () => {
         const mod = await import("../prcDb.js");
         await mod.preparePrcDbForDeletion?.();
@@ -325,10 +325,10 @@ function getCacheEntries(labels) {
     {
       key: "collection-cache",
       cacheType: "collectionCache",
-      title: labels?.collectionCacheDbTitle || "Koleksiyon kartları cache",
+      title: labels?.collectionCacheDbTitle || "Collection cards cache",
       description:
         labels?.collectionCacheDbDescription ||
-        "Boxset ve koleksiyon kartları ile bu koleksiyonların içerik listeleri için tutulan cache burada saklanır.",
+        "Cache data for boxset and collection cards, along with the item lists inside those collections, is stored here.",
       prepare: async () => {
         const mod = await import("../collectionCacheDb.js");
         await mod.prepareCollectionCacheDbForDeletion?.();
@@ -337,10 +337,10 @@ function getCacheEntries(labels) {
     {
       key: "gmmp-music",
       cacheType: "gmmpMusic",
-      title: labels?.gmmpMusicDbTitle || "GMMP müzik cache",
+      title: labels?.gmmpMusicDbTitle || "GMMP music cache",
       description:
         labels?.gmmpMusicDbDescription ||
-        "GMMP tarafındaki parça arşivi, silinen kayıt geçmişi ve şarkı sözleri bu JSON cache içinde tutulur.",
+        "The GMMP track library, deleted track history, and lyrics are stored in this JSON cache.",
       prepare: async () => {
         const mod = await import("../player/utils/db.js");
         await mod.prepareMusicDbForDeletion?.();
@@ -404,9 +404,9 @@ function createCacheAction(entry, labels, scope) {
   restoreInput.style.display = "none";
 
   function resetButtonLabels() {
-    backupButton.textContent = labels?.dbBackupButton || labels?.backupDatabase || "Yedeği İndir";
-    restoreButton.textContent = labels?.dbRestoreButton || labels?.restoreDatabase || "Yedeği Geri Yükle";
-    deleteButton.textContent = labels?.dbDeleteButton || "Cache Dosyasını Sil";
+    backupButton.textContent = labels?.dbBackupButton || labels?.backupDatabase || "Download Backup";
+    restoreButton.textContent = labels?.dbRestoreButton || labels?.restoreDatabase || "Restore Backup";
+    deleteButton.textContent = labels?.dbDeleteButton || "Delete Cache File";
   }
 
   function setRowBusy(active) {
@@ -435,9 +435,9 @@ function createCacheAction(entry, labels, scope) {
   backupButton.addEventListener("click", async () => {
     await runRowAction(
       backupButton,
-      labels?.dbBackingUpButton || labels?.backupInProgress || "İndiriliyor...",
+      labels?.dbBackingUpButton || labels?.backupInProgress || "Downloading...",
       async () => {
-        setStatus(status, labels?.dbBackupInProgress || "Cache yedeği hazırlanıyor...");
+        setStatus(status, labels?.dbBackupInProgress || "Preparing cache backup...");
 
         try {
           const payload = await readScopedCache(entry.cacheType, scope);
@@ -447,7 +447,7 @@ function createCacheAction(entry, labels, scope) {
           const successText =
             formatLabel(
               labels?.dbBackupSuccessMessage ||
-                "Yedek indirildi. {storeCount} bölüm ve {recordCount} kayıt dışa aktarıldı.",
+                "Backup downloaded. Exported {storeCount} sections and {recordCount} records.",
               {
                 storeCount: backup.metadata.sectionCount,
                 recordCount: backup.metadata.recordCount
@@ -464,7 +464,7 @@ function createCacheAction(entry, labels, scope) {
           const errorText =
             String(error?.message || "").trim() ||
             labels?.dbBackupFailed ||
-            "Cache yedeklenemedi.";
+            "The cache could not be backed up.";
 
           setStatus(status, errorText);
           showNotification(
@@ -495,7 +495,7 @@ function createCacheAction(entry, labels, scope) {
       `Cache: ${entry.cacheType}`,
       `Scope: ${scope}`,
       labels?.dbRestoreConfirmOverwriteNote ||
-        "Mevcut JSON cache dosyası yedek içeriği ile değiştirilecek."
+        "The current JSON cache file will be replaced with the backup contents."
     ].join("\n\n");
 
     const confirmed = window.confirm(confirmMessage);
@@ -506,7 +506,7 @@ function createCacheAction(entry, labels, scope) {
 
     await runRowAction(
       restoreButton,
-      labels?.dbRestoringButton || "Yükleniyor...",
+      labels?.dbRestoringButton || "Uploading...",
       async () => {
         try {
           const fileContent = await readFileAsText(file);
@@ -516,7 +516,7 @@ function createCacheAction(entry, labels, scope) {
           setStatus(
             status,
             labels?.dbRestorePrepareInProgress ||
-              "Cache bağlantıları kapatılıyor ve geri yüklemeye hazırlanıyor..."
+              "Closing cache connections and preparing for restore..."
           );
 
           await entry.prepare?.();
@@ -525,7 +525,7 @@ function createCacheAction(entry, labels, scope) {
           const successText =
             formatLabel(
               labels?.dbRestoreSuccessMessage ||
-                "Geri yükleme tamamlandı. {storeCount} bölüm ve {recordCount} kayıt içeri aktarıldı.",
+                "Restore completed. Imported {storeCount} sections and {recordCount} records.",
               {
                 storeCount: countTopLevelSections(payload),
                 recordCount: countCacheRecords(payload)
@@ -542,7 +542,7 @@ function createCacheAction(entry, labels, scope) {
           const errorText =
             String(error?.message || "").trim() ||
             labels?.dbRestoreFailed ||
-            "Cache geri yüklenemedi.";
+            "The cache could not be restored.";
 
           setStatus(status, errorText);
           showNotification(
@@ -560,12 +560,12 @@ function createCacheAction(entry, labels, scope) {
   deleteButton.addEventListener("click", async () => {
     const confirmMessage = [
       formatLabel(
-        labels?.dbDeleteConfirmQuestion || "{name} cache dosyasını silmek istiyor musun?",
+        labels?.dbDeleteConfirmQuestion || "Do you want to delete the {name} cache file?",
         { name: entry.title }
       ),
       `Cache: ${entry.cacheType}`,
       `Scope: ${scope}`,
-      labels?.dbDeleteConfirmRecreateNote || "Bu veri gerektiğinde otomatik olarak yeniden oluşturulur."
+      labels?.dbDeleteConfirmRecreateNote || "This data will be recreated automatically when needed."
     ].join("\n\n");
 
     const confirmed = window.confirm(confirmMessage);
@@ -573,11 +573,11 @@ function createCacheAction(entry, labels, scope) {
 
     await runRowAction(
       deleteButton,
-      labels?.dbDeletingButton || "Siliniyor...",
+      labels?.dbDeletingButton || "Deleting...",
       async () => {
         setStatus(
           status,
-          labels?.dbDeleteInProgress || "Cache bağlantıları kapatılıyor ve JSON dosyası siliniyor..."
+          labels?.dbDeleteInProgress || "Closing cache connections and deleting the JSON file..."
         );
 
         try {
@@ -586,11 +586,11 @@ function createCacheAction(entry, labels, scope) {
 
           const successText =
             labels?.dbDeleteSuccessMessage ||
-            "Silme tamamlandı. İlgili modül bu cache dosyasını ihtiyaç olduğunda yeniden oluşturur.";
+            "Deletion completed. The related module will recreate this cache file automatically when needed.";
           setStatus(status, successText);
 
           showNotification(
-            `<i class="fas fa-database" style="margin-right: 8px;"></i> ${entry.title} silindi.`,
+            `<i class="fas fa-database" style="margin-right: 8px;"></i> ${entry.title} deleted.`,
             3000,
             "success"
           );
@@ -598,7 +598,7 @@ function createCacheAction(entry, labels, scope) {
           const errorText =
             String(error?.message || "").trim() ||
             labels?.dbDeleteFailed ||
-            "Cache silinemedi.";
+            "The cache could not be deleted.";
 
           setStatus(status, errorText);
           showNotification(
@@ -625,24 +625,24 @@ export function createDbManagementPanel(config, labels) {
   panel.className = "settings-panel";
 
   const scope = resolveScopedCacheScope();
-  const introSection = createSection(labels?.dbManagementTab || "DB Yönetimi");
+  const introSection = createSection(labels?.dbManagementTab || "DB Management");
 
   const introText = document.createElement("div");
   introText.className = "description-text";
   introText.textContent =
     labels?.dbManagementDescription ||
-    "Buradan sunucudaki scoped JSON cache dosyalarını yedekleyebilir, geri yükleyebilir veya silebilirsiniz.";
+    "From here you can back up, restore, or delete the scoped JSON cache files stored on the server.";
 
   const blockedHint = document.createElement("div");
   blockedHint.className = "description-text2";
   blockedHint.style.marginTop = "8px";
   blockedHint.textContent =
     labels?.dbManagementBlockedHint ||
-    `${SCOPED_CACHE_ROOT_HINT} altındaki dosyalar aktif sunucu ve kullanıcı scope'una göre yönetilir.`;
+    `Files under ${SCOPED_CACHE_ROOT_HINT} are managed within the active server and user scope.`;
 
   introSection.append(introText, blockedHint);
 
-  const listSection = createSection(labels?.dbManagementListTitle || "Yönetilebilir Cache Dosyaları");
+  const listSection = createSection(labels?.dbManagementListTitle || "Manageable Cache Files");
   getCacheEntries(labels).forEach((entry) => {
     listSection.appendChild(createCacheAction(entry, labels, scope));
   });

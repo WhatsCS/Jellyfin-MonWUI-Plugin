@@ -37,7 +37,7 @@ export function showTopTracksModal() {
 
   const title = document.createElement('h3');
   title.className = 'top-tracks-title';
-  title.textContent = config.languageLabels.myMusic || 'Müzik Kütüphanem';
+  title.textContent = config.languageLabels.myMusic || "Library";
 
   const actionsContainer = document.createElement('div');
   actionsContainer.className = 'top-tracks-actions';
@@ -46,7 +46,7 @@ export function showTopTracksModal() {
   limitSelector.className = 'top-tracks-limit-selector';
   limitSelector.id = 'top-tracks-limit-selector';
   limitSelector.name = 'top-tracks-limit-selector';
-  limitSelector.setAttribute('aria-label', config.languageLabels.trackLimit || 'Parça limiti');
+  limitSelector.setAttribute('aria-label', config.languageLabels.trackLimit || 'Track limit');
   [20,50,100,200,400,600,800,1000].forEach(n => {
     const opt = document.createElement('option');
     opt.value = n;
@@ -65,7 +65,7 @@ export function showTopTracksModal() {
   const selectAllBtn = document.createElement('button');
   selectAllBtn.className = 'top-tracks-action-btn';
   selectAllBtn.innerHTML = '<i class="fas fa-check-square"></i>';
-  selectAllBtn.title = config.languageLabels.selectAll || 'Tümünü seç';
+  selectAllBtn.title = config.languageLabels.selectAll || "Select all";
   const onToggleAll = () => toggleSelectAll();
   selectAllBtn.addEventListener('click', onToggleAll);
   cleanupFns.push(() => selectAllBtn.removeEventListener('click', onToggleAll));
@@ -74,7 +74,7 @@ export function showTopTracksModal() {
   const playSelectedBtn = document.createElement('button');
   playSelectedBtn.className = 'top-tracks-action-btn';
   playSelectedBtn.innerHTML = '<i class="fas fa-play"></i>';
-  playSelectedBtn.title = config.languageLabels.playSelected || 'Seçilenleri çal';
+  playSelectedBtn.title = config.languageLabels.playSelected || "Play Selected";
   playSelectedBtn.disabled = true;
   const onPlaySel = () => playSelectedTracks();
   playSelectedBtn.addEventListener('click', onPlaySel);
@@ -84,7 +84,7 @@ export function showTopTracksModal() {
   const addToQueueBtn = document.createElement('button');
   addToQueueBtn.className = 'top-tracks-action-btn';
   addToQueueBtn.innerHTML = '<i class="fas fa-plus"></i>';
-  addToQueueBtn.title = config.languageLabels.addToQueue || 'Sıraya ekle';
+  addToQueueBtn.title = config.languageLabels.addToQueue || "Add to Queue";
   addToQueueBtn.disabled = true;
   const onAddQ = () => addSelectedToQueue();
   addToQueueBtn.addEventListener('click', onAddQ);
@@ -94,7 +94,7 @@ export function showTopTracksModal() {
   const saveToPlaylistBtn = document.createElement('button');
   saveToPlaylistBtn.className = 'top-tracks-action-btn';
   saveToPlaylistBtn.innerHTML = '<i class="fas fa-save"></i>';
-  saveToPlaylistBtn.title = config.languageLabels.saveToPlaylist || 'Listeye kaydet';
+  saveToPlaylistBtn.title = config.languageLabels.saveToPlaylist || "Save Selected to Playlist";
   saveToPlaylistBtn.disabled = true;
   const onSavePL = () => showSaveToPlaylistModal();
   saveToPlaylistBtn.addEventListener('click', onSavePL);
@@ -118,10 +118,10 @@ export function showTopTracksModal() {
     tab.className = 'top-tracks-tab' + (tabKey === activeTab ? ' active' : '');
     tab.dataset.tab = tabKey;
     tab.textContent = {
-      top: config.languageLabels.topTracks || 'En Çok Dinlenenler',
-      recent: config.languageLabels.recentTracks || 'Son Dinlenenler',
-      latest: config.languageLabels.latestTracks || 'Son Eklenenler',
-      favorites: config.languageLabels.favorites || 'Favorilerim'
+      top: config.languageLabels.topTracks || "Top Tracks",
+      recent: config.languageLabels.recentTracks || "Recently Listened",
+      latest: config.languageLabels.latestTracks || "Recently Added",
+      favorites: config.languageLabels.favorites || "My Favorites"
     }[tabKey];
     const onTab = () => switchTab(tabKey);
     tab.addEventListener('click', onTab);
@@ -234,7 +234,7 @@ function addSelectedToQueue() {
 async function showSaveToPlaylistModal() {
   if (selectedTrackIds.size === 0) {
     showNotification(
-      `<i class="fas fa-exclamation-triangle"></i> ${config.languageLabels.noSelection || "Hiç şarkı seçilmedi"}`,
+      `<i class="fas fa-exclamation-triangle"></i> ${config.languageLabels.noSelection || "No selection made"}`,
       3000,
       'warning'
     );
@@ -251,7 +251,7 @@ async function showSaveToPlaylistModal() {
   modalHeader.className = "playlist-save-modal-header";
 
   const modalTitle = document.createElement("h3");
-  modalTitle.textContent = config.languageLabels.saveToPlaylist || "Seçilenleri Kaydet";
+  modalTitle.textContent = config.languageLabels.saveToPlaylist || "Save Selected to Playlist";
   modalTitle.id = "top-save-modal-title";
   modalHeader.appendChild(modalTitle);
 
@@ -306,7 +306,7 @@ async function showSaveToPlaylistModal() {
   newPlaylistRadio.onchange = togglePlaylistSelection;
   const newPlaylistLabel = document.createElement("label");
   newPlaylistLabel.htmlFor = "top-new-playlist";
-  newPlaylistLabel.textContent = config.languageLabels.newPlaylist || "Yeni liste oluştur";
+  newPlaylistLabel.textContent = config.languageLabels.newPlaylist || "New Playlist";
   newPlaylistOption.appendChild(newPlaylistRadio);
   newPlaylistOption.appendChild(newPlaylistLabel);
 
@@ -320,7 +320,7 @@ async function showSaveToPlaylistModal() {
   existingPlaylistRadio.onchange = togglePlaylistSelection;
   const existingPlaylistLabel = document.createElement("label");
   existingPlaylistLabel.htmlFor = "top-existing-playlist";
-  existingPlaylistLabel.textContent = config.languageLabels.addToExisting || "Mevcut listeye ekle";
+  existingPlaylistLabel.textContent = config.languageLabels.addToExisting || "Add to Existing Playlist";
   existingPlaylistOption.appendChild(existingPlaylistRadio);
   existingPlaylistOption.appendChild(existingPlaylistLabel);
 
@@ -332,7 +332,7 @@ async function showSaveToPlaylistModal() {
   playlistSelectContainer.style.display = "none";
 
   const playlistSelectLabel = document.createElement("label");
-  playlistSelectLabel.textContent = config.languageLabels.selectPlaylist || "Liste seçin:";
+  playlistSelectLabel.textContent = config.languageLabels.selectPlaylist || "Select a Playlist";
 
   const playlistSelect = document.createElement("select");
   playlistSelect.className = "playlist-select";
@@ -351,7 +351,7 @@ async function showSaveToPlaylistModal() {
 
   const selectedCountContainer = document.createElement("div");
   selectedCountContainer.className = "selected-count-container";
-  selectedCountContainer.textContent = `${selectedTrackIds.size} ${config.languageLabels.tracksSelected || "şarkı seçildi"}`;
+  selectedCountContainer.textContent = `${selectedTrackIds.size} ${config.languageLabels.tracksSelected || "tracks selected"}`;
 
   modalBody.appendChild(nameInputContainer);
   modalBody.appendChild(publicLabel);
@@ -364,7 +364,7 @@ async function showSaveToPlaylistModal() {
 
   const saveButton = document.createElement("button");
   saveButton.className = "playlist-save-modal-save";
-  saveButton.textContent = config.languageLabels.save || "Kaydet";
+  saveButton.textContent = config.languageLabels.save || "Save";
   saveButton.onclick = async () => {
     const tracksToSave = allTracks.filter(track => selectedTrackIds.has(track.Id));
     const isNew = newPlaylistRadio.checked;
@@ -442,7 +442,7 @@ async function loadExistingPlaylists(selectElement) {
     if (playlists.length === 0) {
       const noPlaylistOption = document.createElement("option");
       noPlaylistOption.value = "";
-      noPlaylistOption.textContent = config.languageLabels.noPlaylists || "Hiç çalma listesi bulunamadı";
+      noPlaylistOption.textContent = config.languageLabels.noPlaylists || "No playlists found";
       selectElement.appendChild(noPlaylistOption);
       selectElement.disabled = true;
       return;
@@ -459,12 +459,12 @@ async function loadExistingPlaylists(selectElement) {
 
     selectElement.disabled = false;
   } catch (error) {
-    console.error("Listeler yüklenirken hata:", error);
+    console.error("Error loading playlists:", error);
     selectElement.innerHTML = '';
 
     const errorOption = document.createElement("option");
     errorOption.value = "";
-    errorOption.textContent = config.languageLabels.loadError || "Listeler yüklenemedi";
+    errorOption.textContent = config.languageLabels.loadError || "Failed to load playlists";
     selectElement.appendChild(errorOption);
     selectElement.disabled = true;
   }
@@ -501,14 +501,14 @@ async function loadTracks() {
       headers: { "X-Emby-Token": token }
     });
 
-    if (!response.ok) throw new Error('Şarkılar yüklenemedi');
+    if (!response.ok) throw new Error('Could not load tracks');
 
     const data = await response.json();
     allTracks = data.Items || [];
 
     if (allTracks.length === 0) {
       grid.innerHTML = `<div class="no-tracks">${
-        config.languageLabels.noTracks || 'Şarkı bulunamadı'
+        config.languageLabels.noTracks || "No tracks found"
       }</div>`;
       return;
     }
@@ -529,7 +529,7 @@ async function loadTracks() {
       checkbox.checked = selectedTrackIds.has(track.Id);
       checkbox.setAttribute(
         'aria-label',
-        `${config.languageLabels.selectTrack || 'Parçayı seç'}: ${track.Name || config.languageLabels.unknownTrack || 'Bilinmeyen parça'}`
+        `${config.languageLabels.selectTrack || 'Select track'}: ${track.Name || config.languageLabels.unknownTrack || "Unknown Track"}`
       );
       const onCheck = (e) => {
         const trackId = e.target.dataset.trackId;
@@ -606,7 +606,7 @@ async function loadTracks() {
     }
   } catch (error) {
     grid.innerHTML = `<div class="error-message">${
-      config.languageLabels.loadError || 'Yüklenirken hata oluştu'
+      config.languageLabels.loadError || "Failed to load playlists"
     }</div>`;
   }
 }
@@ -652,11 +652,11 @@ function formatDate(date) {
   const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
 
   if (diffInDays === 0) {
-    return config.languageLabels.today || 'Bugün';
+    return config.languageLabels.today || "Today";
   } else if (diffInDays === 1) {
-    return config.languageLabels.yesterday || 'Dün';
+    return config.languageLabels.yesterday || "Yesterday";
   } else if (diffInDays < 7) {
-    return `${diffInDays} ${config.languageLabels.daysAgo || 'gün önce'}`;
+    return `${diffInDays} ${config.languageLabels.daysAgo || "Days ago"}`;
   } else {
     return date.toLocaleDateString(config.dateLocale || 'tr-TR', {
       day: '2-digit',
@@ -693,7 +693,7 @@ async function loadTrackImage(track, element) {
 
     element.style.backgroundImage = DEFAULT_ARTWORK;
   } catch (error) {
-    console.error('Şarkı görseli yüklenemedi:', error);
+    console.error('Could not load track image:', error);
     element.style.backgroundImage = DEFAULT_ARTWORK;
   }
 }

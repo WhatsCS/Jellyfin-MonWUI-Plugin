@@ -360,7 +360,7 @@ function getPrcTypeToken(itemType) {
 function getPrcCardTypeBadge(itemType) {
   const ll = config.languageLabels || {};
   if (itemType === "Series") {
-    return { label: ll.dizi || labels.dizi || "Dizi", icon: "tv" };
+    return { label: ll.dizi || labels.dizi || "Series", icon: "tv" };
   }
   if (itemType === "BoxSet") {
     return {
@@ -368,7 +368,7 @@ function getPrcCardTypeBadge(itemType) {
       icon: "layerGroup"
     };
   }
-  return { label: ll.film || labels.film || "Film", icon: "film" };
+  return { label: ll.film || labels.film || "Movie", icon: "film" };
 }
 
 async function maybePurgePrcDb(st) {
@@ -813,7 +813,7 @@ function scheduleDeferredGenreHubsRender({ force = false, seq = __deferredHomeSe
       prcLog("GENRE:success", { force, seq });
       return true;
     } catch (e) {
-      console.error("Genre hubs deferred render hatası:", e);
+      console.error("Genre hubs deferred rendering error:", e);
       prcWarn("GENRE:error", {
         force,
         seq,
@@ -979,7 +979,7 @@ function attachGenreScrollIdleLoader() {
       'aria-label',
       (labels.loadMoreGenres ||
         config.languageLabels?.loadMoreGenres ||
-        'Daha fazla tür göster')
+        'Show more genres')
     );
 
     GENRE_STATE._loadMoreArrow = arrow;
@@ -1220,8 +1220,8 @@ async function applyResumeLabelsToCards(cardEls, userId) {
     const id = el?.dataset?.itemId;
     const it = byId.get(id);
     const isResume = hasPartialPlaybackUserData(it?.UserData);
-    const resumeText = (config.languageLabels?.devamet || 'Sürdür');
-    const playText   = (config.languageLabels?.izle    || 'Oynat');
+    const resumeText = (config.languageLabels?.devamet || "Resume");
+    const playText   = (config.languageLabels?.izle    || "Watch");
     setPrimaryCtaText(el, isResume ? resumeText : playText, isResume);
   }
 }
@@ -2058,7 +2058,7 @@ async function renderPersonalRecommendationsInternal(options = {}) {
             setPersonalRecsDone(true);
             schedulePrunePlayedAfterPaint(row, userId, 360);
           } catch (e) {
-            console.error("Kişisel öneriler alınırken hata:", e);
+            console.error("Error fetching personal recommendations:", e);
             setPersonalRecsDone(true);
           }
         }, {
@@ -2157,7 +2157,7 @@ async function renderPersonalRecommendationsInternal(options = {}) {
     }
 
   } catch (error) {
-    console.error("Kişisel öneriler / tür hub render hatası:", error);
+    console.error("Personal recommendations / genre hub rendering error:", error);
     prcWarn("render:error", {
       force,
       deferredSeq,
@@ -2209,7 +2209,7 @@ function ensureBecauseContainer(indexPage, key = "0") {
   section.innerHTML = `
     <div class="sectionTitleContainer sectionTitleContainer-cards">
       <h2 class="sectionTitle sectionTitle-cards">
-        <span class="byw-title-text">${(config.languageLabels?.becauseYouWatched) || (labels.becauseYouWatched) || "İzlediğin için"}</span>
+        <span class="byw-title-text">${(config.languageLabels?.becauseYouWatched) || (labels.becauseYouWatched) || "Because you watched"}</span>
       </h2>
     </div>
     <div class="personal-recs-scroll-wrap">
@@ -2312,7 +2312,7 @@ function formatBecauseYouWatchedTitle(seedName) {
     const cand = getLangKeyCandidates();
     if (cand.includes('de') || cand.includes('deu')) tpl = "Weil du {title} angesehen hast";
     else if (cand.includes('eng') || cand.includes('en')) tpl = "Because you watched {title}";
-    else tpl = "{title} izlediğiniz için";
+    else tpl = "Because you watched {title}";
   }
 
   return String(tpl).replace("{title}", title);
@@ -2582,7 +2582,7 @@ async function renderBecauseYouWatchedAuto(indexPage, options = {}) {
                   itemId: heroItem.Id,
                   serverId,
                   detailsUrl: getDetailsUrl(heroItem.Id, serverId),
-                  detailsText: (config.languageLabels?.details || labels.details || "Ayrıntılar"),
+                  detailsText: (config.languageLabels?.details || labels.details || "Details"),
                   showDetailsOverlay: false,
                 });
               }
@@ -2656,15 +2656,15 @@ function ensurePersonalRecsContainer(indexPage) {
   <div class="sectionTitleContainer sectionTitleContainer-cards">
     <h2 class="sectionTitle sectionTitle-cards prc-title">
       <span class="prc-title-text" role="button" tabindex="0"
-        aria-label="${(config.languageLabels?.seeAll || 'Tümünü gör')}: ${(config.languageLabels?.personalRecommendations) || labels.personalRecommendations || "Sana Özel Öneriler"}">
-        ${(config.languageLabels?.personalRecommendations) || labels.personalRecommendations || "Sana Özel Öneriler"}
+        aria-label="${(config.languageLabels?.seeAll || "See All")}: ${(config.languageLabels?.personalRecommendations) || labels.personalRecommendations || "Personalized Recommendations"}">
+        ${(config.languageLabels?.personalRecommendations) || labels.personalRecommendations || "Personalized Recommendations"}
       </span>
       <div class="prc-see-all"
-           aria-label="${(config.languageLabels?.seeAll) || "Tümünü gör"}"
-           title="${(config.languageLabels?.seeAll) || "Tümünü gör"}">
+           aria-label="${(config.languageLabels?.seeAll) || "See All"}"
+           title="${(config.languageLabels?.seeAll) || "See All"}">
         ${faIconHtml("chevronRight")}
       </div>
-      <span class="prc-see-all-tip">${(config.languageLabels?.seeAll) || "Tümünü gör"}</span>
+      <span class="prc-see-all-tip">${(config.languageLabels?.seeAll) || "See All"}</span>
     </h2>
   </div>
 
@@ -2864,7 +2864,7 @@ async function fetchUnwatchedByGenres(userId, genres, targetCount = 20, minRatin
     const items = Array.isArray(data?.Items) ? data.Items : [];
     return filterAndTrimByRating(items, minRating, targetCount);
   } catch (err) {
-    console.error("Türe göre içerik alınırken hata:", err);
+    console.error("Error fetching content by genre:", err);
     const fb = await getFallbackRecommendations(userId, requested);
     return filterAndTrimByRating(fb, minRating, targetCount);
   }
@@ -2882,7 +2882,7 @@ async function getFallbackRecommendations(userId, limit = 20) {
     const data = await makeApiRequest(url);
     return Array.isArray(data?.Items) ? data.Items : [];
   } catch (err) {
-    console.error("Fallback öneriler alınırken hata:", err);
+    console.error("Error fetching fallback recommendations:", err);
     return [];
   }
 }
@@ -3098,7 +3098,7 @@ function renderRecommendationCards(row, items, serverId) {
   const personalCardCount = getPersonalRecsCardCount();
   clearRowWithCleanup(row);
   if (!items || !items.length) {
-    row.innerHTML = `<div class="no-recommendations">${(config.languageLabels?.noRecommendations) || labels.noRecommendations || "Öneri bulunamadı"}</div>`;
+    row.innerHTML = `<div class="no-recommendations">${(config.languageLabels?.noRecommendations) || labels.noRecommendations || "No Suitable Content Found"}</div>`;
     return;
   }
 
@@ -3202,8 +3202,8 @@ function formatRuntime(ticks) {
 
 function getRuntimeWithIcons(runtime) {
   if (!runtime) return '';
-  return runtime.replace(/(\d+)s/g, `$1${config.languageLabels?.sa || 'sa'}`)
-  .replace(/(\d+)d/g, `$1${config.languageLabels?.dk || 'dk'}`);
+  return runtime.replace(/(\d+)s/g, `$1${config.languageLabels?.sa || "h"}`)
+  .replace(/(\d+)d/g, `$1${config.languageLabels?.dk || "m"}`);
 }
 
 function getDetailsUrl(itemId, serverId) {
@@ -3564,8 +3564,8 @@ function createHubScrollButton(side = "right") {
   btn.setAttribute(
     "aria-label",
     isLeft
-      ? ((config.languageLabels && config.languageLabels.scrollLeft) || "Sola kaydır")
-      : ((config.languageLabels && config.languageLabels.scrollRight) || "Sağa kaydır")
+      ? ((config.languageLabels && config.languageLabels.scrollLeft) || "Scroll Left")
+      : ((config.languageLabels && config.languageLabels.scrollRight) || "Scroll Right")
   );
   btn.setAttribute("aria-disabled", "true");
   btn.disabled = true;
@@ -4091,15 +4091,15 @@ function ensureGenreSectionElement(idx) {
     <div class="sectionTitleContainer sectionTitleContainer-cards">
       <h2 class="sectionTitle sectionTitle-cards gh-title">
         <span class="gh-title-text" role="button" tabindex="0"
-          aria-label="${(config.languageLabels?.seeAll || 'Tümünü gör')}: ${escapeHtml(genre)}">
+          aria-label="${(config.languageLabels?.seeAll || "See All")}: ${escapeHtml(genre)}">
           ${escapeHtml(genre)}
         </span>
         <div class="gh-see-all" data-genre="${escapeHtml(genre)}"
-             aria-label="${(config.languageLabels?.seeAll) || "Tümünü gör"}"
-             title="${(config.languageLabels?.seeAll) || "Tümünü gör"}">
+             aria-label="${(config.languageLabels?.seeAll) || "See All"}"
+             title="${(config.languageLabels?.seeAll) || "See All"}">
           ${faIconHtml("chevronRight")}
         </div>
-        <span class="gh-see-all-tip">${(config.languageLabels?.seeAll) || "Tümünü gör"}</span>
+        <span class="gh-see-all-tip">${(config.languageLabels?.seeAll) || "See All"}</span>
       </h2>
 	    </div>
 	    <div class="personal-recs-scroll-wrap">
@@ -4241,7 +4241,7 @@ async function ensureGenreLoaded(idx) {
                 itemId: best.Id,
                 serverId,
                 detailsUrl: getDetailsUrl(best.Id, serverId),
-                detailsText: (config.languageLabels?.details || labels.details || "Ayrıntılar"),
+                detailsText: (config.languageLabels?.details || labels.details || "Details"),
                 showDetailsOverlay: false,
               });
             }
@@ -4390,7 +4390,7 @@ async function fetchItemsBySingleGenre(userId, genre, limit = 30, minRating = 0)
 
     return picked;
   } catch (e) {
-    if (e?.name !== 'AbortError') console.error("fetchItemsBySingleGenre hata:", e);
+    if (e?.name !== 'AbortError') console.error("fetchItemsBySingleGenre error:", e);
     return [];
   } finally {
     __genreFetchCtrls.delete(ctrl);

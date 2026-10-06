@@ -106,13 +106,21 @@ function localizeStudioHubError(message) {
 
   const mapped = {
     "Bu işlem sadece admin kullanıcılar içindir.": getStudioHubLabel("studioHubAdminOnlyAction", "This action is only available to admin users."),
+    "This action is only available to administrators.": getStudioHubLabel("studioHubAdminOnlyAction", "This action is only available to admin users."),
     "StudioId ve başlık gerekli.": getStudioHubLabel("studioHubStudioIdAndTitleRequired", "Studio ID and title are required."),
+    "Studio ID and title are required.": getStudioHubLabel("studioHubStudioIdAndTitleRequired", "Studio ID and title are required."),
     "StudioId gerekli.": getStudioHubLabel("studioHubStudioIdRequired", "Studio ID is required."),
+    "Studio ID is required.": getStudioHubLabel("studioHubStudioIdRequired", "Studio ID is required."),
     "Yüklenecek logo gerekli.": getStudioHubLabel("studioHubLogoFileRequired", "A logo file is required for upload."),
+    "A logo file is required.": getStudioHubLabel("studioHubLogoFileRequired", "A logo file is required for upload."),
     "Yüklenecek video gerekli.": getStudioHubLabel("studioHubVideoFileRequired", "A video file is required for upload."),
+    "A video file is required.": getStudioHubLabel("studioHubVideoFileRequired", "A video file is required for upload."),
     "Koleksiyon adı gerekli.": getStudioHubLabel("studioHubCollectionNameRequired", "Collection name is required."),
+    "Collection name is required.": getStudioHubLabel("studioHubCollectionNameRequired", "Collection name is required."),
     "Manuel koleksiyon bulunamadı.": getStudioHubLabel("studioHubManualCollectionNotFound", "Manual collection not found."),
+    "Manual collection not found.": getStudioHubLabel("studioHubManualCollectionNotFound", "Manual collection not found."),
     "X-Emby-UserId gerekli.": getStudioHubLabel("ctrlApiUserHeaderRequired", "X-Emby-UserId header is required."),
+    "X-Emby-UserId is required.": getStudioHubLabel("ctrlApiUserHeaderRequired", "X-Emby-UserId header is required."),
   };
 
   return mapped[raw] || raw;

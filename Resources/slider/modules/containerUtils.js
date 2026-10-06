@@ -426,7 +426,7 @@ export function createStatusContainer(config, UserData, RunTimeTicks) {
     const formatEndTimeLocalized = (ticks) => {
       const totalMinutes = Math.floor(ticks / 600000000);
       const end = new Date(Date.now() + totalMinutes * 60 * 1000);
-      const locale = String(config?.languageLabels?.timeLocale || "tr-TR").trim() || "tr-TR";
+      const locale = String(config?.languageLabels?.timeLocale || "en-US").trim() || "tr-TR";
 
       try {
         return new Intl.DateTimeFormat(locale, {
@@ -490,7 +490,7 @@ async function resolvePeopleForItem(People, item) {
       const parentPeople = getPeopleArray(parent?.People);
       if (parentPeople.length) return parentPeople;
     } catch (e) {
-      console.warn("Ana dizi bilgileri alınamadı:", e);
+      console.warn("Could not fetch parent series information:", e);
     }
   }
 

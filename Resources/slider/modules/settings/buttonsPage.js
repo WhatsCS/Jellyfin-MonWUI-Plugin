@@ -7,7 +7,7 @@ export function createButtonsPanel(config, labels) {
     panel.id = 'buttons-panel';
     panel.className = 'settings-panel';
 
-    const section = createSection(labels.buttons || 'Buton Ayarları');
+    const section = createSection(labels.buttons || "Button Settings");
 
     const trailerButtonDiv = document.createElement('div');
     trailerButtonDiv.appendChild(createCheckbox('showTrailerButton', labels.showTrailerButton || 'Fragman Butonunu Show', config.showTrailerButton));
@@ -26,7 +26,7 @@ export function createButtonsPanel(config, labels) {
     bindCheckboxKontrol('#showTrailerButton', '.trailer-bg-container', 0.6, [trailerBgSelect]);
 
     const watchButtonDiv = document.createElement('div');
-    watchButtonDiv.appendChild(createCheckbox('showWatchButton', labels.showWatchButton || 'İzle Butonunu Show', config.showWatchButton));
+    watchButtonDiv.appendChild(createCheckbox('showWatchButton', labels.showWatchButton || "Show Watch Button", config.showWatchButton));
     section.appendChild(watchButtonDiv);
 
     const watchBgDiv = document.createElement('div');
@@ -76,7 +76,7 @@ export function createButtonsPanel(config, labels) {
     const buttonOpacityDiv = document.createElement('div');
     buttonOpacityDiv.className = 'setting-item';
     const buttonOpacityLabel = document.createElement('label');
-    buttonOpacityLabel.textContent = labels.backgroundOpacity || 'Buton Arka Plan Şeffaflığı:';
+    buttonOpacityLabel.textContent = labels.backgroundOpacity || "Background opacity";
     const buttonOpacityInput = document.createElement('input');
     buttonOpacityInput.type = 'range';
     buttonOpacityInput.min = '0.3';
@@ -101,7 +101,7 @@ export function createButtonsPanel(config, labels) {
     buttonblurDiv.className = 'setting-item';
 
     const buttonblurLabel = document.createElement('label');
-    buttonblurLabel.textContent = labels.backgroundBlur || 'Arka plan bulanıklığı:';
+    buttonblurLabel.textContent = labels.backgroundBlur || "Background blur";
     buttonblurLabel.htmlFor = 'buttonBackgroundBlur';
 
     const buttonblurInput = document.createElement('input');

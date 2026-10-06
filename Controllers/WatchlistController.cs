@@ -129,7 +129,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             lock (SyncRoot)
@@ -211,13 +211,13 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var itemId = Clean(req.ItemId);
             if (string.IsNullOrWhiteSpace(itemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             lock (SyncRoot)
@@ -276,13 +276,13 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanItemId = Clean(itemId);
             if (string.IsNullOrWhiteSpace(cleanItemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             lock (SyncRoot)
@@ -343,18 +343,18 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             if (req is null)
             {
-                return BadRequest(new { ok = false, error = "İstek gövdesi gerekli" });
+                return BadRequest(new { ok = false, error = "Request body is required" });
             }
 
             var itemId = Clean(req.ItemId);
             if (string.IsNullOrWhiteSpace(itemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             var targets = (req.Targets ?? new List<ShareTargetDto>())
@@ -370,7 +370,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 
             if (targets.Count == 0)
             {
-                return BadRequest(new { ok = false, error = "En az bir kullanıcı seçilmeli" });
+                return BadRequest(new { ok = false, error = "Select at least one user" });
             }
 
             lock (SyncRoot)
@@ -448,13 +448,13 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanShareId = Clean(shareId);
             if (string.IsNullOrWhiteSpace(cleanShareId))
             {
-                return BadRequest(new { ok = false, error = "shareId gerekli" });
+                return BadRequest(new { ok = false, error = "shareId is required" });
             }
 
             lock (SyncRoot)
@@ -466,12 +466,12 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 var share = cfg.WatchlistShares.FirstOrDefault(candidate => Same(candidate.Id, cleanShareId));
                 if (share is null)
                 {
-                    return NotFound(new { ok = false, error = "Paylaşım bulunamadı" });
+                    return NotFound(new { ok = false, error = "Share not found" });
                 }
 
                 if (!Same(share.OwnerUserId, user.UserId) && !Same(share.TargetUserId, user.UserId))
                 {
-                    return StatusCode(403, new { ok = false, error = "Bu paylaşımı kaldıramazsın" });
+                    return StatusCode(403, new { ok = false, error = "You cannot remove this share" });
                 }
 
                 changed |= cfg.WatchlistShares.RemoveAll(candidate => Same(candidate.Id, cleanShareId)) > 0;
@@ -525,8 +525,8 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var message = responseItems.Count > 0
                 ? string.Empty
                 : hasAnySignal
-                    ? "İzlenmemiş veya dinlenmemiş uygun içerik bulunamadı."
-                    : "Akıllı öneri üretmek için yeterli izleme geçmişi bulunamadı.";
+                    ? "No eligible unwatched or unplayed content was found."
+                    : "There is not enough viewing history to generate smart recommendations.";
 
             NoCache();
             return Ok(new
@@ -2053,13 +2053,13 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var context = ReadUserContext();
             if (!Guid.TryParse(context.UserId, out var userId) || userId == Guid.Empty)
             {
-                return (null, null, Unauthorized(new { ok = false, error = "Geçerli X-Emby-UserId gerekli" }));
+                return (null, null, Unauthorized(new { ok = false, error = "A valid X-Emby-UserId is required" }));
             }
 
             var user = _users.GetUserById(userId);
             if (user is null)
             {
-                return (null, null, Unauthorized(new { ok = false, error = "Kullanıcı bulunamadı" }));
+                return (null, null, Unauthorized(new { ok = false, error = "User not found" }));
             }
 
             if (string.IsNullOrWhiteSpace(context.UserName))

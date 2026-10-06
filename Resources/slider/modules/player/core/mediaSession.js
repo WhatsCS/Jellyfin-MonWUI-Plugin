@@ -148,7 +148,7 @@ export async function updateMediaMetadata(track) {
     navigator.mediaSession.metadata = new MediaMetadata(metadata);
     updatePlaybackState();
   } catch (error) {
-    console.error("[MediaSession] Metadata güncelleme başarısız:", error);
+    console.error("[MediaSession] Metadata update failed:", error);
   }
 }
 

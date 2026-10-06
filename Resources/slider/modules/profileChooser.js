@@ -994,12 +994,12 @@ function buildOverlayDom(L) {
   overlay.id = OVERLAY_ID;
   overlay.className = "jf-profile-overlay";
   overlay.innerHTML = `
-    <div class="jf-profile-shell" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("profileChooserAriaLabel", "Profil seçimi"))}">
-      <button class="jf-profile-close" type="button" aria-label="${escapeHtml(L("kapat", "Kapat"))}">✕</button>
-      <button class="jf-profile-settings" type="button" aria-label="${escapeHtml(L("ayarlar", "Ayarlar"))}">⚙</button>
+    <div class="jf-profile-shell" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("profileChooserAriaLabel", "Profile selection"))}">
+      <button class="jf-profile-close" type="button" aria-label="${escapeHtml(L("kapat", "Close"))}">✕</button>
+      <button class="jf-profile-settings" type="button" aria-label="${escapeHtml(L("ayarlar", "Settings"))}">⚙</button>
 
       <div class="jf-profile-title">${escapeHtml(L("kimIzliyor", "Kim izliyor?"))}</div>
-      <div class="jf-profile-subtitle">${escapeHtml(L("profilSecAlt", "Devam etmek için profil seç."))}</div>
+      <div class="jf-profile-subtitle">${escapeHtml(L("profilSecAlt", "Select a profile to continue."))}</div>
 
       <div class="jf-profile-grid" role="list"></div>
 
@@ -1008,12 +1008,12 @@ function buildOverlayDom(L) {
           <div class="jf-profile-login-avatar"></div>
           <div class="jf-profile-login-name"></div>
 
-          <label class="jf-profile-login-label">${escapeHtml(L("sifre", "Şifre"))}</label>
+          <label class="jf-profile-login-label">${escapeHtml(L("sifre", "Password"))}</label>
           <input class="jf-profile-login-input" type="password" autocomplete="current-password" />
 
           <div class="jf-profile-login-actions">
-            <button class="jf-profile-btn secondary" type="button" data-action="back">${escapeHtml(L("geri", "Geri"))}</button>
-            <button class="jf-profile-btn primary" type="button" data-action="login">${escapeHtml(L("devam", "Devam"))}</button>
+            <button class="jf-profile-btn secondary" type="button" data-action="back">${escapeHtml(L("geri", "Back"))}</button>
+            <button class="jf-profile-btn primary" type="button" data-action="login">${escapeHtml(L("devam", "Continue"))}</button>
           </div>
 
           <div class="jf-profile-login-hint"></div>
@@ -1021,7 +1021,7 @@ function buildOverlayDom(L) {
       </div>
 
       <div class="jf-profile-footer">
-        <button class="jf-profile-footer-btn" type="button" data-action="signout">${escapeHtml(L("cikis", "Çıkış"))}</button>
+        <button class="jf-profile-footer-btn" type="button" data-action="signout">${escapeHtml(L("cikis", "Sign out"))}</button>
       </div>
     </div>
   `;
@@ -1072,7 +1072,7 @@ function installHeaderButton(open, L, { isOverlayOpen } = {}) {
 
   function scheduleWarmupRefreshes() {
     clearWarmupRefreshes();
-    const placeholder = String(L("profil", "Profil") || "Profil").trim();
+    const placeholder = String(L("profil", "Profile") || "Profil").trim();
     const delays = [120, 420, 900, 1800, 3600, 7200];
 
     warmupRefreshIds = delays.map((delay) => window.setTimeout(() => {
@@ -1140,12 +1140,12 @@ function installHeaderButton(open, L, { isOverlayOpen } = {}) {
       const avatarSlot = btn.querySelector(".jf-profile-header-avatar");
       const nameSlot = btn.querySelector(".jf-profile-header-name");
       if (avatarSlot && !hasRenderableAvatarContent(avatarSlot)) {
-        setAvatarFallback(avatarSlot, { Name: L("profil", "Profil") });
+        setAvatarFallback(avatarSlot, { Name: L("profil", "Profile") });
       }
       if (nameSlot && !String(nameSlot.textContent || "").trim()) {
-        nameSlot.textContent = L("profil", "Profil");
+        nameSlot.textContent = L("profil", "Profile");
       }
-      btn.setAttribute("aria-label", L("profilDegistir", "Profil değiştir"));
+      btn.setAttribute("aria-label", L("profilDegistir", "Switch profile"));
       btn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -1189,7 +1189,7 @@ function installHeaderButton(open, L, { isOverlayOpen } = {}) {
     const splashState = isCustomSplashBlockingProfileHeader() ? "splash" : "live";
 
     if (nameSlot) {
-      const next = userName || L("profil", "Profil");
+      const next = userName || L("profil", "Profile");
       if (nameSlot.textContent !== next) nameSlot.textContent = next;
     }
 
@@ -1328,7 +1328,7 @@ async function authenticateByName(userName, password) {
 
   if (!res.ok) {
     const t = await res.text().catch(() => "");
-    throw new Error(`Login başarısız (${res.status}) ${t}`.trim());
+    throw new Error(`Login failed (${res.status}) ${t}`.trim());
   }
   return await res.json();
 }
@@ -1622,7 +1622,7 @@ export function initProfileChooser(options = {}) {
       if (!currentList.length && currentUserId) {
         currentList = [{
           Id: currentUserId,
-          Name: currentUserName || L("profil", "Profil"),
+          Name: currentUserName || L("profil", "Profile"),
           HasPassword: false,
           PrimaryImageTag: currentPrimaryImageTag,
           IsAdmin: currentUserIsAdmin,
@@ -1634,7 +1634,7 @@ export function initProfileChooser(options = {}) {
           currentList.find(u => u.Id === currentUserId) ||
           (currentUserId ? {
             Id: currentUserId,
-            Name: currentUserName || L("profil", "Profil"),
+            Name: currentUserName || L("profil", "Profile"),
             HasPassword: false,
             PrimaryImageTag: currentPrimaryImageTag,
             IsAdmin: false,
@@ -1748,8 +1748,8 @@ export function initProfileChooser(options = {}) {
               tabindex="0"
               data-action="userprofile"
               data-user-id="${escapeHtml(id)}"
-              aria-label="${escapeHtml(L("profilSayfasi", "Profil sayfası"))}"
-              title="${escapeHtml(L("profilSayfasi", "Profil sayfası"))}"
+              aria-label="${escapeHtml(L("profilSayfasi", "Profile page"))}"
+              title="${escapeHtml(L("profilSayfasi", "Profile page"))}"
             >⚙</span>
           ` : ``}
           <div class="jf-profile-avatar">${avatarFallbackHtml(name)}</div>
@@ -1760,11 +1760,11 @@ export function initProfileChooser(options = {}) {
             ${isOnline ? `
               <span class="jf-profile-badge-active jfpc-chip">
                 <span class="jf-profile-dot-online" aria-hidden="true"></span>
-                ${escapeHtml(L("cevrimici", "Çevrimiçi"))}
+                ${escapeHtml(L("cevrimici", "Online"))}
               </span>
             ` : ``}
             ${showQuickBadge ? `
-              <span class="jf-profile-badge jfpc-chip">${escapeHtml(L("hizli", "Hızlı"))}</span>
+              <span class="jf-profile-badge jfpc-chip">${escapeHtml(L("hizli", "Fast"))}</span>
             ` : ``}
             ${remembered ? `
               <span
@@ -1773,8 +1773,8 @@ export function initProfileChooser(options = {}) {
                 tabindex="0"
                 data-action="forget"
                 data-user-id="${escapeHtml(id)}"
-                aria-label="${escapeHtml(L("hizliyiKaldir", "Hızlı girişi kaldır"))}"
-                title="${escapeHtml(L("hizliyiKaldir", "Hızlı girişi kaldır"))}"
+                aria-label="${escapeHtml(L("hizliyiKaldir", "Forget"))}"
+                title="${escapeHtml(L("hizliyiKaldir", "Forget"))}"
               >✕ </span>
             ` : ``}
           </div>
@@ -1782,8 +1782,8 @@ export function initProfileChooser(options = {}) {
             <div class="jf-profile-now-playing" title="${escapeHtml(statusTitle || "")}">
               ${escapeHtml(
                 isPaused
-                  ? L("duraklatildi", "Duraklatıldı")
-                  : (isAudio ? L("dinliyor", "Dinliyor") : L("izliyor", "İzliyor"))
+                  ? L("duraklatildi", "Playback paused")
+                  : (isAudio ? L("dinliyor", "Listening") : L("izliyor", "Watching"))
               )}
               ${statusTitle ? `: ${escapeHtml(statusTitle)}` : ""}
             </div>
@@ -1928,7 +1928,7 @@ export function initProfileChooser(options = {}) {
       const primaryImageTag = getUserPrimaryImageTag(u);
       const isAdmin = readAdminFlagFromUser(u) === true;
 
-      if (!accessToken || !userId) throw new Error(L("loginEksikYanıt", "Login yanıtı eksik (token/userId)"));
+      if (!accessToken || !userId) throw new Error(L("loginEksikYanıt", "Login response is missing (token/userId)"));
 
       if (rememberTokens) {
         rememberUserToken({ userId, name: userName, accessToken, primaryImageTag, isAdmin });
@@ -1945,7 +1945,7 @@ export function initProfileChooser(options = {}) {
       close();
       try { location.reload(); } catch {}
     } catch (e) {
-      const msg = String(e?.message || L("loginBasarisiz", "Login başarısız"));
+      const msg = String(e?.message || L("loginBasarisiz", "Login failed"));
       showLogin(user, { hint: msg });
     } finally {
       try { overlay?.classList.remove("busy"); } catch {}
@@ -1985,7 +1985,7 @@ export function initProfileChooser(options = {}) {
       return;
     }
 
-    showLogin(user, { hint: L("profilSifreIstiyor", "Bu profil şifre istiyor.") });
+    showLogin(user, { hint: L("profilSifreIstiyor", "This profile requires a password.") });
   }
 
   async function submitLogin() {

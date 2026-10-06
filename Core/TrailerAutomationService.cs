@@ -226,17 +226,17 @@ public sealed class TrailerAutomationService
             {
                 DownloaderStep => await RunDownloaderAsync(normalized, logger, ct).ConfigureAwait(false),
                 UrlNfoStep => await RunUrlNfoAsync(normalized, logger, ct).ConfigureAwait(false),
-                _ => new TrailerStepResult(stepName, 1, $"[HATA] Bilinmeyen görev: {stepName}{Environment.NewLine}", string.Empty)
+                _ => new TrailerStepResult(stepName, 1, $"[ERROR] Unknown task: {stepName}{Environment.NewLine}", string.Empty)
             };
         }
         catch (OperationCanceledException)
         {
-            logger.Out("[WARN] İş iptal edildi.");
+            logger.Out("[WARN] Job cancelled.");
             return new TrailerStepResult(stepName, 130, logger.Stdout, logger.Stderr);
         }
         catch (Exception ex)
         {
-            logger.Err($"[HATA] {ex.Message}");
+            logger.Err($"[ERROR] {ex.Message}");
             return new TrailerStepResult(stepName, 1, logger.Stdout, logger.Stderr);
         }
     }
@@ -254,14 +254,14 @@ public sealed class TrailerAutomationService
             {
                 var tools = await EnsureManagedToolSuiteAsync(CancellationToken.None).ConfigureAwait(false);
                 _logger.LogInformation(
-                    "[JMSFusionV2] Tool bootstrap hazır. yt-dlp={YtDlpVersion} deno={DenoVersion} root={ToolRoot}",
+                    "[JMSFusionV2] Tool bootstrap ready. yt-dlp={YtDlpVersion} deno={DenoVersion} root={ToolRoot}",
                     FirstNonEmpty(tools.YtDlp.InstalledVersion, "unknown"),
                     FirstNonEmpty(tools.Deno.InstalledVersion, "unknown"),
                     tools.ToolRoot);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "[JMSFusionV2] Tool bootstrap başarısız.");
+                _logger.LogWarning(ex, "[JMSFusionV2] Tool bootstrap failed.");
             }
         });
     }
@@ -277,20 +277,20 @@ public sealed class TrailerAutomationService
 
         if (!TryNormalizeOverwritePolicy(options.OverwritePolicy, out var overwritePolicy))
         {
-            logger.Err($"[HATA] OVERWRITE_POLICY geçersiz: {options.OverwritePolicy} (skip|replace|if-better)");
+            logger.Err($"[ERROR] Invalid OVERWRITE_POLICY: {options.OverwritePolicy} (skip|replace|if-better)");
             return new TrailerStepResult(DownloaderStep, 2, logger.Stdout, logger.Stderr);
         }
 
         var tools = await EnsureManagedToolSuiteAsync(ct).ConfigureAwait(false);
         if (!tools.YtDlp.Ready || !IsExecutableAvailable(tools.YtDlp.InstallPath))
         {
-            logger.Err("Hata: yt-dlp hazırlanamadı.");
+            logger.Err("Error: Could not prepare yt-dlp.");
             return new TrailerStepResult(DownloaderStep, 1, logger.Stdout, logger.Stderr);
         }
 
         if (!tools.Deno.Ready || !IsExecutableAvailable(tools.Deno.InstallPath))
         {
-            logger.Err("Hata: deno hazırlanamadı.");
+            logger.Err("Error: Could not prepare deno.");
             return new TrailerStepResult(DownloaderStep, 1, logger.Stdout, logger.Stderr);
         }
 
@@ -302,17 +302,17 @@ public sealed class TrailerAutomationService
 
         if (string.IsNullOrWhiteSpace(ffmpegCommand))
         {
-            logger.Err("Uyarı: ffmpeg yok; yt-dlp progressive mp4 fallback ile denenecek.");
+            logger.Err("Warning: ffmpeg is missing; trying the yt-dlp progressive MP4 fallback.");
         }
 
         if (!hasFfprobe)
         {
-            logger.Err("Uyarı: ffprobe yok; süre/boyut kontrolleri sınırlı olur.");
+            logger.Err("Warning: ffprobe is missing; duration/size checks will be limited.");
         }
 
         if (!TryEnsureDirectory(ctx.WorkDir, out var workDirError))
         {
-            logger.Err($"[HATA] WORK_DIR oluşturulamadı: {ctx.WorkDir}");
+            logger.Err($"[ERROR] Could not create WORK_DIR: {ctx.WorkDir}");
             if (!string.IsNullOrWhiteSpace(workDirError))
             {
                 logger.Err($"[WARN] {workDirError}");
@@ -334,7 +334,7 @@ public sealed class TrailerAutomationService
         var fail = 0;
         var skip = 0;
         var total = 0;
-        logger.Out($"[INFO] Eşzamanlı indirme limiti: {ctx.MaxConcurrentDownloads}");
+        logger.Out($"[INFO] Concurrent download limit: {ctx.MaxConcurrentDownloads}");
 
         while (true)
         {
@@ -410,11 +410,11 @@ public sealed class TrailerAutomationService
             }
         }
 
-        logger.Out("[INFO] Geçici dosyalar temizleniyor...");
+        logger.Out("[INFO] Cleaning temporary files...");
         CleanupTemporaryFiles(seenDirs.Keys, ctx.WorkDir);
         logger.Out(string.Empty);
-        logger.Out($"BİTTİ: işlenen={processed}");
-        logger.Out($"ÖZET -> indirilen={ok}, başarısız={fail}, atlanan(zaten vardı)={skip}");
+        logger.Out($"FINISHED: processed={processed}");
+        logger.Out($"SUMMARY -> downloaded={ok}, failed={fail}, skipped(already exists)={skip}");
 
         return new TrailerStepResult(DownloaderStep, 0, logger.Stdout, logger.Stderr);
     }
@@ -473,7 +473,7 @@ public sealed class TrailerAutomationService
 
                 if (string.IsNullOrWhiteSpace(path))
                 {
-                    logger.Out($"[ATLA] Yol yok: {name}");
+                    logger.Out($"[SKIP] Path missing: {name}");
                     noPath++;
                     continue;
                 }
@@ -532,17 +532,17 @@ public sealed class TrailerAutomationService
         }
 
         logger.Out(string.Empty);
-        logger.Out("===== ÖZET =====");
-        logger.Out($"Toplam işlenen öğe      : {totalProcessed}");
-        logger.Out($"Başarılı (NFO eklendi)  : {ok}");
-        logger.Out($"Atlandı (zaten vardı)   : {skipHas}");
-        logger.Out($"Trailer bulunamadı      : {notFound}");
-        logger.Out($"NFO yazma hatası        : {failWrite}");
-        logger.Out($"Refresh hatası          : {failRefresh}");
-        logger.Out($"TMDb ID yok             : {noTmdb}");
-        logger.Out($"Yol (Path) yok          : {noPath}");
-        logger.Out($"Desteklenmeyen tür      : {unsupported}");
-        logger.Out($"Diğer/çeşitli           : {misc}");
+        logger.Out("===== SUMMARY =====");
+        logger.Out($"Total processed items      : {totalProcessed}");
+        logger.Out($"Successful (NFO added)  : {ok}");
+        logger.Out($"Skipped (already exists)   : {skipHas}");
+        logger.Out($"Trailer not found      : {notFound}");
+        logger.Out($"NFO write errors        : {failWrite}");
+        logger.Out($"Refresh errors          : {failRefresh}");
+        logger.Out($"TMDb ID missing             : {noTmdb}");
+        logger.Out($"Path missing          : {noPath}");
+        logger.Out($"Unsupported type      : {unsupported}");
+        logger.Out($"Other/miscellaneous           : {misc}");
         logger.Out("========================");
 
         return new TrailerStepResult(UrlNfoStep, 0, logger.Stdout, logger.Stderr);
@@ -577,13 +577,13 @@ public sealed class TrailerAutomationService
 
         if (!handledDirs.TryAdd(dir, 0))
         {
-            ctx.Log.Out($"[ATLA] Aynı klasör bu çalıştırmada zaten işlendi: {dir}  ->  {name} ({year})");
+            ctx.Log.Out($"[SKIP] Directory already processed in this run: {dir}  ->  {name} ({year})");
             return DownloadOutcome.Skip;
         }
 
         if (!CheckDirectoryWritable(dir))
         {
-            ctx.Log.Out($"[ATLA] Yazılamayan klasör, atlanıyor: {dir}  ->  {name} ({year})");
+            ctx.Log.Out($"[SKIP] Directory is not writable, Skipping: {dir}  ->  {name} ({year})");
             return DownloadOutcome.Skip;
         }
 
@@ -596,18 +596,18 @@ public sealed class TrailerAutomationService
                     if (ctx.Options.EnableThemeLink == 1)
                     {
                         await EnsureBackdropsThemeAsync(dir, outFile, ctx.Log, ctx.Options.ThemeLinkMode, ct).ConfigureAwait(false);
-                        ctx.Log.Out($"[ATLA] Zaten var: {outFile}  -> theme.mp4 kuruldu/korundu.");
+                        ctx.Log.Out($"[SKIP] Already exists: {outFile}  -> theme.mp4 created/preserved.");
                     }
                     else
                     {
-                        ctx.Log.Out($"[ATLA] Zaten var: {outFile}  ->  {name} ({year})");
+                        ctx.Log.Out($"[SKIP] Already exists: {outFile}  ->  {name} ({year})");
                     }
                     return DownloadOutcome.Skip;
                 case "replace":
-                    ctx.Log.Out($"[BİLGİ] Üzerine yazılacak: {outFile}");
+                    ctx.Log.Out($"[INFO] Will overwrite: {outFile}");
                     break;
                 case "if-better":
-                    ctx.Log.Out("[BİLGİ] if-better modu: karşılaştırma için indirilecek.");
+                    ctx.Log.Out("[INFO] if-better mode: will download for comparison.");
                     compareAfter = true;
                     break;
             }
@@ -616,7 +616,7 @@ public sealed class TrailerAutomationService
         var tmdb = GetProviderId(item.ProviderIds, "Tmdb", "MovieDb");
         var imdb = GetProviderId(item.ProviderIds, "Imdb");
 
-        ctx.Log.Out($"[DEBUG] İşleniyor: {name} (IMDb: {imdb ?? string.Empty}, TMDb: {tmdb ?? string.Empty}, Tür: {itemType})");
+        ctx.Log.Out($"[DEBUG] Processing: {name} (IMDb: {imdb ?? string.Empty}, TMDb: {tmdb ?? string.Empty}, Type: {itemType})");
 
         var seriesContext = await ResolveSeriesContextAsync(
             ctx,
@@ -640,7 +640,7 @@ public sealed class TrailerAutomationService
 
             if (string.IsNullOrWhiteSpace(tmdbId))
             {
-                ctx.Log.Out($"[ATLA] TMDb ID yok: {name}");
+                ctx.Log.Out($"[SKIP] TMDb ID missing: {name}");
                 return DownloadOutcome.Fail;
             }
 
@@ -650,7 +650,7 @@ public sealed class TrailerAutomationService
         {
             if (string.IsNullOrWhiteSpace(seriesContext.SeriesTmdb))
             {
-                ctx.Log.Out($"[ATLA] Series TMDb yok: {name}");
+                ctx.Log.Out($"[SKIP] Series TMDb missing: {name}");
                 return DownloadOutcome.Fail;
             }
 
@@ -664,7 +664,7 @@ public sealed class TrailerAutomationService
         }
         else
         {
-            ctx.Log.Out($"[ATLA] Tür desteklenmiyor: {itemType} - {name}");
+            ctx.Log.Out($"[SKIP] Unsupported type: {itemType} - {name}");
             return DownloadOutcome.Fail;
         }
 
@@ -675,26 +675,26 @@ public sealed class TrailerAutomationService
         {
             ct.ThrowIfCancellationRequested();
             tried++;
-            ctx.Log.Out($"[DEBUG] Denenen #{tried}: {candidate.Site}:{candidate.Key}");
+            ctx.Log.Out($"[DEBUG] Trying #{tried}: {candidate.Site}:{candidate.Key}");
 
             var freeMbDest = GetFreeMb(dir);
             if (freeMbDest < MinFreeMb)
             {
-                ctx.Log.Out($"[WARN] Hedefte yetersiz boş alan: {freeMbDest} MiB (< {MinFreeMb} MiB). Atlanıyor: {name} ({year})");
+                ctx.Log.Out($"[WARN] Insufficient free space at destination: {freeMbDest} MiB (< {MinFreeMb} MiB). Skipping: {name} ({year})");
                 continue;
             }
 
             var freeMbWork = GetFreeMb(ctx.WorkDir);
             if (freeMbWork < MinFreeMb)
             {
-                ctx.Log.Out($"[WARN] Çalışma klasöründe yetersiz boş alan: {freeMbWork} MiB (< {MinFreeMb} MiB). Atlanıyor: {name} ({year})");
+                ctx.Log.Out($"[WARN] Insufficient free space in working directory: {freeMbWork} MiB (< {MinFreeMb} MiB). Skipping: {name} ({year})");
                 continue;
             }
 
             var attemptWorkDir = Path.Combine(ctx.WorkDir, $"{tempPrefix}-{tried:D2}-{Guid.NewGuid():N}");
             if (!TryEnsureDirectory(attemptWorkDir, out var attemptDirError))
             {
-                ctx.Log.Out($"[WARN] Geçici klasör oluşturulamadı: {attemptWorkDir} ({attemptDirError ?? "bilinmeyen hata"})");
+                ctx.Log.Out($"[WARN] Could not create temporary directory: {attemptWorkDir} ({attemptDirError ?? "unknown error"})");
                 continue;
             }
 
@@ -702,7 +702,7 @@ public sealed class TrailerAutomationService
 
             try
             {
-                ctx.Log.Out($"[INDIR] {name} ({year}) -> {outFile}  [{candidate.Site}:{candidate.Key}] (best mp4)");
+                ctx.Log.Out($"[DOWNLOAD] {name} ({year}) -> {outFile}  [{candidate.Site}:{candidate.Key}] (best mp4)");
                 var url = candidate.Site == "youtube"
                     ? $"https://www.youtube.com/watch?v={candidate.Key}"
                     : $"https://vimeo.com/{candidate.Key}";
@@ -720,11 +720,11 @@ public sealed class TrailerAutomationService
 
                 if (ytdlp.ExitCode != 0 || !File.Exists(tmpPath))
                 {
-                    ctx.Log.Out($"[WARN] yt-dlp deneme #{tried} başarısız.");
+                    ctx.Log.Out($"[WARN] yt-dlp attempt #{tried} failed.");
                     LogProcessFailure(ctx.Log, ytdlp);
                     if (GetFreeMb(dir) <= 0)
                     {
-                        ctx.Log.Out($"[HATA] Diskte yer kalmamış. Film atlanıyor: {name} ({year})");
+                        ctx.Log.Out($"[ERROR] No space left on disk. Skipping movie: {name} ({year})");
                     }
                     TryDeleteFile(tmpPath);
                     continue;
@@ -733,7 +733,7 @@ public sealed class TrailerAutomationService
                 var sizeBytes = GetFileSize(tmpPath);
                 if (sizeBytes < MinTrailerBytes)
                 {
-                    ctx.Log.Out($"[WARN] Dosya çok küçük ({sizeBytes}B). Siliniyor ve sonraki aday denenecek...");
+                    ctx.Log.Out($"[WARN] File is too small ({sizeBytes}B). Deleting and trying the next candidate...");
                     TryDeleteFile(tmpPath);
                     continue;
                 }
@@ -743,7 +743,7 @@ public sealed class TrailerAutomationService
                     var duration = await ProbeDurationAsync(ffprobeCommand, tmpPath, ct).ConfigureAwait(false);
                     if (duration > 0 && duration < MinTrailerDurationSeconds)
                     {
-                        ctx.Log.Out($"[WARN] Süre kısa ({duration.ToString("0.##", CultureInfo.InvariantCulture)}s). Siliniyor ve sonraki aday denenecek...");
+                        ctx.Log.Out($"[WARN] Duration is too short ({duration.ToString("0.##", CultureInfo.InvariantCulture)}s). Deleting and trying the next candidate...");
                         TryDeleteFile(tmpPath);
                         continue;
                     }
@@ -757,10 +757,10 @@ public sealed class TrailerAutomationService
 
                     if (IsBetterTrailer(sizeBytes, outSize, tmpDuration, outDuration))
                     {
-                        ctx.Log.Out("[OK] Yeni trailer daha iyi bulundu (if-better): değiştiriliyor.");
+                        ctx.Log.Out("[OK] New trailer is better (if-better): replacing.");
                         if (!TryMoveReplace(tmpPath, outFile))
                         {
-                            ctx.Log.Err($"[HATA] mv başarısız, yazılamıyor: {outFile}");
+                            ctx.Log.Err($"[ERROR] Move failed, cannot write: {outFile}");
                             TryDeleteFile(tmpPath);
                             return DownloadOutcome.Fail;
                         }
@@ -772,7 +772,7 @@ public sealed class TrailerAutomationService
                     }
                     else
                     {
-                        ctx.Log.Out("[ATLA] Mevcut trailer daha iyi/eşdeğer: yenisi silindi.");
+                        ctx.Log.Out("[SKIP] Existing trailer is better/equivalent: new trailer deleted.");
                         TryDeleteFile(tmpPath);
                         if (ctx.Options.EnableThemeLink == 1)
                         {
@@ -785,7 +785,7 @@ public sealed class TrailerAutomationService
                 {
                     if (!TryMoveReplace(tmpPath, outFile))
                     {
-                        ctx.Log.Err($"[HATA] mv başarısız, yazılamıyor: {outFile}");
+                        ctx.Log.Err($"[ERROR] Move failed, cannot write: {outFile}");
                         TryDeleteFile(tmpPath);
                         return DownloadOutcome.Fail;
                     }
@@ -802,7 +802,7 @@ public sealed class TrailerAutomationService
                     "Recursive=true&ImageRefreshMode=Default&MetadataRefreshMode=Default&RegenerateTrickplay=false&ReplaceAllMetadata=false",
                     ct).ConfigureAwait(false);
 
-                ctx.Log.Out($"[OK] Eklendi ve yenilendi: {outFile}");
+                ctx.Log.Out($"[OK] Added and refreshed: {outFile}");
                 if (ctx.SleepSecs > 0)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(ctx.SleepSecs), ct).ConfigureAwait(false);
@@ -816,7 +816,7 @@ public sealed class TrailerAutomationService
             }
         }
 
-        ctx.Log.Out($"[ATLA] Uygun indirilebilir trailer bulunamadı: {name} ({year})");
+        ctx.Log.Out($"[SKIP] No suitable downloadable trailer found: {name} ({year})");
         return DownloadOutcome.Fail;
     }
 
@@ -848,7 +848,7 @@ public sealed class TrailerAutomationService
 
             if (string.IsNullOrWhiteSpace(tmdbId))
             {
-                ctx.Log.Out($"[ATLA] TMDb ID yok: {name}");
+                ctx.Log.Out($"[SKIP] TMDb ID missing: {name}");
                 return NfoOutcome.NoTmdb;
             }
 
@@ -871,7 +871,7 @@ public sealed class TrailerAutomationService
 
             if (string.IsNullOrWhiteSpace(seriesContext.SeriesTmdb))
             {
-                ctx.Log.Out($"[ATLA] Series TMDb yok: {name}");
+                ctx.Log.Out($"[SKIP] Series TMDb missing: {name}");
                 return NfoOutcome.NoTmdb;
             }
 
@@ -886,7 +886,7 @@ public sealed class TrailerAutomationService
             return await WriteFirstTrailerToNfoAsync(ctx, itemId, itemType, name, year, path, candidates, ct).ConfigureAwait(false);
         }
 
-        ctx.Log.Out($"[ATLA] Tür desteklenmiyor: {itemType} - {name}");
+        ctx.Log.Out($"[SKIP] Unsupported type: {itemType} - {name}");
         return NfoOutcome.Unsupported;
     }
 
@@ -911,7 +911,7 @@ public sealed class TrailerAutomationService
             var (nfoPath, root) = PickNfoPath(itemType, path);
             if (string.IsNullOrWhiteSpace(nfoPath) || string.IsNullOrWhiteSpace(root))
             {
-                ctx.Log.Out($"[ATLA] NFO yolu çözülemedi: {name}");
+                ctx.Log.Out($"[SKIP] Could not resolve NFO path: {name}");
                 return NfoOutcome.Misc;
             }
 
@@ -930,7 +930,7 @@ public sealed class TrailerAutomationService
                         ct).ConfigureAwait(false);
                     if (!refreshOk)
                     {
-                        ctx.Log.Out($"[WARN] Refresh çağrısı başarısız: {name}");
+                        ctx.Log.Out($"[WARN] Refresh request failed: {name}");
                         return NfoOutcome.FailRefresh;
                     }
 
@@ -943,7 +943,7 @@ public sealed class TrailerAutomationService
             }
         }
 
-        ctx.Log.Out($"[ATLA] Trailer bulunamadı: {name}");
+        ctx.Log.Out($"[SKIP] Trailer not found: {name}");
         return NfoOutcome.NotFound;
     }
 
@@ -1124,7 +1124,7 @@ public sealed class TrailerAutomationService
 
         if (string.IsNullOrWhiteSpace(picked))
         {
-            throw new InvalidOperationException("Kullanıcı bulunamadı.");
+            throw new InvalidOperationException("User not found.");
         }
 
         return picked;
@@ -1238,13 +1238,13 @@ public sealed class TrailerAutomationService
         error = string.Empty;
         if (string.IsNullOrWhiteSpace(ctx.Options.JfApiKey) || string.Equals(ctx.Options.JfApiKey, "CHANGE_ME", StringComparison.OrdinalIgnoreCase))
         {
-            error = "Hata: Jellyfin oturum tokeni alınamadı.";
+            error = "Error: Could not obtain Jellyfin session token.";
             return false;
         }
 
         if (requireTmdb && (string.IsNullOrWhiteSpace(ctx.Options.TmdbApiKey) || string.Equals(ctx.Options.TmdbApiKey, "CHANGE_ME", StringComparison.OrdinalIgnoreCase)))
         {
-            error = "Hata: TMDB_API_KEY ayarla.";
+            error = "Error: Set TMDB_API_KEY.";
             return false;
         }
 
@@ -1332,7 +1332,7 @@ public sealed class TrailerAutomationService
         {
             foreach (var line in TailLines(result.Stdout, 4))
             {
-                log.Out($"[WARN] yt-dlp çıktı: {line}");
+                log.Out($"[WARN] yt-dlp output: {line}");
             }
         }
     }
@@ -1745,7 +1745,7 @@ public sealed class TrailerAutomationService
         }
         catch
         {
-            log.Out($"[WARN] backdrops klasörü oluşturulamadı: {backdropsDir}");
+            log.Out($"[WARN] Could not create backdrops directory: {backdropsDir}");
             return;
         }
 
@@ -1762,30 +1762,30 @@ public sealed class TrailerAutomationService
             case "symlink":
                 if (TryCreateSymbolicLink(themePath, relativeTarget) || TryCreateSymbolicLink(themePath, trailerPath))
                 {
-                    log.Out($"[OK] theme.mp4 için symlink oluşturuldu (mode=symlink): {themePath} -> {trailerPath}");
+                    log.Out($"[OK] theme.mp4 symlink created (mode=symlink): {themePath} -> {trailerPath}");
                 }
                 else if (TryCreateHardLink(themePath, trailerPath))
                 {
-                    log.Out($"[OK] symlink mümkün değil, hardlink fallback kullanıldı (mode=symlink): {themePath}");
+                    log.Out($"[OK] symlink unavailable, used hardlink fallback (mode=symlink): {themePath}");
                 }
                 else
                 {
-                    log.Out("[WARN] Symlink/hardlink oluşturulamadı, theme.mp4 atlanıyor (mode=symlink).");
+                    log.Out("[WARN] Symlink/hardlink could not be created, theme.mp4 Skipping (mode=symlink).");
                     return;
                 }
                 break;
             case "hardlink":
                 if (TryCreateHardLink(themePath, trailerPath))
                 {
-                    log.Out($"[OK] theme.mp4 için hardlink oluşturuldu (mode=hardlink): {themePath}");
+                    log.Out($"[OK] theme.mp4 hardlink created (mode=hardlink): {themePath}");
                 }
                 else if (TryCreateSymbolicLink(themePath, relativeTarget) || TryCreateSymbolicLink(themePath, trailerPath))
                 {
-                    log.Out($"[OK] hardlink mümkün değil, symlink fallback kullanıldı (mode=hardlink): {themePath}");
+                    log.Out($"[OK] hardlink unavailable, used symlink fallback (mode=hardlink): {themePath}");
                 }
                 else
                 {
-                    log.Out("[WARN] Hardlink/symlink oluşturulamadı, theme.mp4 atlanıyor (mode=hardlink).");
+                    log.Out("[WARN] Hardlink/symlink could not be created, theme.mp4 Skipping (mode=hardlink).");
                     return;
                 }
                 break;
@@ -1793,17 +1793,17 @@ public sealed class TrailerAutomationService
                 try
                 {
                     File.Copy(trailerPath, themePath, overwrite: true);
-                    log.Out($"[OK] theme.mp4 kopyalandı (mode=copy): {themePath}");
+                    log.Out($"[OK] theme.mp4 copied (mode=copy): {themePath}");
                 }
                 catch
                 {
-                    log.Out($"[WARN] copy mode: theme.mp4 kopyalanamadı: {themePath}");
+                    log.Out($"[WARN] copy mode: theme.mp4 could not be copied: {themePath}");
                     return;
                 }
                 break;
         }
 
-        log.Out($"[OK] backdrops/theme.mp4 hazırlandı → {themePath}");
+        log.Out($"[OK] backdrops/theme.mp4 ready → {themePath}");
     }
 
     private static bool TryCreateSymbolicLink(string linkPath, string targetPath)
@@ -2003,7 +2003,7 @@ public sealed class TrailerAutomationService
             var toolRoot = ResolveManagedToolRoot();
             if (!TryEnsureDirectory(toolRoot, out var dirError))
             {
-                throw new IOException($"Tool dizini oluşturulamadı: {toolRoot}. {dirError}");
+                throw new IOException($"Tool directory could not be created: {toolRoot}. {dirError}");
             }
 
             var ytDlp = await EnsureManagedYtDlpAsync(toolRoot, ct).ConfigureAwait(false);
@@ -2018,7 +2018,7 @@ public sealed class TrailerAutomationService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "[JMSFusionV2] ffmpeg/ffprobe yönetilen indirme başarısız.");
+                    _logger.LogWarning(ex, "[JMSFusionV2] Managed ffmpeg/ffprobe download failed.");
                 }
             }
 
@@ -2226,7 +2226,7 @@ public sealed class TrailerAutomationService
             using var resp = await Http.SendAsync(req, ct).ConfigureAwait(false);
             if (!resp.IsSuccessStatusCode)
             {
-                _logger.LogWarning("[JMSFusionV2] Release sorgusu başarısız: {ApiUrl} status={StatusCode}", apiUrl, (int)resp.StatusCode);
+                _logger.LogWarning("[JMSFusionV2] Release query failed: {ApiUrl} status={StatusCode}", apiUrl, (int)resp.StatusCode);
                 return null;
             }
 
@@ -2235,7 +2235,7 @@ public sealed class TrailerAutomationService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "[JMSFusionV2] Release bilgisi alınamadı: {ApiUrl}", apiUrl);
+            _logger.LogWarning(ex, "[JMSFusionV2] Could not fetch release information: {ApiUrl}", apiUrl);
             return null;
         }
     }
@@ -2374,7 +2374,7 @@ public sealed class TrailerAutomationService
             EnsureExecutable(tempPath);
             if (!TryMoveReplace(tempPath, installPath))
             {
-                throw new IOException($"Tool dosyası güncellenemedi: {installPath}");
+                throw new IOException($"Could not update tool file: {installPath}");
             }
 
             EnsureExecutable(installPath);
@@ -2402,7 +2402,7 @@ public sealed class TrailerAutomationService
 
             if (entry == null)
             {
-                throw new FileNotFoundException($"Zip içinde beklenen dosya yok: {entryName}");
+                throw new FileNotFoundException($"Expected file not found in ZIP: {entryName}");
             }
 
             entry.ExtractToFile(tempExtract, overwrite: true);
@@ -2410,7 +2410,7 @@ public sealed class TrailerAutomationService
 
             if (!TryMoveReplace(tempExtract, installPath))
             {
-                throw new IOException($"Zip tool dosyası güncellenemedi: {installPath}");
+                throw new IOException($"Could not update ZIP tool file: {installPath}");
             }
 
             EnsureExecutable(installPath);
@@ -2439,7 +2439,7 @@ public sealed class TrailerAutomationService
 
             if (string.IsNullOrWhiteSpace(ffmpegDir))
             {
-                throw new FileNotFoundException("İndirilen ffmpeg paketinde ffmpeg.exe bulunamadı.");
+                throw new FileNotFoundException("ffmpeg.exe not found in downloaded ffmpeg package.");
             }
 
             foreach (var file in Directory.EnumerateFiles(ffmpegDir, "*", SearchOption.TopDirectoryOnly))

@@ -184,12 +184,12 @@ function inferSeasonNumbers(item, explicitSeasons = null) {
 }
 
 function itemTitle(item) {
-  if (item?.__monwuiVirtualTrailer) return text(item?.Name, L("serrUntitled", "İçerik"));
+  if (item?.__monwuiVirtualTrailer) return text(item?.Name, L("serrUntitled", "Content"));
   const type = text(item?.Type || item?.type).toLowerCase();
   if (type === "episode") {
     return [item?.SeriesName, item?.Name].map((v) => text(v)).filter(Boolean).join(" - ") || text(item?.Name);
   }
-  return text(item?.Name || item?.name || item?.Title || item?.title, L("serrUntitled", "İçerik"));
+  return text(item?.Name || item?.name || item?.Title || item?.title, L("serrUntitled", "Content"));
 }
 
 function isAvailableJellyfinItem(item) {
@@ -243,15 +243,15 @@ function notify(message, type = "info") {
 
 function statusLabel(status) {
   switch (text(status).toLowerCase()) {
-    case "pending": return L("serrStatusPending", "Onay bekliyor");
-    case "approved": return L("serrStatusApproved", "Onaylandı");
-    case "processing": return L("serrStatusProcessing", "İşleniyor");
+    case "pending": return L("serrStatusPending", "Pending approval");
+    case "approved": return L("serrStatusApproved", "Approved");
+    case "processing": return L("serrStatusProcessing", "Processing");
     case "completed":
-    case "available": return L("serrStatusCompleted", "Tamamlandı");
-    case "declined": return L("serrStatusDeclined", "Reddedildi");
-    case "failed": return L("serrStatusFailed", "Hatalı");
-    case "withdrawn": return L("serrStatusWithdrawn", "Geri çekildi");
-    default: return L("serrStatusApproved", "Onaylandı");
+    case "available": return L("serrStatusCompleted", "Completed");
+    case "declined": return L("serrStatusDeclined", "Declined");
+    case "failed": return L("serrStatusFailed", "Failed");
+    case "withdrawn": return L("serrStatusWithdrawn", "Withdrawn");
+    default: return L("serrStatusApproved", "Approved");
   }
 }
 
@@ -268,15 +268,15 @@ function statusMessage(result) {
     const status = lowerStatusLabel(result?.duplicateStatus || result?.request?.Status || result?.request?.status);
     const own = result?.duplicateOwnedByCurrentUser === true;
     const fallback = own
-      ? "Bu istek zaten sizin tarafınızdan oluşturuldu ve {status}."
-      : "Bu istek başka bir kullanıcı tarafından oluşturuldu ve {status}.";
+      ? "You already created this request and its status is {status}."
+      : "Another user created this request and its status is {status}.";
     return L(own ? "serrDuplicateOwnRequest" : "serrDuplicateOtherRequest", fallback).replace("{status}", status);
   }
-  if (result?.pendingApproval) return L("serrRequestPendingToast", "İstek yönetici onayına gönderildi.");
-  if (result?.request?.episodeOnly || result?.request?.EpisodeOnly) return L("serrRequestCreatedToast", "İstek oluşturuldu.");
+  if (result?.pendingApproval) return L("serrRequestPendingToast", "Request sent for admin approval.");
+  if (result?.request?.episodeOnly || result?.request?.EpisodeOnly) return L("serrRequestCreatedToast", "Request created.");
   const status = text(result?.request?.Status || result?.request?.status);
-  if (status === "approved" || status === "processing") return L("serrRequestApprovedToast", "İstek Seerr'e gönderildi.");
-  return L("serrRequestCreatedToast", "İstek oluşturuldu.");
+  if (status === "approved" || status === "processing") return L("serrRequestApprovedToast", "Request sent.");
+  return L("serrRequestCreatedToast", "Request created.");
 }
 
 function statusType(result) {
@@ -284,9 +284,9 @@ function statusType(result) {
 }
 
 function arrStatusMessage(result) {
-  if (result?.service === "sonarr") return L("arrEpisodeRequestSent", "Bölüm isteği Sonarr'a gönderildi.");
-  if (result?.service === "radarr") return L("arrMovieRequestSent", "Film isteği Radarr'a gönderildi.");
-  return L("arrRequestSent", "Arr isteği gönderildi.");
+  if (result?.service === "sonarr") return L("arrEpisodeRequestSent", "Episode request sent to Sonarr.");
+  if (result?.service === "radarr") return L("arrMovieRequestSent", "Movie request sent to Radarr.");
+  return L("arrRequestSent", "Arr request sent.");
 }
 
 function shouldUseDirectArrMovieFallback(access) {
@@ -306,11 +306,11 @@ function shouldFallbackMovieToArr(result) {
   return result?.duplicate === true && (status === "completed" || status === "available");
 }
 
-function requestErrorMessage(error, fallback = L("serrRequestFailed", "Seerr isteği oluşturulamadı.")) {
+function requestErrorMessage(error, fallback = L("serrRequestFailed", "Unable to create the request.")) {
   const code = text(error?.payload?.code || error?.payload?.errorCode);
   const message = text(error?.message || error?.payload?.error);
   if (code === "serrAlreadyAvailable" || code === "already_available" || /already available in jellyfin/i.test(message)) {
-    return L("serrAlreadyAvailable", "Bu içerik Jellyfin'de zaten mevcut.");
+    return L("serrAlreadyAvailable", "This item is already available in Jellyfin.");
   }
   return message || fallback;
 }
@@ -321,7 +321,7 @@ function isJellyfinAlreadyAvailableError(error) {
   return code === "serrAlreadyAvailable" || /already available in jellyfin/i.test(message);
 }
 
-function markRequestButtonRequested(button, title = L("serrStatusRequested", "İstendi")) {
+function markRequestButtonRequested(button, title = L("serrStatusRequested", "Requested")) {
   if (!button) return;
   button.disabled = true;
   button.classList.add("monwui-serr-requested");
@@ -371,17 +371,17 @@ function shouldConfirmRequests(access = null) {
 
 function requestConfirmTitle(payload = {}) {
   const mediaType = text(payload?.mediaType).toLowerCase();
-  if (mediaType === "movie") return L("serrNativeMovieModalTitle", "Seerr Film İsteği");
-  if (mediaType === "tv") return L("serrNativeSeasonModalTitle", "Seerr Sezon İsteği");
-  return L("serrRequestConfirmHint", "İstek onayı");
+  if (mediaType === "movie") return L("serrNativeMovieModalTitle", "Movie Request");
+  if (mediaType === "tv") return L("serrNativeSeasonModalTitle", "Season Request");
+  return L("serrRequestConfirmHint", "Request confirmation");
 }
 
 function requestConfirmHint(payload = {}) {
   const mediaType = text(payload?.mediaType).toLowerCase();
   if (mediaType === "movie") {
-    return L("serrMovieConfirmHint", "Film isteği gönderilmeden önce içeriği kontrol edin.");
+    return L("serrMovieConfirmHint", "Review the movie before sending the request.");
   }
-  return L("serrSeasonConfirmHint", "Sezon isteği gönderilmeden önce kapsamı kontrol edin.");
+  return L("serrSeasonConfirmHint", "Review the season scope before sending the request.");
 }
 
 function requestConfirmMeta(payload = {}) {
@@ -389,11 +389,11 @@ function requestConfirmMeta(payload = {}) {
   const seasons = Array.isArray(payload?.seasons) ? payload.seasons : [];
   const parts = [
     payload?.is4K === true ? L("serrRequest4KBadge", "4K") : "",
-    mediaType === "tv" ? L("serrTv", "Dizi") : L("serrMovie", "Film"),
+    mediaType === "tv" ? L("serrTv", "Series") : L("serrMovie", "Movie"),
     payload?.requestAllSeasons === true
-      ? L("serrAllSeasons", "Tüm sezonlar")
+      ? L("serrAllSeasons", "All seasons")
       : (mediaType === "tv" && seasons.length
-        ? `${seasons.length} ${L("season", "Sezon")}`
+        ? `${seasons.length} ${L("season", "Season")}`
         : ""),
     Number(payload?.mediaId) > 0 ? `TMDb ${Number(payload.mediaId)}` : ""
   ].filter(Boolean);
@@ -402,8 +402,8 @@ function requestConfirmMeta(payload = {}) {
 
 function requestConfirmInfo(access = null) {
   return access?.isAdmin === true
-    ? L("serrConfirmDirectInfo", "Onayladığınızda istek gönderilecek.")
-    : L("serrConfirmPendingInfo", "Onayladığınızda istek yönetici onayına gönderilecek.");
+    ? L("serrConfirmDirectInfo", "After confirmation, the request will be sent.")
+    : L("serrConfirmPendingInfo", "After confirmation, the request will be sent for admin approval.");
 }
 
 function closeRequestConfirmModal(value = false) {
@@ -425,10 +425,10 @@ function ensureRequestConfirmModal() {
   modal.id = "monwuiSerrConfirmModal";
   modal.setAttribute("hidden", "hidden");
   modal.innerHTML = `
-    <div class="monwui-serr-card monwui-serr-confirm-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("serrRequestConfirmHint", "İstek onayı"))}">
+    <div class="monwui-serr-card monwui-serr-confirm-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("serrRequestConfirmHint", "Request confirmation"))}">
       <div class="monwui-serr-head">
-        <h2 class="monwui-serr-title" data-serr-confirm-title>${escapeHtml(L("serrRequestConfirmHint", "İstek onayı"))}</h2>
-        <button type="button" class="monwui-serr-close" data-serr-confirm-cancel aria-label="${escapeHtml(L("close", "Kapat"))}">
+        <h2 class="monwui-serr-title" data-serr-confirm-title>${escapeHtml(L("serrRequestConfirmHint", "Request confirmation"))}</h2>
+        <button type="button" class="monwui-serr-close" data-serr-confirm-cancel aria-label="${escapeHtml(L("close", "Close"))}">
           <i class="fas fa-times" aria-hidden="true"></i>
         </button>
       </div>
@@ -439,7 +439,7 @@ function ensureRequestConfirmModal() {
             <i class="fas fa-clapperboard" aria-hidden="true"></i>
           </div>
           <div class="monwui-serr-confirm-summary">
-            <div class="monwui-serr-confirm-eyebrow">${escapeHtml(L("serrRequestConfirmHint", "İstek onayı"))}</div>
+            <div class="monwui-serr-confirm-eyebrow">${escapeHtml(L("serrRequestConfirmHint", "Request confirmation"))}</div>
             <div class="monwui-serr-confirm-name" data-serr-confirm-name></div>
             <div class="monwui-serr-confirm-meta" data-serr-confirm-meta></div>
             <div class="monwui-serr-confirm-hint" data-serr-confirm-hint></div>
@@ -448,12 +448,12 @@ function ensureRequestConfirmModal() {
         </div>
       </div>
       <div class="monwui-serr-footer">
-        <button type="button" class="monwui-serr-mini-btn" data-serr-confirm-cancel>${escapeHtml(L("cancel", "İptal"))}</button>
+        <button type="button" class="monwui-serr-mini-btn" data-serr-confirm-cancel>${escapeHtml(L("cancel", "Cancel"))}</button>
         <button type="button" class="monwui-serr-btn" data-serr-confirm-submit>
-          <i class="fas fa-paper-plane" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestButton", "İste"))}</span>
+          <i class="fas fa-paper-plane" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestButton", "Request"))}</span>
         </button>
         <button type="button" class="monwui-serr-btn monwui-serr-4k-btn" data-serr-confirm-submit-4k hidden>
-          <i class="fas fa-film" aria-hidden="true"></i><span>${escapeHtml(L("serrRequest4KButton", "4K İste"))}</span>
+          <i class="fas fa-film" aria-hidden="true"></i><span>${escapeHtml(L("serrRequest4KButton", "Request 4K"))}</span>
         </button>
       </div>
     </div>
@@ -484,7 +484,7 @@ async function confirmRequestBeforeSend(payload = {}, access = null) {
   if (!shouldConfirmRequests(access)) return true;
   const modal = ensureRequestConfirmModal();
   const title = requestConfirmTitle(payload);
-  const name = text(payload?.title, L("serrUntitled", "İçerik"));
+  const name = text(payload?.title, L("serrUntitled", "Content"));
   const meta = requestConfirmMeta(payload);
 
   const titleNode = modal.querySelector("[data-serr-confirm-title]");
@@ -523,8 +523,8 @@ async function confirmRequestBeforeSend(payload = {}, access = null) {
     }
   }
   if (submitNode) submitNode.textContent = payload?.is4K === true
-    ? L("serrRequest4KButton", "4K İste")
-    : L("serrRequestButton", "İste");
+    ? L("serrRequest4KButton", "Request 4K")
+    : L("serrRequestButton", "Request");
   if (submit4KNode) {
     const allow4KChoice = payload?.is4K !== true && accessCanRequestMedia(access, payload?.mediaType, true);
     if (allow4KChoice) submit4KNode.removeAttribute("hidden");
@@ -547,11 +547,11 @@ export async function requestSerrFromItem(item, options = {}) {
   const access = await getSerrAccess().catch(() => null);
   const requestedMediaType = options.mediaType || normalizeItemType(item);
   if (!access?.enabled || !accessCanRequestMedia(access, requestedMediaType, options.is4K === true)) {
-    throw new Error(L("serrDisabled", "Seerr entegrasyonu etkin değil."));
+    throw new Error(L("serrDisabled", "Seerr integration is disabled."));
   }
 
   if (options.allowAvailable !== true && isAvailableJellyfinItem(item)) {
-    throw new Error(L("serrAlreadyAvailable", "Bu içerik Jellyfin'de zaten mevcut."));
+    throw new Error(L("serrAlreadyAvailable", "This item is already available in Jellyfin."));
   }
 
   const payload = buildPayloadFromItem(item, options);
@@ -561,7 +561,7 @@ export async function requestSerrFromItem(item, options = {}) {
       openSerrSearchModal(query, { source: options.source || "jellyfin" });
       return { openedSearch: true };
     }
-    throw new Error(L("serrTmdbMissing", "TMDb ID bulunamadı. Seerr araması ile devam edin."));
+    throw new Error(L("serrTmdbMissing", "TMDb ID not found. Continue with Seerr & Arr search."));
   }
 
   const confirmed = await confirmRequestBeforeSend(payload, access);
@@ -597,7 +597,7 @@ export async function requestSerrFromItem(item, options = {}) {
   }
 
   if (result?.ok === false) {
-    const err = new Error(result?.error || L("serrRequestFailed", "İstek oluşturulamadı."));
+    const err = new Error(result?.error || L("serrRequestFailed", "Unable to create the request."));
     err.payload = result;
     throw err;
   }
@@ -614,9 +614,9 @@ export function createSerrRequestButton(item, options = {}) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = options.className || "monwui-serr-btn";
-  const defaultLabel = options.is4K === true ? L("serrRequest4KButton", "4K İste") : L("serrRequestButton", "İste");
+  const defaultLabel = options.is4K === true ? L("serrRequest4KButton", "Request 4K") : L("serrRequestButton", "Request");
   button.innerHTML = `<i class="fas fa-clapperboard" aria-hidden="true"></i><span>${escapeHtml(options.label || defaultLabel)}</span>`;
-  button.title = options.title || (options.is4K === true ? L("serrRequest4KButtonTitle", "Bu içeriği 4K iste") : L("serrRequestButtonTitle", "Bu içeriği iste"));
+  button.title = options.title || (options.is4K === true ? L("serrRequest4KButtonTitle", "Request this title in 4K") : L("serrRequestButtonTitle", "Request this title"));
 
   button.addEventListener("click", async (event) => {
     event.preventDefault();
@@ -629,7 +629,7 @@ export function createSerrRequestButton(item, options = {}) {
       const result = await requestSerrFromItem(item, {
         ...options,
         onBeforeSubmit: () => {
-          button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestSending", "Gönderiliyor..."))}</span>`;
+          button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("serrRequestSending", "Sending..."))}</span>`;
         }
       });
       if (shouldMarkRequestButtonRequested(result)) {
@@ -657,11 +657,11 @@ export async function appendSerrRequestButton(host, item, options = {}) {
   const requestedMediaType = options.mediaType || normalizeItemType(item);
   if (!access?.enabled || !accessCanRequestMedia(access, requestedMediaType, options.is4K === true)) return null;
   const label = accessHasSerr(access)
-    ? (options.label || (options.is4K === true ? L("serrRequest4KButton", "4K İste") : L("serrRequestButton", "İste")))
-    : L("arrRequestButton", "İste");
+    ? (options.label || (options.is4K === true ? L("serrRequest4KButton", "Request 4K") : L("serrRequestButton", "Request")))
+    : L("arrRequestButton", "Request");
   const title = accessHasSerr(access)
-    ? (options.title || (options.is4K === true ? L("serrRequest4KButtonTitle", "Bu içeriği 4K iste") : L("serrRequestButtonTitle", "Bu içeriği iste")))
-    : L("arrRequestButtonTitle", "Bu içeriği iste");
+    ? (options.title || (options.is4K === true ? L("serrRequest4KButtonTitle", "Request this title in 4K") : L("serrRequestButtonTitle", "Request this title")))
+    : L("arrRequestButtonTitle", "Request this title");
   const button = createSerrRequestButton(item, { ...options, label, title });
   host.appendChild(button);
   markButtonIfAlreadyRequested(button, item, options).catch(() => {});
@@ -676,7 +676,7 @@ function posterUrl(result) {
 }
 
 function resultTitle(result) {
-  return text(result?.title || result?.name || result?.originalTitle || result?.originalName, L("serrUntitled", "İçerik"));
+  return text(result?.title || result?.name || result?.originalTitle || result?.originalName, L("serrUntitled", "Content"));
 }
 
 function resultMediaType(result) {
@@ -694,8 +694,8 @@ function resultYear(result) {
 function resultMeta(result) {
   const mediaType = resultMediaType(result);
   const type = mediaType === "tv"
-    ? L("serrTv", "Dizi")
-    : (mediaType === "collection" ? L("boxset", "Koleksiyon") : L("serrMovie", "Film"));
+    ? L("serrTv", "Series")
+    : (mediaType === "collection" ? L("boxset", "Collection") : L("serrMovie", "Movie"));
   const tmdbId = Number(result?.id);
   return [type, resultYear(result), Number.isFinite(tmdbId) && tmdbId > 0 ? `TMDb ${tmdbId}` : ""].filter(Boolean).join(" • ");
 }
@@ -804,14 +804,14 @@ function ensureModal() {
     <div class="monwui-serr-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("serrSearchTitle", "Seerr'de Ara"))}">
       <div class="monwui-serr-head">
         <h2 class="monwui-serr-title">${escapeHtml(L("serrSearchTitle", "Seerr'de Ara"))}</h2>
-        <button type="button" class="monwui-serr-close" data-serr-close aria-label="${escapeHtml(L("close", "Kapat"))}">
+        <button type="button" class="monwui-serr-close" data-serr-close aria-label="${escapeHtml(L("close", "Close"))}">
           <i class="fas fa-times" aria-hidden="true"></i>
         </button>
       </div>
       <div class="monwui-serr-searchbar">
         <input class="monwui-serr-input" type="search" autocomplete="off" spellcheck="false">
         <button type="button" class="monwui-serr-btn" data-serr-run>
-          <i class="fas fa-search" aria-hidden="true"></i><span>${escapeHtml(L("search", "Ara"))}</span>
+          <i class="fas fa-search" aria-hidden="true"></i><span>${escapeHtml(L("search", "Search"))}</span>
         </button>
       </div>
       <div class="monwui-serr-results"></div>
@@ -867,7 +867,7 @@ async function runModalSearch(modal) {
   const host = modal.querySelector(".monwui-serr-results");
   const query = text(input?.value);
   if (!host || query.length < 2) {
-    if (host) host.innerHTML = `<div class="monwui-serr-empty">${escapeHtml(L("serrSearchHint", "Aramak için en az 2 karakter yazın."))}</div>`;
+    if (host) host.innerHTML = `<div class="monwui-serr-empty">${escapeHtml(L("serrSearchHint", "Type at least 2 characters to search."))}</div>`;
     return;
   }
 
@@ -875,12 +875,12 @@ async function runModalSearch(modal) {
     try { modalSearchAbort.abort(); } catch {}
   }
   modalSearchAbort = new AbortController();
-  host.innerHTML = `<div class="monwui-serr-loading">${escapeHtml(L("loadingText", "Yükleniyor..."))}</div>`;
+  host.innerHTML = `<div class="monwui-serr-loading">${escapeHtml(L("loadingText", "Loading…"))}</div>`;
 
   try {
     const access = await getSerrAccess();
     if (!access?.enabled) {
-      host.innerHTML = `<div class="monwui-serr-error">${escapeHtml(L("serrDisabled", "Seerr entegrasyonu etkin değil."))}</div>`;
+      host.innerHTML = `<div class="monwui-serr-error">${escapeHtml(L("serrDisabled", "Seerr integration is disabled."))}</div>`;
       return;
     }
     const language = access?.settings?.defaultLanguage || cfg()?.defaultLanguage || "";
@@ -912,14 +912,14 @@ async function runModalSearch(modal) {
 
     renderSearchResults(host, results, { ...(modal.__serrOptions || {}), access });
   } catch (error) {
-    host.innerHTML = `<div class="monwui-serr-error">${escapeHtml(error?.message || L("serrSearchFailed", "Seerr araması başarısız."))}</div>`;
+    host.innerHTML = `<div class="monwui-serr-error">${escapeHtml(error?.message || L("serrSearchFailed", "Seerr & Arr search failed."))}</div>`;
   }
 }
 
 function renderSearchResults(host, results, options = {}) {
   const media = balancedSearchResults(results.filter((result) => resultMediaType(result)));
   if (!media.length) {
-    host.innerHTML = `<div class="monwui-serr-empty">${escapeHtml(L("serrNoResults", "Seerr'de sonuç bulunamadı."))}</div>`;
+    host.innerHTML = `<div class="monwui-serr-empty">${escapeHtml(L("serrNoResults", "No results found in Seerr & Arr."))}</div>`;
     return;
   }
 
@@ -941,7 +941,7 @@ function renderSearchResults(host, results, options = {}) {
       </div>
       <div class="monwui-serr-result-actions">
         <button type="button" class="monwui-serr-btn" data-serr-result-request>
-          <i class="fas fa-paper-plane" aria-hidden="true"></i><span>${escapeHtml(accessHasSerr(options.access) ? L("serrRequestButton", "İste") : L("arrRequestButton", "İste"))}</span>
+          <i class="fas fa-paper-plane" aria-hidden="true"></i><span>${escapeHtml(accessHasSerr(options.access) ? L("serrRequestButton", "Request") : L("arrRequestButton", "Request"))}</span>
         </button>
       </div>
     `;
@@ -952,7 +952,7 @@ function renderSearchResults(host, results, options = {}) {
       try {
         btn.disabled = true;
         if (mediaType === "collection") {
-          btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${escapeHtml(L("loadingText", "Yükleniyor..."))}</span>`;
+          btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${escapeHtml(L("loadingText", "Loading…"))}</span>`;
           await openSerrCollectionRequestModal(result, { source: text(options.source, "search") });
           return;
         }
@@ -974,10 +974,10 @@ function renderSearchResults(host, results, options = {}) {
           effectiveIs4K = true;
         }
 
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${escapeHtml(L("serrRequestSending", "Gönderiliyor..."))}</span>`;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${escapeHtml(L("serrRequestSending", "Sending..."))}</span>`;
         const response = await createSerrRequest(payload);
         if (response?.ok === false) {
-          const err = new Error(response?.error || L("serrRequestFailed", "İstek oluşturulamadı."));
+          const err = new Error(response?.error || L("serrRequestFailed", "Unable to create the request."));
           err.payload = response;
           throw err;
         }

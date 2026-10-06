@@ -453,7 +453,7 @@ async function fetchAndCacheQualitySingle(itemId, ctrl = new AbortController()) 
       return quality;
     } catch (error) {
       if (error?.name !== 'QuotaExceededError' && error?.name !== 'AbortError') {
-        console.error('Kalite bilgisi alınırken hata oluştu:', error);
+        console.error('Error fetching quality information:', error);
       }
       return null;
     }

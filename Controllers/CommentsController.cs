@@ -32,13 +32,13 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanItemId = Clean(itemId);
             if (string.IsNullOrWhiteSpace(cleanItemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             lock (SyncRoot)
@@ -76,19 +76,19 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanItemId = Clean(itemId);
             if (string.IsNullOrWhiteSpace(cleanItemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             var content = NormalizeContent(req?.Content);
             if (string.IsNullOrWhiteSpace(content))
             {
-                return BadRequest(new { ok = false, error = "content gerekli" });
+                return BadRequest(new { ok = false, error = "Content is required" });
             }
 
             lock (SyncRoot)
@@ -170,13 +170,13 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanCommentId = Clean(commentId);
             if (string.IsNullOrWhiteSpace(cleanCommentId))
             {
-                return BadRequest(new { ok = false, error = "commentId gerekli" });
+                return BadRequest(new { ok = false, error = "commentId is required" });
             }
 
             lock (SyncRoot)
@@ -188,7 +188,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 var comment = cfg.ItemComments.FirstOrDefault(entry => Same(entry.Id, cleanCommentId));
                 if (comment is null)
                 {
-                    return NotFound(new { ok = false, error = "yorum bulunamadı" });
+                    return NotFound(new { ok = false, error = "Comment not found" });
                 }
 
                 if (!Same(comment.OwnerUserId, user.UserId))

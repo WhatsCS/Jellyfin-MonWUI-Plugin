@@ -135,9 +135,9 @@ function detailsHref(item) {
 
 function localItemTypeLabel(item) {
   const type = text(item?.Type || item?.type).toLowerCase();
-  if (type.includes("series")) return L("serrTv", "Dizi");
-  if (type.includes("movie")) return L("serrMovie", "Film");
-  return text(item?.Type || item?.type, L("content", "İçerik"));
+  if (type.includes("series")) return L("serrTv", "Series");
+  if (type.includes("movie")) return L("serrMovie", "Movie");
+  return text(item?.Type || item?.type, L("content", "Content"));
 }
 
 function renderLocalMatches(bridge, items, tmdbId) {
@@ -152,10 +152,10 @@ function renderLocalMatches(bridge, items, tmdbId) {
 
   host.hidden = false;
   host.innerHTML = `
-    <div class="monwui-serr-local-title">${L("serrTmdbLocalMatches", "TMDb ID ile Jellyfin eşleşmeleri")}</div>
+    <div class="monwui-serr-local-title">${L("serrTmdbLocalMatches", "Jellyfin matches by TMDb ID")}</div>
     <div class="monwui-serr-local-list">
       ${list.slice(0, 8).map((item) => {
-        const title = text(item?.Name || item?.name, L("serrUntitled", "İçerik"));
+        const title = text(item?.Name || item?.name, L("serrUntitled", "Content"));
         const year = text(item?.ProductionYear || item?.productionYear);
         const meta = [localItemTypeLabel(item), year, `TMDb ${tmdbId}`].filter(Boolean).join(" • ");
         return `
@@ -258,8 +258,8 @@ function mountBridge(host, query, localItems = [], tmdbId = null) {
   if (span) {
     const arrOnly = lastAccess?.serrEnabled === false && lastAccess?.arrEnabled === true;
     span.textContent = tmdbId
-      ? (arrOnly ? L("arrSearchTmdbInArr", "Arr'da TMDb ID ile ara") : L("serrSearchTmdbInSeerr", "Seerr'de TMDb ID ile ara"))
-      : (arrOnly ? L("arrSearchInArr", "Arr'da ara") : L("serrSearchInSeerr", "Seerr'de ara"));
+      ? (arrOnly ? L("arrSearchTmdbInArr", "Search Arr by TMDb ID") : L("serrSearchTmdbInSeerr", "Search by TMDb ID in Seerr & Arr"))
+      : (arrOnly ? L("arrSearchInArr", "Search in Arr") : L("serrSearchInSeerr", "Search in Seerr & Arr"));
   }
   renderLocalMatches(bridge, localItems, tmdbId);
 

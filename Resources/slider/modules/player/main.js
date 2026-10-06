@@ -487,7 +487,7 @@ async function setGmmpPaused(paused) {
   await ensureGmmpInit({ show: false });
   const audio = musicPlayerState?.audio;
   if (!audio) {
-    throw new Error("GMMP audio bulunamadi");
+    throw new Error("GMMP audio not found");
   }
 
   if (!!audio.paused !== !!paused) {
@@ -519,7 +519,7 @@ async function setGmmpMuted(muted) {
   await ensureGmmpInit({ show: false });
   const audio = musicPlayerState?.audio;
   if (!audio) {
-    throw new Error("GMMP audio bulunamadi");
+    throw new Error("GMMP audio not found");
   }
 
   const nextMuted = !!muted;
@@ -564,7 +564,7 @@ async function setGmmpVolume(volumeLevel) {
   await ensureGmmpInit({ show: false });
   const audio = musicPlayerState?.audio;
   if (!audio) {
-    throw new Error("GMMP audio bulunamadi");
+    throw new Error("GMMP audio not found");
   }
 
   const normalized = clamp(volumeLevel, 0, 100) / 100;
@@ -1289,7 +1289,7 @@ function waitForElement(selector, timeout = 5000) {
 
     const to = setTimeout(() => {
       observer.disconnect();
-      reject(new Error(`Zaman aşımı bekleniyor ${selector}`));
+      reject(new Error(`Timed out waiting for ${selector}`));
     }, timeout);
     const cleanupResolve = (el) => {
       clearTimeout(to);
@@ -1305,7 +1305,7 @@ function createPlayerButton() {
     const btn = document.createElement("button");
     btn.id = "jellyfinPlayerToggle";
     btn.type = "button";
-    btn.setAttribute("aria-label", "GMMP Aç/Kapa");
+    btn.setAttribute("aria-label", "Toggle GMMP");
     btn.title = "GMMP";
     btn.innerHTML = faIconHtml("play", "gmmp");
     return btn;
@@ -1425,7 +1425,7 @@ async function onToggleClick() {
       togglePlayerVisibility();
     }
   } catch (err) {
-    console.error("GMMP geçiş hatası:", err);
+    console.error("GMMP toggle error:", err);
   } finally {
     initInProgress = false;
   }

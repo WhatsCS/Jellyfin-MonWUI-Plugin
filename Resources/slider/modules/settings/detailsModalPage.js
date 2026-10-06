@@ -25,7 +25,7 @@ export function createDetailsModalPanel(config, labels) {
 
   fieldsWrap.appendChild(createCheckbox(
     "detailsModalLocalCommentsEnabled",
-    labels.detailsModalLocalCommentsEnabled || "Community Comments alanını göster",
+    labels.detailsModalLocalCommentsEnabled || "Show Community Comments section",
     config.detailsModalLocalCommentsEnabled === true
   ));
 
@@ -35,7 +35,7 @@ export function createDetailsModalPanel(config, labels) {
   localCommentsHint.className = "description-text";
   localCommentsHint.textContent =
     labels.detailsModalLocalCommentsHint ||
-    "Community Comments alanı varsayılan olarak kapalı gelir.";
+    "Community Comments is disabled by default.";
   section.appendChild(localCommentsHint);
 
   panel.appendChild(section);

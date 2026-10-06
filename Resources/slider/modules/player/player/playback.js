@@ -54,14 +54,14 @@ const updatePlaybackUI = (isPlaying) => {
 };
 
 const handlePlaybackError = (error, action = 'play') => {
-  console.error(`Oynatma sırasında hata oluştu ${action}:`, error);
+  console.error(`Playback error during ${action}:`, error);
   const t = musicPlayerState.playlist[musicPlayerState.currentIndex];
   if (t && musicPlayerState.isPlayingReported) {
     reportPlaybackStopped(t, convertSecondsToTicks(musicPlayerState.audio?.currentTime || 0));
     musicPlayerState.isPlayingReported = false;
   }
   showNotification(
-  `<i class="fas fa-exclamation-circle"></i> ${config.languageLabels.playbackError || "Oynatma Hatası"}`,
+  `<i class="fas fa-exclamation-circle"></i> ${config.languageLabels.playbackError || "An error occurred during playback"}`,
   3000,
   'error'
 );
@@ -184,7 +184,7 @@ function refreshLiveRadioTrackInfo(track) {
 
 
 function handlePlayError() {
-  console.error("Şarkı yükleme hatası:", musicPlayerState.audio.src);
+  console.error("Track loading error:", musicPlayerState.audio.src);
   const t = musicPlayerState.playlist[musicPlayerState.currentIndex];
   if (t && musicPlayerState.isPlayingReported) {
     reportPlaybackStopped(t, convertSecondsToTicks(musicPlayerState.audio?.currentTime || 0));
@@ -261,7 +261,7 @@ export function handleSongEnd() {
     updatePlaybackUI(false);
     if (musicPlayerState.playlistSource === "radio") {
       showNotification(
-        config.languageLabels.radioPlaybackStopped || "Radyo yayini sonlandi",
+        config.languageLabels.radioPlaybackStopped || "Radio playback ended",
         2000,
         'info'
       );
@@ -301,7 +301,7 @@ export function togglePlayPause() {
   const { audio } = musicPlayerState;
 
   if (!audio) {
-    console.warn('Ses okunamadı');
+    console.warn('Could not read volume');
     return;
   }
 
@@ -557,7 +557,7 @@ async function updateTrackMeta(track) {
   if (isRadioTrack(track)) {
     const radioMeta = [
       { key: 'radioLiveLabel', label: config.languageLabels.radioLiveLabel || "LIVE", icon: 'fas fa-broadcast-tower', text: config.languageLabels.radioLiveLabel || "LIVE", compact: true },
-      { key: 'country', label: config.languageLabels.country || "Ülke", icon: 'fas fa-globe', text: track.Country || track.Language },
+      { key: 'country', label: config.languageLabels.country || "Country", icon: 'fas fa-globe', text: track.Country || track.Language },
       { key: 'codec', label: config.languageLabels.codec || "Codec", icon: 'fas fa-wave-square', text: track.Codec || "" },
       { key: 'bitrate', label: config.languageLabels.bitrate || "Bitrate", icon: 'fas fa-tachometer-alt', text: track.Bitrate > 0 ? `${track.Bitrate} kbps` : "", compact: true },
       { key: 'tag', label: config.languageLabels.tags || "Etiket", icon: 'fas fa-tags', text: track.TagsText || "" }
@@ -654,7 +654,7 @@ async function loadAlbumArt(track) {
       cacheForOffline(track.Id, 'artwork', artwork);
     }
   } catch (err) {
-    console.error("Albüm kapağı yükleme hatası:", err);
+    console.error("Album cover loading error:", err);
     if (artReqId !== _artReqId) return;
     setAlbumArt(DEFAULT_ARTWORK);
   }
@@ -682,7 +682,7 @@ async function getArtworkFromSources(track) {
 
     return DEFAULT_ARTWORK;
   } catch (error) {
-    console.error("Artwork alınırken hata:", error);
+    console.error("Error fetching artwork:", error);
     return DEFAULT_ARTWORK;
   }
 }
@@ -757,14 +757,14 @@ function syncResolvedTrackSource(trackId, url) {
 function buildDirectAudioUrl(track) {
   const trackId = getTrackId(track);
   if (!trackId) {
-    console.error("Parça Id Bulunamadı:", track);
+    console.error("Track ID not found:", track);
     return null;
   }
 
   const authToken = getAuthToken();
   if (!authToken) {
     showNotification(
-    `<i class="fas fa-exclamation-circle"></i> ${config.languageLabels.authRequired || "Kimlik doğrulama hatası"}`,
+    `<i class="fas fa-exclamation-circle"></i> ${config.languageLabels.authRequired || "Authentication required"}`,
     3000,
     'error'
   );
@@ -1000,10 +1000,10 @@ async function reportPlaybackStart(track) {
     });
 
     if (!response.ok) {
-      console.error("Oynatma başlatma raporu gönderilemedi:", response.status);
+      console.error("Could not send playback start report:", response.status);
     }
   } catch (error) {
-    console.error("Oynatma raporlama hatası:", error);
+    console.error("Playback reporting error:", error);
   }
 }
 
@@ -1038,10 +1038,10 @@ async function reportPlaybackStopped(track, positionTicks) {
     });
 
     if (!response.ok) {
-      console.error("Oynatma durdurma raporu gönderilemedi:", response.status);
+      console.error("Could not send playback stop report:", response.status);
     }
   } catch (error) {
-    console.error("Oynatma durdurma raporlama hatası:", error);
+    console.error("Playback stop reporting error:", error);
   }
 }
 
