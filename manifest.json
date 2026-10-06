@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/WhatsCS/Jellyfin-MonWUI-Plugin/main/img/icon.png",
     "versions": [
       {
+        "version": "4.0.0.0",
+        "changelog": "# JMSFusionV2 4.0\n\nMajor release of the independent WhatsCS fork of MonWUI / JMSFusion, originally developed by G-grbz and upstream contributors. Licensed under GPLv3.\n\n## Changes\n\n- Bundle browser entry points with esbuild, shared chunks, and minified assets.\n- Preserve embedded modules required by dynamic settings and language imports.\n- Defer slider refresh while the page is scrolled.\n- Include backend/frontend cleanup, translation updates, and technical documentation.\n- Maintain manifest version history and calculate checksums from release archives.\n\n## Upgrade\n\nThis fork uses the JMSFusionV2 assembly, routes, and configuration identity. Upgrades from the original JMSFusion plugin may require reinstalling and reconfiguring the fork; do not assume automatic migration. Back up settings before upgrading.\n\nTargets Jellyfin 10.11.0 and .NET 9. Restart Jellyfin and hard refresh Jellyfin Web after installation. Native Android TV clients are not supported.\n\n## Validation\n\nRelease build passed. Assembly version 4.0.0.0, embedded browser bundles, dynamic settings/language modules, and ZIP contents were verified. Existing duplicate-key warnings were emitted by the asset bundler. Runtime validation in Jellyfin Web was unavailable; no performance benchmark or compatibility with newer Jellyfin versions is claimed.\n",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin/releases/download/v4.0.0.0/JMSFusionV2-4.0.0.0-server.zip",
+        "checksum": "a7d19e4012f58d4cf1ad6e407fb48328",
+        "timestamp": "2026-10-06T05:36:49.9436461Z"
+      },
+      {
         "version": "3.7.0.3",
         "changelog": "",
         "targetAbi": "10.11.0.0",
