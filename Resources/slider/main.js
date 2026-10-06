@@ -3323,8 +3323,28 @@ function isPlannedLastIndex(idx) {
   return Number.isFinite(idx) && idx === getPlannedLastIndex();
 }
 
+function canRebuildSliderCycle() {
+  if (document.hidden || !isHomeVisible()) return false;
+
+  // Jellyfin can scroll the document, the page, or a nested home container.
+  // Replacing the slider while browsing rows changes layout and scroll position.
+  const page = getVisibleHomePageEl();
+  const scrollTops = [
+    window.scrollY,
+    document.scrollingElement?.scrollTop,
+    document.documentElement?.scrollTop,
+    document.body?.scrollTop,
+  ];
+  let node = page?.querySelector(".homeSectionsContainer") || page;
+  while (node) {
+    scrollTops.push(node.scrollTop);
+    node = node.parentElement;
+  }
+  return scrollTops.every((top) => !(Number(top) > 24));
+}
+
 async function scheduleSliderRebuild(reason = "cycle-complete") {
-  if (!isSliderEnabled()) return;
+  if (!isSliderEnabled() || !canRebuildSliderCycle()) return;
   if (window.__rebuildingSlider) return;
   window.__rebuildingSlider = true;
   try {
@@ -5676,9 +5696,8 @@ if (window.__totalSlidesPlanned > 0 && window.__slidesCreated >= window.__totalS
         const active = document.querySelector("#indexPage:not(.hide) .monwui-slide.active, #homePage:not(.hide) .monwui-slide.active");
         const idx = getSlideIndex(active);
 
-        if (window.__cycleExpired && isPlannedLastIndex(idx)) {
+        if (window.__cycleExpired && isPlannedLastIndex(idx) && canRebuildSliderCycle()) {
           ev.preventDefault();
-          window.__cycleExpired = false;
           scheduleSliderRebuild("cycle-expired-and-last-finished");
         }
       } catch (e) {
