@@ -3,13 +3,13 @@
   "description": "JMSFusionV2 is an independent WhatsCS fork of MonWUI / JMSFusion, originally developed by G-grbz and upstream contributors. It injects custom JS modules into Jellyfin Web and serves external or embedded assets.",
   "name": "JMSFusionV2",
   "owner": "WhatsCS",
-  "version": "3.7.0.2",
+  "version": "3.7.0.3",
   "status": "Active",
   "autoUpdate": true,
   "targetAbi": "10.11.0.0",
   "sourceUrl": "https://github.com/WhatsCS/Jellyfin-Media-Slider",
-  "imagePathLinux": "/var/lib/jellyfin/plugins/JMSFusionV2_3.7.0.2/icon.png",
-  "imagePathWindows": "%ProgramData%/Jellyfin/Server/plugins/JMSFusionV2_3.7.0.2/icon.png",
-  "timestamp": "2026-10-05T22:15:32.9765693Z",
+  "imagePathLinux": "/var/lib/jellyfin/plugins/JMSFusionV2_3.7.0.3/icon.png",
+  "imagePathWindows": "%ProgramData%/Jellyfin/Server/plugins/JMSFusionV2_3.7.0.3/icon.png",
+  "timestamp": "2026-10-06T05:17:42.6916912Z",
   "guid": "c0b4a5e0-2f6a-4e70-9c5f-1e7c2d0b7f12"
 }
