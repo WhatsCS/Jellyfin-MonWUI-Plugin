@@ -21,10 +21,34 @@ Run commands from the repository root:
 - Prerequisites: a .NET SDK supporting `net9.0`, Node.js/npm, Bash, and Unix utilities. The metadata script uses GNU-style `date`/`sed`; `jq` is preferred but has a `sed` fallback.
 - The .NET build installs npm dependencies if esbuild or Terser is missing, then runs the asset pipeline automatically. A separate `npm run minify:assets` is useful for frontend validation, not a prerequisite to every .NET build.
 - The Release assembly is produced under `bin/Release/net9.0/` with the assembly name above.
-- **Build side effect:** [update_meta.sh](update_meta.sh) rewrites tracked [meta.json](meta.json), updating its timestamp and, when passed the project version, its version and platform icon paths. Inspect this diff after building; do not include incidental release changes or discard pre-existing edits.
+- **Build side effect:** [update_meta.sh](update_meta.sh) rewrites tracked [meta.json](meta.json), updating its timestamp and, when passed the project version, its version and platform icon paths. It also prepends that version to [manifest.json](manifest.json) without duplicates and calculates its MD5 checksum when the matching release ZIP exists. Inspect both diffs after building; do not include incidental release changes or discard pre-existing edits.
 - [package.json](package.json) defines only the asset-minification script. No automated test project or lint/test script was found. A successful build is not proof of runtime behavior.
 - For UI changes, validate in a Jellyfin Web instance when available: inspect console/network errors, verify the served bundle, navigate away and back, switch users, and test settings persistence. Report when runtime validation was unavailable.
 - For documentation-only changes, check links and diffs; a full build is unnecessary and dirties metadata.
+
+## Shipping a build with GitHub CLI
+
+- Create or publish a GitHub release only when the user requests it. A build or commit request alone does not authorize publishing. An explicit release request authorizes the release workflow; do not ask again unless a required choice is unresolved.
+- Use `gh auth status`, inspect `git status --short`, and check `gh release list --repo WhatsCS/Jellyfin-MonWUI-Plugin` before publishing. Network restrictions can make authentication appear invalid; retry with the required sandbox approval before concluding credentials are broken. Never print tokens.
+- Read the version from [JMSFusion.csproj](JMSFusion.csproj). Development releases currently use `v<version>-dev` tags and `--prerelease`; do not silently publish a development build as stable. The existing `v3.7.0.3-dev` release demonstrates this workflow.
+- Release archives live at `bin/Release/JMSFusionV2-<version>-server.zip`. Build first unless the user explicitly wants to ship an existing archive. Verify that the ZIP contains the intended assembly and `meta.json`, and that its assembly version and contents correspond to the intended source commit. A matching filename alone is insufficient; never imply an older archive contains newer changes.
+- After packaging the final ZIP, run `bash ./update_meta.sh "<version>"` again. The build invokes this script before a fresh archive may exist, so it may leave the checksum empty or hash an older ZIP. Compare the resulting manifest checksum with `md5sum bin/Release/JMSFusionV2-<version>-server.zip`. Do not modify the ZIP after hashing without recalculating the checksum.
+- The script inherits the prior download URL pattern, including `-dev`. Check that `manifest.json` points to the exact intended release tag and asset name. Use `MANIFEST_SOURCE_URL`, `MANIFEST_CHANGELOG`, and `MANIFEST_TARGET_ABI` for explicit release details; `MANIFEST_CHECKSUM` is a fallback only when no local ZIP exists. Preserve version history and author credits, and describe validation limits accurately.
+- Review and commit intended release metadata, then ensure the target commit is pushed before creating the release. Check for an existing tag/release; do not overwrite published assets or move tags without authorization. Write release notes to a temporary file and pass `--notes-file` to preserve formatting.
+
+Example development release command (replace every placeholder with verified values):
+
+```bash
+gh release create "v<version>-dev" \
+  "bin/Release/JMSFusionV2-<version>-server.zip" \
+  --repo WhatsCS/Jellyfin-MonWUI-Plugin \
+  --target "<pushed-commit-sha>" \
+  --title "<release-title>" \
+  --notes-file "<release-notes-file>" \
+  --prerelease
+```
+
+After creation, verify the release tag, target commit, asset name, and download URL using `gh release view`, and report the release link to the user.
 
 ## Architecture map
 
