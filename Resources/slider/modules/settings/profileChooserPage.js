@@ -5,13 +5,13 @@ export function createProfileChooserPanel(config, labels) {
   panel.id = "profile-chooser-panel";
   panel.className = "settings-panel";
 
-  const section = createSection(labels?.profileChooserHeader || "Kim İzliyor Ayarları");
+  const section = createSection(labels?.profileChooserHeader || "Who is Watching Settings");
   const enableRow = document.createElement("div");
   enableRow.className = "fsetting-item";
 
   const enableCb = createCheckbox(
     "enableProfileChooser",
-    labels?.enableProfileChooser || "Profil seçiciyi (Kim izliyor?) etkinleştir",
+    labels?.enableProfileChooser || "Enable profile chooser (Who is watching?)",
     config.enableProfileChooser
   );
 
@@ -25,7 +25,7 @@ export function createProfileChooserPanel(config, labels) {
 
   const autoCb = createCheckbox(
     "profileChooserAutoOpen",
-    labels?.profileChooserAutoOpen || "Sayfa açılınca otomatik göster",
+    labels?.profileChooserAutoOpen || "Show automatically when page opens",
     config.profileChooserAutoOpen
   );
 
@@ -39,7 +39,7 @@ export function createProfileChooserPanel(config, labels) {
 
   const autoRuleCb = createCheckbox(
     "profileChooserAutoOpenRequireQuickLogin",
-    labels?.profileChooserAutoOpenRequireQuickLogin || "En az 1 hızlı giriş varsa otomatik göster",
+    labels?.profileChooserAutoOpenRequireQuickLogin || "Auto-show if at least 1 quick login exists",
     config.profileChooserAutoOpenRequireQuickLogin
   );
 
@@ -51,7 +51,7 @@ export function createProfileChooserPanel(config, labels) {
 
   const rememberCb = createCheckbox(
     "profileChooserRememberTokens",
-    labels?.profileChooserRememberTokens || "Tokenları hatırla (Yerel depolama)",
+    labels?.profileChooserRememberTokens || "Remember tokens (local storage)",
     config.profileChooserRememberTokens
   );
 
@@ -62,7 +62,7 @@ export function createProfileChooserPanel(config, labels) {
 
   const privacyCb = createCheckbox(
     "profileChooserHideUsersFromRegularUsers",
-    labels?.profileChooserHideUsersFromRegularUsers || "Normal kullanıcılardan diğer profilleri gizle",
+    labels?.profileChooserHideUsersFromRegularUsers || "Hide other profiles from regular users",
     config.profileChooserHideUsersFromRegularUsers
   );
 
@@ -72,7 +72,7 @@ export function createProfileChooserPanel(config, labels) {
   desc.className = "description-text";
   desc.textContent =
     labels?.profileChooserDesc ||
-    "Bu ayar, Jellyfin arayüzünde Netflix benzeri kullanıcı seçme ekranını açar. Otomatik gösterim, hızlı giriş kuralı ve token hatırlama seçenekleri burada yönetilir.";
+    "This setting opens a Netflix-like user chooser in Jellyfin. Auto-show, quick-login rule, and token memory are managed here.";
 
   subWrap.append(autoRow, autoRuleWrap, rememberRow, privacyRow, desc);
 

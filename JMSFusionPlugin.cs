@@ -10,32 +10,33 @@ using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
-using Jellyfin.Plugin.JMSFusion.Core;
+using Jellyfin.Plugin.JMSFusionV2.Core;
 
-namespace Jellyfin.Plugin.JMSFusion
+namespace Jellyfin.Plugin.JMSFusionV2
 {
-    public class JMSFusionPlugin : BasePlugin<JMSFusionConfiguration>, IHasWebPages
+    public class JMSFusionV2Plugin : BasePlugin<JMSFusionV2Configuration>, IHasWebPages
     {
-        public override string Name => "JMSFusion";
+        public override string Name => "JMSFusionV2";
         public override Guid Id => Guid.Parse("c0b4a5e0-2f6a-4e70-9c5f-1e7c2d0b7f12");
         public override string Description => "Inject custom JS into Jellyfin UI via in-memory transformation, middleware fallback, or index.html patch.";
 
-        private readonly ILogger<JMSFusionPlugin> _logger;
+        private readonly ILogger<JMSFusionV2Plugin> _logger;
         private readonly IApplicationPaths _paths;
         private bool _lastPhysicalPatchFallbackEnabled;
-        public static JMSFusionPlugin Instance { get; private set; } = null!;
+        public static JMSFusionV2Plugin Instance { get; private set; } = null!;
 
-        public JMSFusionPlugin(IApplicationPaths paths, IXmlSerializer xmlSerializer, ILoggerFactory loggerFactory)
+        public JMSFusionV2Plugin(IApplicationPaths paths, IXmlSerializer xmlSerializer, ILoggerFactory loggerFactory)
             : base(paths, xmlSerializer)
         {
-            _logger = loggerFactory.CreateLogger<JMSFusionPlugin>();
+            _logger = loggerFactory.CreateLogger<JMSFusionV2Plugin>();
             _paths = paths;
             Instance = this;
             _lastPhysicalPatchFallbackEnabled = Configuration.EnablePhysicalIndexHtmlPatchFallback;
 
             ConfigurationChanged += (_, __) =>
             {
-                _logger.LogInformation("[JMSFusion] Configuration changed.");
+                _logger.LogInformation("[JMSFusionV2] Configuration changed.");
+                JMSStartupFilter.InvalidateIndexHtmlCache();
                 var fallbackEnabled = Configuration.EnablePhysicalIndexHtmlPatchFallback;
 
                 if (fallbackEnabled)
@@ -79,7 +80,7 @@ namespace Jellyfin.Plugin.JMSFusion
                             var html = req.Contents ?? string.Empty;
 
                             _logger.LogInformation(
-                                "[JMSFusion][DIAG] Transform hit for {Path} (len={Len})",
+                                "[JMSFusionV2][DIAG] Transform hit for {Path} (len={Len})",
                                 req.FilePath, html.Length
                             );
 
@@ -96,29 +97,29 @@ namespace Jellyfin.Plugin.JMSFusion
                             return html + "\n" + snippet + "\n";
                         });
 
-                    _logger.LogInformation("[JMSFusion] Registered in-memory transformation rule for .*index.html(+gz/br)");
+                    _logger.LogInformation("[JMSFusionV2] Registered in-memory transformation rule for .*index.html(+gz/br)");
                 }
                 else
                 {
-                    _logger.LogInformation("[JMSFusion] Transform engine disabled by configuration");
+                    _logger.LogInformation("[JMSFusionV2] Transform engine disabled by configuration");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "[JMSFusion] Failed to register in-memory transformation; middleware/patch fallback will be used.");
+                _logger.LogWarning(ex, "[JMSFusionV2] Failed to register in-memory transformation; middleware/patch fallback will be used.");
             }
         }
 
         public override void OnUninstalling()
         {
-            _logger.LogInformation("[JMSFusion] Plugin uninstall detected. Cleaning physical index.html patch if present.");
+            _logger.LogInformation("[JMSFusionV2] Plugin uninstall detected. Cleaning physical index.html patch if present.");
             TryUnpatchIndexHtml();
             base.OnUninstalling();
         }
 
         public override void UpdateConfiguration(BasePluginConfiguration configuration)
         {
-            if (configuration is JMSFusionConfiguration incoming &&
+            if (configuration is JMSFusionV2Configuration incoming &&
                 Configuration != null &&
                 !ReferenceEquals(incoming, Configuration))
             {
@@ -129,11 +130,11 @@ namespace Jellyfin.Plugin.JMSFusion
         }
 
         private static void PreserveExistingValuesForPartialUpdate(
-            JMSFusionConfiguration incoming,
-            JMSFusionConfiguration existing)
+            JMSFusionV2Configuration incoming,
+            JMSFusionV2Configuration existing)
         {
-            var defaults = new JMSFusionConfiguration();
-            var properties = typeof(JMSFusionConfiguration).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var defaults = new JMSFusionV2Configuration();
+            var properties = typeof(JMSFusionV2Configuration).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
             foreach (var property in properties)
             {
@@ -185,13 +186,13 @@ namespace Jellyfin.Plugin.JMSFusion
                     Directory.Exists(webPath) &&
                     File.Exists(Path.Combine(webPath, "index.html")))
                 {
-                    _logger.LogInformation("[JMSFusion] Using ApplicationPaths.WebPath as web root: {WebRoot}", webPath);
+                    _logger.LogInformation("[JMSFusionV2] Using ApplicationPaths.WebPath as web root: {WebRoot}", webPath);
                     return webPath;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "[JMSFusion] Failed probing ApplicationPaths.WebPath");
+                _logger.LogWarning(ex, "[JMSFusionV2] Failed probing ApplicationPaths.WebPath");
             }
 
             var candidates = new[]
@@ -208,21 +209,21 @@ namespace Jellyfin.Plugin.JMSFusion
             {
                 try
                 {
-                    _logger.LogInformation("[JMSFusion] Checking web root candidate: {Candidate}", p);
+                    _logger.LogInformation("[JMSFusionV2] Checking web root candidate: {Candidate}", p);
 
                     if (Directory.Exists(p) && File.Exists(Path.Combine(p, "index.html")))
                     {
-                        _logger.LogInformation("[JMSFusion] Found web root: {WebRoot}", p);
+                        _logger.LogInformation("[JMSFusionV2] Found web root: {WebRoot}", p);
                         return p;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "[JMSFusion] Error checking candidate: {Candidate}", p);
+                    _logger.LogWarning(ex, "[JMSFusionV2] Error checking candidate: {Candidate}", p);
                 }
             }
 
-            _logger.LogWarning("[JMSFusion] Web root not found in any candidate location");
+            _logger.LogWarning("[JMSFusionV2] Web root not found in any candidate location");
             return null;
         }
 
@@ -233,16 +234,16 @@ namespace Jellyfin.Plugin.JMSFusion
                 var root = DetectWebRoot();
                 if (string.IsNullOrWhiteSpace(root))
                 {
-                    _logger.LogWarning("[JMSFusion] Web root not found; skipping patch.");
+                    _logger.LogWarning("[JMSFusionV2] Web root not found; skipping patch.");
                     return;
                 }
 
                 var ok = IndexPatcher.EnsurePatched(_logger, root);
-                _logger.LogInformation("[JMSFusion] Patch result: {ok}", ok);
+                _logger.LogInformation("[JMSFusionV2] Patch result: {ok}", ok);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[JMSFusion] TryPatchIndexHtml failed");
+                _logger.LogError(ex, "[JMSFusionV2] TryPatchIndexHtml failed");
             }
         }
 
@@ -253,16 +254,16 @@ namespace Jellyfin.Plugin.JMSFusion
                 var root = DetectWebRoot();
                 if (string.IsNullOrWhiteSpace(root))
                 {
-                    _logger.LogWarning("[JMSFusion] Web root not found; skipping unpatch.");
+                    _logger.LogWarning("[JMSFusionV2] Web root not found; skipping unpatch.");
                     return;
                 }
 
                 var ok = IndexPatcher.EnsureUnpatched(_logger, root);
-                _logger.LogInformation("[JMSFusion] Unpatch result: {ok}", ok);
+                _logger.LogInformation("[JMSFusionV2] Unpatch result: {ok}", ok);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[JMSFusion] TryUnpatchIndexHtml failed");
+                _logger.LogError(ex, "[JMSFusionV2] TryUnpatchIndexHtml failed");
             }
         }
 
@@ -271,22 +272,22 @@ namespace Jellyfin.Plugin.JMSFusion
             var sb = new StringBuilder();
             sb.AppendLine("<!-- SL-INJECT BEGIN -->");
             sb.AppendLine(AssetVersioning.BuildBootstrapScript());
-            sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../Plugins/JMSFusion/runtime/storage-preload.js")}""></script>");
-            sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../slider/main.js")}""></script>");
-            sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../slider/modules/player/main.js")}""></script>");
+            sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../slider/dist/storage-preload.js")}""></script>");
+            sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../slider/dist/main.js")}""></script>");
+            sb.AppendLine($@"<script type=""module"" src=""{AssetVersioning.AppendVersionQuery("../slider/dist/player.js")}""></script>");
             sb.AppendLine("<!-- SL-INJECT END -->");
             return sb.ToString();
         }
 
         public IEnumerable<PluginPageInfo> GetPages()
         {
-            var ns = typeof(JMSFusionPlugin).Namespace;
+            var ns = typeof(JMSFusionV2Plugin).Namespace;
             return new[]
             {
                 new PluginPageInfo
                 {
-                    Name = "JMSFusionConfigPage",
-                    DisplayName = "JMSFusion",
+                    Name = "JMSFusionV2ConfigPage",
+                    DisplayName = "JMSFusionV2",
                     EmbeddedResourcePath = $"{ns}.Web.configuration.html",
                     EnableInMainMenu = true,
                     MenuSection = "server",
@@ -304,7 +305,7 @@ namespace Jellyfin.Plugin.JMSFusion
                 Path.GetDirectoryName(ReadPathValue(this, "ConfigurationPath") ?? string.Empty) ??
                 AppContext.BaseDirectory;
 
-            var current = Path.Combine(basePath, "JMSFusion");
+            var current = Path.Combine(basePath, "JMSFusionV2");
             Directory.CreateDirectory(current);
 
             foreach (var segment in segments ?? Array.Empty<string>())

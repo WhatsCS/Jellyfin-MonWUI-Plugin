@@ -1,0 +1,5 @@
+bin/
+node_modules/
+minified-assets/
+obj/
+*.log

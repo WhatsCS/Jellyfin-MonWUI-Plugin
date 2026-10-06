@@ -1,7 +1,7 @@
 import { getConfig } from "./config.js";
 import { withServer } from "./jfUrl.js";
 
-export const CINEMA_PREROLL_CACHE_ENDPOINT = "/Plugins/JMSFusion/cinema-preroll/cache";
+export const CINEMA_PREROLL_CACHE_ENDPOINT = "/Plugins/JMSFusionV2/cinema-preroll/cache";
 
 export function normalizeCinemaPreRollLanguage(raw) {
   const value = String(raw || "").trim().replace("_", "-");

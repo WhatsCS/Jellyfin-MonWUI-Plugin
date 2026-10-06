@@ -1,4 +1,4 @@
-import { fetchItemDetailsFull, fetchItemsBulk, getEmbyHeaders, getLastPlayNowBlockReason, getSessionInfo, makeApiRequest, playNow, updateFavoriteStatus } from "../../Plugins/JMSFusion/runtime/api.js";
+import { fetchItemDetailsFull, fetchItemsBulk, getEmbyHeaders, getLastPlayNowBlockReason, getSessionInfo, makeApiRequest, playNow, updateFavoriteStatus } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { CollectionCacheDB } from "./collectionCacheDb.js";
 import { getConfig } from "./config.js";
 import { withServer } from "./jfUrl.js";
@@ -14,7 +14,7 @@ import {
   requestSerrMissingSyntheticItem
 } from "./seerr/itemPageBridge.js";
 
-const WATCHLIST_ENDPOINT = "/Plugins/jmsFusion/watchlist";
+const WATCHLIST_ENDPOINT = "/Plugins/JMSFusionV2/watchlist";
 export const WATCHLIST_MODAL_ID = "monwui-watchlist-modal-root";
 const WATCHLIST_STYLE_ID = "monwui-watchlist-modal-style";
 const WATCHLIST_NAV_BUTTON_CLASS = "monwui-watchlist-nav-button";
@@ -62,10 +62,10 @@ const WATCHLIST_STATS_TAB_KEY = "stats";
 const WATCHLIST_TABS = [
   { key: "movies", labelKey: "watchlistMovieTab", fallback: "Filmler" },
   { key: "series", labelKey: "watchlistSeriesTab", fallback: "Diziler" },
-  { key: "music", labelKey: "watchlistMusicTab", fallback: "Müzik" },
+  { key: "music", labelKey: "watchlistMusicTab", fallback: "Music" },
   { key: "collections", labelKey: "watchlistCollectionTab", fallback: "Koleksiyonlar" },
-  { key: "albums", labelKey: "watchlistAlbumTab", fallback: "Müzik Albümleri" },
-  { key: WATCHLIST_STATS_TAB_KEY, labelKey: "watchlistStatsTab", fallback: "İstatistikler" }
+  { key: "albums", labelKey: "watchlistAlbumTab", fallback: "Music Albums" },
+  { key: WATCHLIST_STATS_TAB_KEY, labelKey: "watchlistStatsTab", fallback: "Statistics" }
 ];
 const WATCHLIST_CONTENT_TABS = WATCHLIST_TABS.filter((tab) => tab.key !== WATCHLIST_STATS_TAB_KEY);
 const WATCHLIST_TAB_KEYS = new Set(WATCHLIST_TABS.map((tab) => tab.key));
@@ -282,15 +282,15 @@ function getWatchlistTabLabel(tabKey) {
 }
 
 function getSmartFillIdleLabel() {
-  return L("watchlistSmartFill", "Akıllı Liste Oluştur");
+  return L("watchlistSmartFill", "Create Smart Watchlist");
 }
 
 function getSmartFillLoadingLabel() {
-  return L("watchlistSmartFillLoading", "Akıllı liste hazırlanıyor...");
+  return L("watchlistSmartFillLoading", "Building smart watchlist...");
 }
 
 function getSmartFillCountLabel() {
-  return L("watchlistSmartFillCount", "Tür başına");
+  return L("watchlistSmartFillCount", "Per type");
 }
 
 function normalizeSmartFillCount(value) {
@@ -402,12 +402,12 @@ function buildSmartFillSuccessMessage(counts = {}, usedCommunityFallback = false
     .filter(Boolean);
 
   if (!parts.length) {
-    return L("watchlistSmartFillEmpty", "Akıllı liste için uygun yeni içerik bulunamadı.");
+    return L("watchlistSmartFillEmpty", "No suitable new items were found for the smart watchlist.");
   }
 
-  const base = `${L("watchlistSmartFillSuccess", "Akıllı öneriler listene eklendi")}: ${parts.join(" • ")}`;
+  const base = `${L("watchlistSmartFillSuccess", "Smart recommendations were added to your watchlist")}: ${parts.join(" • ")}`;
   if (!usedCommunityFallback) return base;
-  return `${base} ${L("watchlistSmartFillCommunity", "Yeterli geçmiş olmadığı için diğer kullanıcıların izleme alışkanlıkları da kullanıldı.")}`;
+  return `${base} ${L("watchlistSmartFillCommunity", "Community viewing habits were also used because there was not enough personal history.")}`;
 }
 
 function getWatchlistTabButtonText(model, tabKey) {
@@ -479,7 +479,7 @@ function hasPartialPlayback(itemLike) {
 function getPlayActionLabel(itemLike) {
   return hasPartialPlayback(itemLike)
     ? L("devamet", "Devam et")
-    : L("playNowLabel", "Şimdi Oynat");
+    : L("playNowLabel", "Play Now");
 }
 
 function toTimestampMs(value) {
@@ -830,14 +830,14 @@ function getFavoriteMirrorUserId() {
 async function setJellyfinFavoriteStatus(itemId, isFavorite, { signal } = {}) {
   const userId = text(getFavoriteMirrorUserId());
   if (!userId) {
-    const err = new Error("Kullanıcı oturumu bulunamadı.");
+    const err = new Error("User session not found.");
     err.status = 401;
     throw err;
   }
 
   const cleanItemId = text(itemId);
   if (!cleanItemId) {
-    throw new Error("itemId gerekli");
+    throw new Error("itemId is required");
   }
 
   return makeApiRequest(`/Users/${encodeURIComponent(userId)}/FavoriteItems/${encodeURIComponent(cleanItemId)}`, {
@@ -1101,7 +1101,7 @@ function buildWatchlistHeaders(extra = {}) {
   });
 
   if (userId) headers["X-Emby-UserId"] = userId;
-  if (userName) headers["X-jmsFusion-UserName"] = userName;
+  if (userName) headers["X-JMSFusionV2-UserName"] = userName;
 
   return headers;
 }
@@ -1152,7 +1152,7 @@ async function runSmartWatchlistFill(root) {
     const suggestions = Array.isArray(response?.items) ? response.items : [];
     if (!suggestions.length) {
       window.showMessage?.(
-        text(response?.message, L("watchlistSmartFillEmpty", "Akıllı liste için uygun yeni içerik bulunamadı.")),
+        text(response?.message, L("watchlistSmartFillEmpty", "No suitable new items were found for the smart watchlist.")),
         "info"
       );
       return;
@@ -1189,18 +1189,18 @@ async function runSmartWatchlistFill(root) {
       );
     } else if (errors.length) {
       window.showMessage?.(
-        errors[0] || L("watchlistSmartFillError", "Akıllı liste oluşturulamadı."),
+        errors[0] || L("watchlistSmartFillError", "Unable to build the smart watchlist"),
         "error"
       );
     } else {
       window.showMessage?.(
-        text(response?.message, L("watchlistSmartFillEmpty", "Akıllı liste için uygun yeni içerik bulunamadı.")),
+        text(response?.message, L("watchlistSmartFillEmpty", "No suitable new items were found for the smart watchlist.")),
         "info"
       );
     }
   } catch (error) {
     window.showMessage?.(
-      error?.message || L("watchlistSmartFillError", "Akıllı liste oluşturulamadı."),
+      error?.message || L("watchlistSmartFillError", "Unable to build the smart watchlist"),
       "error"
     );
   } finally {
@@ -1544,13 +1544,13 @@ export function isMusicAlbumItem(itemLike) {
 export function getWatchlistButtonText(itemLike, inWatchlist) {
   if (inWatchlist) {
     return isMusicAlbumItem(itemLike)
-      ? L("watchlistAlbumRemove", "Albüm listesinden çıkar")
-      : L("watchlistRemove", "Listeden çıkar");
+      ? L("watchlistAlbumRemove", "Remove album from list")
+      : L("watchlistRemove", "Remove from list");
   }
 
   return isMusicAlbumItem(itemLike)
-    ? L("watchlistAlbumAdd", "Albüm listeme ekle")
-    : L("watchlistAdd", "Listeme ekle");
+    ? L("watchlistAlbumAdd", "Add album to my list")
+    : L("watchlistAdd", "Add to my list");
 }
 
 export function getWatchlistButtonTitle(itemLike, inWatchlist) {
@@ -1560,13 +1560,13 @@ export function getWatchlistButtonTitle(itemLike, inWatchlist) {
 export function getWatchlistToast(itemLike, added) {
   if (added) {
     return isMusicAlbumItem(itemLike)
-      ? L("watchlistAlbumAdded", "Albüm listene eklendi")
-      : L("watchlistAdded", "Öğe listene eklendi");
+      ? L("watchlistAlbumAdded", "Album added to your list")
+      : L("watchlistAdded", "Item added to your list");
   }
 
   return isMusicAlbumItem(itemLike)
-    ? L("watchlistAlbumRemoved", "Albüm listenden çıkarıldı")
-    : L("watchlistRemoved", "Öğe listenden çıkarıldı");
+    ? L("watchlistAlbumRemoved", "Album removed from your list")
+    : L("watchlistRemoved", "Item removed from your list");
 }
 
 export function getWatchlistTabKey(itemLike) {
@@ -1579,7 +1579,7 @@ export function getWatchlistTabKey(itemLike) {
 
 export async function addToWatchlist(itemId, options = {}) {
   const id = text(itemId);
-  if (!id) throw new Error("itemId gerekli");
+  if (!id) throw new Error("itemId is required");
 
   let item = options?.item || null;
   if (!item || text(item?.Id) !== id) {
@@ -1619,7 +1619,7 @@ export async function addToWatchlist(itemId, options = {}) {
 
 export async function removeFromWatchlist(itemId, options = {}) {
   const id = text(itemId);
-  if (!id) throw new Error("itemId gerekli");
+  if (!id) throw new Error("itemId is required");
   const wasPlayed = options?.played === true || isMarkedPlayed(options?.item);
   const liveTvItem = isLiveTvItemLike(options?.item);
 
@@ -1658,9 +1658,9 @@ export async function shareWatchlistItem(itemId, targets = [], note = "", option
     }))
     .filter((target) => target.UserId);
 
-  if (!isWatchlistSharingEnabled()) throw new Error(L("watchlistSharingDisabled", "İzleme listesi paylaşımı kapalı"));
-  if (!id) throw new Error("itemId gerekli");
-  if (!normalizedTargets.length) throw new Error(L("watchlistSelectUsers", "En az bir kullanıcı seç"));
+  if (!isWatchlistSharingEnabled()) throw new Error(L("watchlistSharingDisabled", "Watchlist sharing is disabled"));
+  if (!id) throw new Error("itemId is required");
+  if (!normalizedTargets.length) throw new Error(L("watchlistSelectUsers", "Select at least one user"));
 
   const snapshot = options?.snapshot && typeof options.snapshot === "object"
     ? options.snapshot
@@ -1686,7 +1686,7 @@ export async function shareWatchlistItem(itemId, targets = [], note = "", option
 
 export async function removeWatchlistShare(shareId) {
   const id = text(shareId);
-  if (!id) throw new Error("shareId gerekli");
+  if (!id) throw new Error("shareId is required");
 
   const result = await requestWatchlist(`/shares/${encodeURIComponent(id)}`, {
     method: "DELETE"
@@ -3701,8 +3701,8 @@ function formatRuntime(ticks) {
   if (!Number.isFinite(totalMinutes) || totalMinutes <= 0) return "";
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  if (hours <= 0) return `${minutes} ${L("dk", "dk")}`;
-  return `${hours} ${L("sa", "sa")} ${minutes} ${L("dk", "dk")}`;
+  if (hours <= 0) return `${minutes} ${L("dk", "m")}`;
+  return `${hours} ${L("sa", "h")} ${minutes} ${L("dk", "m")}`;
 }
 
 function ticksToMs(value) {
@@ -3954,8 +3954,8 @@ function formatAudioStream(stream) {
   const bitrate = formatBitrate(stream?.BitRate);
   const labels = [language, codec, channels, bitrate].filter(Boolean);
   const flags = [];
-  if (stream?.IsDefault) flags.push(L("default", "Varsayılan"));
-  if (stream?.IsExternal) flags.push(L("external", "Harici"));
+  if (stream?.IsDefault) flags.push(L("default", "Default"));
+  if (stream?.IsExternal) flags.push(L("external", "External"));
   if (stream?.Title) flags.push(text(stream.Title));
   return [labels.join(" • "), flags.join(" • ")].filter(Boolean).join(" - ");
 }
@@ -3965,9 +3965,9 @@ function formatSubtitleStream(stream) {
   const codec = text(stream?.Codec).toUpperCase();
   const title = text(stream?.DisplayTitle || stream?.Title);
   const flags = [];
-  if (stream?.IsDefault) flags.push(L("default", "Varsayılan"));
-  if (stream?.IsForced) flags.push(L("forced", "Zorunlu"));
-  if (stream?.IsExternal) flags.push(L("external", "Harici"));
+  if (stream?.IsDefault) flags.push(L("default", "Default"));
+  if (stream?.IsForced) flags.push(L("forced", "Forced"));
+  if (stream?.IsExternal) flags.push(L("external", "External"));
 
   return [language, codec, title, flags.join(" • ")].filter(Boolean).join(" • ");
 }
@@ -4346,35 +4346,35 @@ function getCollectionAverageRating(items = []) {
 }
 
 function getContainerPreviewSectionTitle(mode = "") {
-  if (mode === "season") return L("watchlistPreviewSeasonSection", "Sezonlar");
-  if (mode === "episode") return L("watchlistPreviewEpisodeSection", "Bölümler");
-  return L("watchlistPreviewCollectionSection", "Koleksiyon Öğeleri");
+  if (mode === "season") return L("watchlistPreviewSeasonSection", "Seasons");
+  if (mode === "episode") return L("watchlistPreviewEpisodeSection", "Episodes");
+  return L("watchlistPreviewCollectionSection", "Collection Items");
 }
 
 function getContainerPreviewLoadingText(mode = "") {
-  if (mode === "season") return L("watchlistPreviewSeasonLoading", "Sezonlar yükleniyor");
-  if (mode === "episode") return L("watchlistPreviewEpisodeLoading", "Bölümler yükleniyor");
-  return L("watchlistPreviewCollectionLoading", "Koleksiyon öğeleri yükleniyor");
+  if (mode === "season") return L("watchlistPreviewSeasonLoading", "Loading seasons...");
+  if (mode === "episode") return L("watchlistPreviewEpisodeLoading", "Loading episodes...");
+  return L("watchlistPreviewCollectionLoading", "Loading collection items");
 }
 
 function getContainerPreviewCountText(mode = "", count = 0) {
   if (!count) return "";
-  if (mode === "season") return `${count} ${L("season", "Sezon")}`;
-  if (mode === "episode") return `${count} ${L("episode", "Bölüm")}`;
-  return `${count} ${L("watchlistPreviewCollectionItemSuffix", "öğe")}`;
+  if (mode === "season") return `${count} ${L("season", "Season")}`;
+  if (mode === "episode") return `${count} ${L("episode", "Episode")}`;
+  return `${count} ${L("watchlistPreviewCollectionItemSuffix", "items")}`;
 }
 
 function getContainerPreviewMoreText(hiddenCount = 0) {
   if (!hiddenCount) return "";
-  return `+${hiddenCount} ${L("watchlistPreviewCollectionMore", "daha")}`;
+  return `+${hiddenCount} ${L("watchlistPreviewCollectionMore", "more")}`;
 }
 
 function formatSeasonPreviewTitle(item) {
   const raw = text(item?.Name);
   const index = Number(item?.IndexNumber || 0);
   if (raw) return raw;
-  if (index > 0) return `${L("season", "Sezon")} ${index}`;
-  return L("season", "Sezon");
+  if (index > 0) return `${L("season", "Season")} ${index}`;
+  return L("season", "Season");
 }
 
 function formatEpisodePreviewTitle(item) {
@@ -4385,22 +4385,22 @@ function formatEpisodePreviewTitle(item) {
   const prefix = hasSeason && hasEpisode
     ? `S${String(seasonNumber).padStart(2, "0")}E${String(episodeNumber).padStart(2, "0")}`
     : (hasEpisode ? `E${String(episodeNumber).padStart(2, "0")}` : "");
-  const raw = text(item?.Name, L("episode", "Bölüm"));
+  const raw = text(item?.Name, L("episode", "Episode"));
   return prefix ? `${prefix} • ${raw}` : raw;
 }
 
 function getContainerPreviewCardTitle(item, mode = "") {
   if (mode === "season") return formatSeasonPreviewTitle(item);
   if (mode === "episode") return formatEpisodePreviewTitle(item);
-  return text(item?.Name, L("untitled", "İsimsiz"));
+  return text(item?.Name, L("untitled", "Untitled"));
 }
 
 function getContainerPreviewCardMeta(item, mode = "") {
-  const playedText = isMarkedPlayed(item) ? L("played", "İzlendi") : "";
+  const playedText = isMarkedPlayed(item) ? L("played", "Watched") : "";
   if (mode === "season") {
     const episodeCount = Number(item?.ChildCount || 0);
     return [
-      episodeCount > 0 ? `${episodeCount} ${L("episode", "Bölüm")}` : "",
+      episodeCount > 0 ? `${episodeCount} ${L("episode", "Episode")}` : "",
       playedText
     ].filter(Boolean).join(" • ");
   }
@@ -4451,15 +4451,15 @@ function renderPlayedOverlayMarkup() {
           <path d="M9.2 16.6 4.8 12.2 3.4 13.6 9.2 19.4 20.6 8 19.2 6.6z"></path>
         </svg>
       </span>
-      <span class="monwuiwl-played-text">${escapeHtml(L("played", "İzlendi"))}</span>
+      <span class="monwuiwl-played-text">${escapeHtml(L("played", "Watched"))}</span>
     </div>
   `;
 }
 
 function renderSerrMissingOverlayButton(requested = false) {
   const actionTitle = requested
-    ? L("serrStatusRequested", "İstek")
-    : L("serrRequestButton", "İste");
+    ? L("serrStatusRequested", "Requested")
+    : L("serrRequestButton", "Request");
   const iconName = requested ? "check" : "playlist_add";
   const disabled = requested ? " disabled aria-disabled=\"true\"" : "";
   return `
@@ -4491,8 +4491,8 @@ function renderCollectionPreviewCards(items = [], { mode = "collection" } = {}) 
           ? Math.max(0, Math.min(100, Math.round((playbackTicks / runtimeTicks) * 100)))
           : 0;
         const fallback = mode === "season"
-          ? L("season", "Sezon")
-          : (mode === "episode" ? L("episode", "Bölüm") : text(item?.Type, title.slice(0, 2).toUpperCase() || L("content", "İçerik")));
+          ? L("season", "Season")
+          : (mode === "episode" ? L("episode", "Episode") : text(item?.Type, title.slice(0, 2).toUpperCase() || L("content", "Content")));
         const isPlayed = isMarkedPlayed(item);
         const playLabel = getPlayActionLabel(item);
 
@@ -4507,7 +4507,7 @@ function renderCollectionPreviewCards(items = [], { mode = "collection" } = {}) 
             aria-label="${escapeHtml(`${playLabel}: ${title}`)}"
           >
             <div class="monwuiwl-preview-collection-poster">
-              ${isMissing ? `<span class="monwui-serr-missing-badge">${escapeHtml(L("serrMissingBadge", "Eksik"))}</span>` : ""}
+              ${isMissing ? `<span class="monwui-serr-missing-badge">${escapeHtml(L("serrMissingBadge", "Missing"))}</span>` : ""}
               ${posterUrl
                 ? `<img src="${escapeHtml(posterUrl)}" alt="${escapeHtml(title)}" loading="lazy" decoding="async" onerror="this.remove()">`
                 : ""}
@@ -4705,7 +4705,7 @@ function buildWatchlistHistorySummary(model, dashboard = dashboardCache) {
     userName ||
     dashboard?.myItems?.[0]?.OwnerUserName ||
     dashboard?.outgoingShares?.[0]?.OwnerUserName,
-    L("unknownUser", "Bilinmeyen kullanıcı")
+    L("unknownUser", "Unknown user")
   );
 
   return {
@@ -4743,7 +4743,7 @@ function renderWatchlistHistoryTypeCard(typeSummary) {
     <article class="monwuiwl-stats-type-card">
       <div class="monwuiwl-stats-type-name">${escapeHtml(typeSummary.label)}</div>
       <div class="monwuiwl-stats-type-total">
-        <span>${escapeHtml(L("watchlistStatsTracked", "Aktif + tamamlanan"))}</span>
+        <span>${escapeHtml(L("watchlistStatsTracked", "Active + completed"))}</span>
         <strong>${escapeHtml(formatCount(typeSummary.summaryCount))}</strong>
       </div>
       <div class="monwuiwl-stats-type-row">
@@ -4751,7 +4751,7 @@ function renderWatchlistHistoryTypeCard(typeSummary) {
         <strong>${escapeHtml(formatCount(typeSummary.activeCount))}</strong>
       </div>
       <div class="monwuiwl-stats-type-row">
-        <span>${escapeHtml(L("watchlistHistoryCompleted", "İzlenmiş / dinlenmiş toplam"))}</span>
+        <span>${escapeHtml(L("watchlistHistoryCompleted", "Watched / listened total"))}</span>
         <strong>${escapeHtml(formatCount(typeSummary.completedCount))}</strong>
       </div>
     </article>
@@ -4802,19 +4802,19 @@ function getGeneralMediaSpecs() {
   return [
     {
       key: "movies",
-      label: L("watchlistMovieTab", "Filmler"),
+      label: L("watchlistMovieTab", "Movies"),
       libraryTypes: "Movie",
       playedTypes: "Movie",
     },
     {
       key: "series",
-      label: L("watchlistSeriesTab", "Diziler"),
+      label: L("watchlistSeriesTab", "Series"),
       libraryTypes: "Series",
       playedTypes: "Episode",
     },
     {
       key: "music",
-      label: L("watchlistMusicTab", "Müzik"),
+      label: L("watchlistMusicTab", "Music"),
       libraryTypes: "Audio",
       playedTypes: "Audio",
     }
@@ -4827,8 +4827,8 @@ function mapGeneralStatsItem(item, key) {
   const playedAt = getLastPlayedTimestamp(item);
   const typeName = getItemTypeName(item);
   const title = key === "series"
-    ? text(item?.SeriesName || item?.Name, L("untitled", "İsimsiz"))
-    : text(item?.Name || item?.Album, L("untitled", "İsimsiz"));
+    ? text(item?.SeriesName || item?.Name, L("untitled", "Untitled"))
+    : text(item?.Name || item?.Album, L("untitled", "Untitled"));
 
   let subtitle = "";
   if (key === "series") {
@@ -4849,7 +4849,7 @@ function mapGeneralStatsItem(item, key) {
     subtitle,
     playedAt,
     playCount: Number(item?.UserData?.PlayCount || 0),
-    label: key === "series" ? L("watchlistSeriesTab", "Diziler") : (key === "music" ? L("watchlistMusicTab", "Müzik") : L("watchlistMovieTab", "Filmler"))
+    label: key === "series" ? L("watchlistSeriesTab", "Series") : (key === "music" ? L("watchlistMusicTab", "Music") : L("watchlistMovieTab", "Movies"))
   };
 }
 
@@ -4943,11 +4943,11 @@ function renderWatchlistHistorySection(model) {
     <section class="monwuiwl-stats-shell monwuiwl-stats-shell-history">
       <article class="monwuiwl-stats-hero">
         <div class="monwuiwl-stats-hero-content">
-          <div class="monwuiwl-stats-kicker">${escapeHtml(L("watchlistHistoryTitle", "Watchlist Geçmişi"))}</div>
+          <div class="monwuiwl-stats-kicker">${escapeHtml(L("watchlistHistoryTitle", "Watchlist History"))}</div>
           <h3 class="monwuiwl-stats-user">${escapeHtml(summary.userName)}</h3>
-          <p class="monwuiwl-stats-copy">${escapeHtml(L("watchlistHistorySubtitle", "Aktif listen, tamamlanan içerikler ve paylaşım hareketleri burada özetlenir."))}</p>
+          <p class="monwuiwl-stats-copy">${escapeHtml(L("watchlistHistorySubtitle", "Your active list, completed items, and sharing activity are summarized here."))}</p>
           <div class="monwuiwl-stats-total">
-            <span class="monwuiwl-stats-total-label">${escapeHtml(L("watchlistStatsTracked", "Aktif + tamamlanan"))}</span>
+            <span class="monwuiwl-stats-total-label">${escapeHtml(L("watchlistStatsTracked", "Active + completed"))}</span>
             <strong class="monwuiwl-stats-total-value">${escapeHtml(formatCount(summary.summaryTotalCount))}</strong>
           </div>
         </div>
@@ -4965,15 +4965,15 @@ function renderWatchlistHistorySection(model) {
 
       <div class="monwuiwl-stats-cards">
         ${renderStatsCard(L("watchlistHistoryActive", "Aktif watchlist"), summary.activeOwnCount)}
-        ${renderStatsCard(L("watchlistHistoryCompleted", "İzlenmiş / dinlenmiş toplam"), summary.completedCount)}
-        ${renderStatsCard(L("watchlistHistoryCompletedRemoved", "İzlenip kaldırılanlar"), summary.removedCompletedCount)}
-        ${renderStatsCard(L("watchlistStatsOutgoingShares", "Gönderilen paylaşımlar"), summary.outgoingSharesCount)}
-        ${renderStatsCard(L("watchlistSharedItems", "Seninle paylaşılanlar"), summary.sharedCount)}
+        ${renderStatsCard(L("watchlistHistoryCompleted", "Watched / listened total"), summary.completedCount)}
+        ${renderStatsCard(L("watchlistHistoryCompletedRemoved", "Watched and removed"), summary.removedCompletedCount)}
+        ${renderStatsCard(L("watchlistStatsOutgoingShares", "Shares sent"), summary.outgoingSharesCount)}
+        ${renderStatsCard(L("watchlistSharedItems", "Shared with you"), summary.sharedCount)}
       </div>
 
       <section class="monwuiwl-stats-breakdown">
         <div class="monwuiwl-stats-breakdown-head">
-          <h3 class="monwuiwl-stats-breakdown-title">${escapeHtml(L("watchlistStatsByType", "Türlere göre dağılım"))}</h3>
+          <h3 class="monwuiwl-stats-breakdown-title">${escapeHtml(L("watchlistStatsByType", "Breakdown by type"))}</h3>
         </div>
         <div class="monwuiwl-stats-type-grid">
           ${summary.typeBreakdown.map(renderWatchlistHistoryTypeCard).join("")}
@@ -4989,9 +4989,9 @@ function renderGeneralStatsMediaCard(section) {
     ? `
       <div class="monwuiwl-general-last-title">${escapeHtml(lastItem.title)}</div>
       ${lastItem.subtitle ? `<div class="monwuiwl-general-last-subtitle">${escapeHtml(lastItem.subtitle)}</div>` : ""}
-      <div class="monwuiwl-general-last-meta">${escapeHtml(lastItem.playedAt ? formatDate(lastItem.playedAt) : L("watchlistGeneralEmptyLast", "Henüz oynatma yok"))}</div>
+      <div class="monwuiwl-general-last-meta">${escapeHtml(lastItem.playedAt ? formatDate(lastItem.playedAt) : L("watchlistGeneralEmptyLast", "No Playback Yet"))}</div>
     `
-    : `<div class="monwuiwl-general-last-empty">${escapeHtml(L("watchlistGeneralEmptyLast", "Henüz oynatma yok"))}</div>`;
+    : `<div class="monwuiwl-general-last-empty">${escapeHtml(L("watchlistGeneralEmptyLast", "No Playback Yet"))}</div>`;
 
   return `
     <article class="monwuiwl-general-card" data-media-key="${escapeHtml(section?.key || "")}">
@@ -5003,11 +5003,11 @@ function renderGeneralStatsMediaCard(section) {
       </div>
       <div class="monwuiwl-general-card-stats">
         <div class="monwuiwl-general-card-stat">
-          <span>${escapeHtml(L("watchlistGeneralLibraryTotal", "Kütüphanedeki toplam"))}</span>
+          <span>${escapeHtml(L("watchlistGeneralLibraryTotal", "Library total"))}</span>
           <strong>${escapeHtml(formatCount(section?.totalCount || 0))}</strong>
         </div>
         <div class="monwuiwl-general-card-stat">
-          <span>${escapeHtml(L("watchlistGeneralPlayedTotal", "İzlenen / dinlenen"))}</span>
+          <span>${escapeHtml(L("watchlistGeneralPlayedTotal", "Watched / listened total"))}</span>
           <strong>${escapeHtml(formatCount(section?.playedCount || 0))}</strong>
         </div>
       </div>
@@ -5021,7 +5021,7 @@ function renderGeneralStatsMediaCard(section) {
 
 function renderGeneralTopRepeated(topRepeated = []) {
   if (!Array.isArray(topRepeated) || !topRepeated.length) {
-    return `<div class="monwuiwl-empty">${escapeHtml(L("watchlistGeneralTopReplayEmpty", "Tekrar oynatma verisi henüz yok."))}</div>`;
+    return `<div class="monwuiwl-empty">${escapeHtml(L("watchlistGeneralTopReplayEmpty", "No Replay Data Yet."))}</div>`;
   }
 
   return `
@@ -5052,8 +5052,8 @@ function renderWatchlistGeneralSection() {
       <article class="monwuiwl-stats-hero monwuiwl-stats-hero-secondary">
         <div class="monwuiwl-stats-hero-content">
           <div class="monwuiwl-stats-kicker">${escapeHtml(L("watchlistGeneralTitle", "Jellyfin Geneli"))}</div>
-          <h3 class="monwuiwl-stats-user">${escapeHtml(L("watchlistGeneralHeroTitle", "Kullanıcı Medya Özeti"))}</h3>
-          <p class="monwuiwl-stats-copy">${escapeHtml(L("watchlistGeneralSubtitle", "Toplam içerik, son oynatmalar ve tekrar izleme alışkanlığı burada gösterilir."))}</p>
+          <h3 class="monwuiwl-stats-user">${escapeHtml(L("watchlistGeneralHeroTitle", "User Media Overview"))}</h3>
+          <p class="monwuiwl-stats-copy">${escapeHtml(L("watchlistGeneralSubtitle", "Library totals, recent playback, and replay habits are summarized here."))}</p>
         </div>
         <div class="monwuiwl-stats-hero-art" aria-hidden="true">
           <div class="monwuiwl-stats-hero-art-badge">
@@ -5072,22 +5072,22 @@ function renderWatchlistGeneralSection() {
           <h3 class="monwuiwl-stats-breakdown-title">${escapeHtml(L("watchlistGeneralTitle", "Jellyfin Geneli"))}</h3>
         </div>
         ${loading
-          ? `<div class="monwuiwl-loading">${escapeHtml(L("watchlistGeneralLoading", "Genel istatistikler yükleniyor..."))}</div>`
+          ? `<div class="monwuiwl-loading">${escapeHtml(L("watchlistGeneralLoading", "Loading general statistics..."))}</div>`
           : (media.length
             ? `
               <div class="monwuiwl-general-grid">
                 ${media.map(renderGeneralStatsMediaCard).join("")}
               </div>
             `
-            : `<div class="monwuiwl-empty">${escapeHtml(L("watchlistGeneralNoData", "Genel istatistik verisi bulunamadı."))}</div>`)}
+            : `<div class="monwuiwl-empty">${escapeHtml(L("watchlistGeneralNoData", "No general statistics data was found."))}</div>`)}
       </section>
 
       <section class="monwuiwl-stats-breakdown">
         <div class="monwuiwl-stats-breakdown-head">
-          <h3 class="monwuiwl-stats-breakdown-title">${escapeHtml(L("watchlistGeneralTopReplay", "En çok tekrar izlenen / dinlenenler"))}</h3>
+          <h3 class="monwuiwl-stats-breakdown-title">${escapeHtml(L("watchlistGeneralTopReplay", "Most replayed titles"))}</h3>
         </div>
         ${loading
-          ? `<div class="monwuiwl-loading">${escapeHtml(L("watchlistGeneralLoading", "Genel istatistikler yükleniyor..."))}</div>`
+          ? `<div class="monwuiwl-loading">${escapeHtml(L("watchlistGeneralLoading", "Loading general statistics..."))}</div>`
           : renderGeneralTopRepeated(topRepeated)}
       </section>
     </section>
@@ -5125,21 +5125,21 @@ function getPreviewInfoLine(view) {
   if (view?.kind === "shared") {
     const by = text(view?.ownerUserName);
     const at = formatDate(view?.sharedAtUtc);
-    return [by ? `${L("watchlistSharedBy", "Paylaşan")}: ${by}` : "", at].filter(Boolean).join(" • ");
+    return [by ? `${L("watchlistSharedBy", "Shared by")}: ${by}` : "", at].filter(Boolean).join(" • ");
   }
 
   const names = uniqTextList(
     (view?.outgoingShares || []).map((share) => share?.TargetUserName || share?.targetUserName)
   );
   if (!names.length) return "";
-  return `${L("watchlistSharedWith", "Paylaşıldı")}: ${names.join(", ")}`;
+  return `${L("watchlistSharedWith", "Shared with")}: ${names.join(", ")}`;
 }
 
 function renderPreviewEmptyState() {
   return `
     <div class="monwuiwl-preview-empty">
       <div class="monwuiwl-preview-empty-copy">
-        ${escapeHtml(L("watchlistEmptySection", "Burada henüz öğe yok."))}
+        ${escapeHtml(L("watchlistEmptySection", "No Items Here Yet."))}
       </div>
     </div>
   `;
@@ -5210,7 +5210,7 @@ function renderPreviewStudioSection(title, studios = []) {
   const visible = (Array.isArray(studios) ? studios : []).filter((studio) => text(studio?.name));
   if (!visible.length) return "";
 
-  const openTitle = L("watchlistPreviewStudioAdd", "Stüdyo koleksiyonuna ekle");
+  const openTitle = L("watchlistPreviewStudioAdd", "Add to studio collections");
 
   return `
     <section class="monwuiwl-preview-section">
@@ -5275,8 +5275,8 @@ function renderPreviewPanel(view, details, { loading = false, collectionLoading 
   const collectionRating = hasContainerPreview ? getCollectionAverageRating(collectionItems) : "";
   const posterUrl = buildPosterUrl(item, { width: 360, height: 540 }) || baseItem.posterUrl || "";
   const backdropUrl = buildBackdropUrl(item, { width: 1280, quality: 88 }) || baseItem.backdropUrl || "";
-  const itemType = text(item?.Type || baseItem.itemType, L("content", "İçerik"));
-  const title = text(item?.Name || baseItem.name, L("untitled", "İsimsiz"));
+  const itemType = text(item?.Type || baseItem.itemType, L("content", "Content"));
+  const title = text(item?.Name || baseItem.name, L("untitled", "Untitled"));
   const parentLine = text(item?.SeriesName || item?.Album || baseItem.parentName || baseItem.albumArtist);
   const subtitleLine = hasContainerPreview
     ? [
@@ -5291,12 +5291,12 @@ function renderPreviewPanel(view, details, { loading = false, collectionLoading 
     hasContainerPreview
       ? (
         isCollection
-          ? L("watchlistPreviewCollectionOverview", "Bu koleksiyondaki başlıkları aşağıda görebilirsin.")
+          ? L("watchlistPreviewCollectionOverview", "Browse the titles in this collection below.")
           : (containerMode === "season"
-            ? L("watchlistPreviewSeriesOverview", "Bu dizinin sezonlarını aşağıda görebilirsin.")
-            : L("watchlistPreviewSeasonOverview", "Bu sezonun bölümlerini aşağıda görebilirsin."))
+            ? L("watchlistPreviewSeriesOverview", "Browse the seasons of this series below.")
+            : L("watchlistPreviewSeasonOverview", "Browse the episodes of this season below."))
       )
-      : L("noDescription", "Açıklama yok.")
+      : L("noDescription", "No description.")
   );
   const runtimeTicks = Number(item?.RunTimeTicks || baseItem.runtimeTicks || 0);
   const playbackTicks = Number(item?.UserData?.PlaybackPositionTicks || 0);
@@ -5327,52 +5327,52 @@ function renderPreviewPanel(view, details, { loading = false, collectionLoading 
     : 0;
   const stats = isCollection
     ? [
-        { label: L("watchlistPreviewCollectionCount", "Öğe"), value: collectionTotal ? `${collectionTotal} ${L("watchlistPreviewCollectionItemSuffix", "öğe")}` : "" },
-        { label: L("watchlistPreviewCollectionYears", "Yıl Aralığı"), value: collectionYears },
-        { label: L("watchlistPreviewCollectionWatched", "İzlendi"), value: collectionWatched },
+        { label: L("watchlistPreviewCollectionCount", "Items"), value: collectionTotal ? `${collectionTotal} ${L("watchlistPreviewCollectionItemSuffix", "items")}` : "" },
+        { label: L("watchlistPreviewCollectionYears", "Year range"), value: collectionYears },
+        { label: L("watchlistPreviewCollectionWatched", "Watched"), value: collectionWatched },
         { label: L("watchlistPreviewCollectionRating", "Ortalama Puan"), value: collectionRating }
       ].filter((entry) => text(entry?.value))
     : [
         hasContainerPreview ? {
           label: containerMode === "season"
             ? L("watchlistPreviewSeasonCount", "Toplam Sezon")
-            : L("watchlistPreviewEpisodeCount", "Toplam Bölüm"),
+            : L("watchlistPreviewEpisodeCount", "Total episodes"),
           value: containerCountText
         } : null,
         hasContainerPreview ? {
-          label: L("watchlistPreviewCollectionWatched", "İzlendi"),
+          label: L("watchlistPreviewCollectionWatched", "Watched"),
           value: collectionWatched
         } : null,
-        { label: L("sure", "Süre"), value: runtime },
+        { label: L("sure", "Time"), value: runtime },
         { label: L("watchlistPreviewRemaining", "Kalan"), value: remaining },
-        { label: L("watchlistPreviewFinishAt", "Bitiş"), value: finishTime },
+        { label: L("watchlistPreviewFinishAt", "Finish time"), value: finishTime },
         { label: L("watchlistPreviewVideoQuality", "Video"), value: videoQuality || text(item?.MediaType || baseItem.mediaType) },
-        { label: L("yonetmen", "Yönetmen"), value: directors.join(", ") },
-        { label: L("watchlistPreviewStudio", "Stüdyo"), value: studios.join(", ") || albumArtist || albumName }
+        { label: L("yonetmen", "Director"), value: directors.join(", ") },
+        { label: L("watchlistPreviewStudio", "Studio"), value: studios.join(", ") || albumArtist || albumName }
       ].filter((entry) => text(entry?.value));
 
   const mediaFields = isCollection
     ? []
     : [
         { label: L("watchlistPreviewVideoTrack", "Video"), value: videoQuality },
-        { label: L("watchlistPreviewAudioCount", "Ses"), value: audioTracks.length ? `${audioTracks.length} ${L("watchlistPreviewTrackSuffix", "parça")}` : "" },
-        { label: L("watchlistPreviewSubtitleCount", "Altyazı"), value: subtitleTracks.length ? `${subtitleTracks.length} ${L("watchlistPreviewTrackSuffix", "parça")}` : "" }
+        { label: L("watchlistPreviewAudioCount", "Audio"), value: audioTracks.length ? `${audioTracks.length} ${L("watchlistPreviewTrackSuffix", "tracks")}` : "" },
+        { label: L("watchlistPreviewSubtitleCount", "Subtitles"), value: subtitleTracks.length ? `${subtitleTracks.length} ${L("watchlistPreviewTrackSuffix", "tracks")}` : "" }
       ];
 
   const creditFields = isCollection
     ? []
     : [
-        { label: L("yonetmen", "Yönetmen"), value: directors.join(", ") },
-        { label: L("watchlistPreviewWriter", "Yazar"), value: writers.join(", ") },
-        { label: L("watchlistPreviewActors", "Oyuncular"), value: actors.join(", ") },
-        { label: L("watchlistPreviewArtists", "Sanatçılar"), value: artists.join(", ") },
-        { label: L("watchlistPreviewAlbum", "Albüm"), value: albumName },
-        { label: L("watchlistPreviewAlbumArtist", "Albüm Sanatçısı"), value: albumArtist }
+        { label: L("yonetmen", "Director"), value: directors.join(", ") },
+        { label: L("watchlistPreviewWriter", "Writer"), value: writers.join(", ") },
+        { label: L("watchlistPreviewActors", "Cast"), value: actors.join(", ") },
+        { label: L("watchlistPreviewArtists", "Artists"), value: artists.join(", ") },
+        { label: L("watchlistPreviewAlbum", "Album"), value: albumName },
+        { label: L("watchlistPreviewAlbumArtist", "Album Artist"), value: albumArtist }
       ];
 
   const chips = isCollection
     ? [
-        collectionTotal ? `${collectionTotal} ${L("watchlistPreviewCollectionItemSuffix", "öğe")}` : "",
+        collectionTotal ? `${collectionTotal} ${L("watchlistPreviewCollectionItemSuffix", "items")}` : "",
         collectionYears,
         collectionRating,
         officialRating
@@ -5409,7 +5409,7 @@ function renderPreviewPanel(view, details, { loading = false, collectionLoading 
                   <div class="monwuiwl-preview-progress-bar" style="width:${Math.max(0, Math.min(100, progressPercent))}%"></div>
                 </div>
                 <div class="monwuiwl-preview-progress-copy">
-                  ${escapeHtml(`${progressPercent}% ${L("watchlistPreviewWatched", "izlendi")}${remaining ? ` • ${remaining} ${L("watchlistPreviewLeft", "kaldı")}` : ""}`)}
+                  ${escapeHtml(`${progressPercent}% ${L("watchlistPreviewWatched", "watched")}${remaining ? ` • ${remaining} ${L("watchlistPreviewLeft", "left")}` : ""}`)}
                 </div>
               </div>
             ` : ""}
@@ -5417,17 +5417,17 @@ function renderPreviewPanel(view, details, { loading = false, collectionLoading 
         </div>
       </div>
       <div class="monwuiwl-preview-body">
-        ${loading ? `<div class="monwuiwl-preview-loading">${escapeHtml(L("watchlistPreviewLoading", "Detaylar yükleniyor"))}</div>` : ""}
-        ${note ? `<p class="monwuiwl-preview-note"><strong>${escapeHtml(L("watchlistShareNote", "Not"))}:</strong> ${escapeHtml(note)}</p>` : ""}
+        ${loading ? `<div class="monwuiwl-preview-loading">${escapeHtml(L("watchlistPreviewLoading", "Loading details..."))}</div>` : ""}
+        ${note ? `<p class="monwuiwl-preview-note"><strong>${escapeHtml(L("watchlistShareNote", "Note"))}:</strong> ${escapeHtml(note)}</p>` : ""}
         <p class="monwuiwl-preview-overview">${escapeHtml(overview)}</p>
         ${hasContainerPreview ? renderCollectionPreviewSection(collectionItems, collectionTotal, { loading: collectionLoading, mode: containerMode }) : ""}
         ${renderPreviewStats(stats)}
-        ${renderPreviewFieldSection(L("watchlistPreviewMediaSection", "Medya Özeti"), mediaFields)}
-        ${renderPreviewListSection(L("watchlistPreviewAudioTracks", "Ses Parçaları"), audioTracks)}
-        ${renderPreviewListSection(L("watchlistPreviewSubtitleTracks", "Altyazılar"), subtitleTracks)}
-        ${renderPreviewFieldSection(L("watchlistPreviewCredits", "Künye"), creditFields)}
-        ${renderPreviewTagSection(L("genre", "Tür"), genres)}
-        ${renderPreviewStudioSection(L("watchlistPreviewStudios", "Stüdyolar"), studioEntries)}
+        ${renderPreviewFieldSection(L("watchlistPreviewMediaSection", "Media Overview"), mediaFields)}
+        ${renderPreviewListSection(L("watchlistPreviewAudioTracks", "Audio tracks"), audioTracks)}
+        ${renderPreviewListSection(L("watchlistPreviewSubtitleTracks", "Subtitle tracks"), subtitleTracks)}
+        ${renderPreviewFieldSection(L("watchlistPreviewCredits", "Credits"), creditFields)}
+        ${renderPreviewTagSection(L("genre", "Genre"), genres)}
+        ${renderPreviewStudioSection(L("watchlistPreviewStudios", "Studios"), studioEntries)}
       </div>
     </div>
   `;
@@ -5524,11 +5524,11 @@ async function startWatchlistPlayback(triggerEl, itemId) {
       if (getLastPlayNowBlockReason() === "parental-pin") {
         return false;
       }
-      throw new Error(L("playStartFailed", "Oynatma başlatılamadı"));
+      throw new Error(L("playStartFailed", "Playback could not be started."));
     }
     return true;
   } catch (error) {
-    window.showMessage?.(error?.message || L("playStartFailed", "Oynatma başlatılamadı"), "error");
+    window.showMessage?.(error?.message || L("playStartFailed", "Playback could not be started."), "error");
     return false;
   } finally {
     if (triggerEl) triggerEl.disabled = false;
@@ -5821,8 +5821,8 @@ function mergeLiveItem(entry, live) {
     itemId: text(item?.Id || base?.ItemId),
     itemType: type,
     mediaType: text(item?.MediaType || base?.MediaType),
-    name: text(item?.Name || base?.Name, L("untitled", "İsimsiz")),
-    overview: text(item?.Overview || base?.Overview, L("noDescription", "Açıklama yok.")),
+    name: text(item?.Name || base?.Name, L("untitled", "Untitled")),
+    overview: text(item?.Overview || base?.Overview, L("noDescription", "No description.")),
     productionYear: item?.ProductionYear ?? base?.ProductionYear ?? "",
     runtimeTicks: item?.RunTimeTicks ?? item?.CumulativeRunTimeTicks ?? base?.RunTimeTicks ?? base?.CumulativeRunTimeTicks ?? 0,
     communityRating: item?.CommunityRating ?? base?.CommunityRating ?? null,
@@ -5916,7 +5916,7 @@ async function buildViewModel(dashboard) {
       key: `shared:${shareId}`,
       shareId,
       itemId,
-      ownerUserName: text(shared?.OwnerUserName || shared?.ownerUserName, L("unknownUser", "Bilinmeyen kullanıcı")),
+      ownerUserName: text(shared?.OwnerUserName || shared?.ownerUserName, L("unknownUser", "Unknown user")),
       note: text(shared?.Note || shared?.note),
       sharedAtUtc,
       item: merged
@@ -5985,7 +5985,7 @@ async function buildPartialWatchlistItemModel(itemId, dashboard = dashboardCache
       key: `shared:${shareId}`,
       shareId,
       itemId: id,
-      ownerUserName: text(shared?.OwnerUserName || shared?.ownerUserName, L("unknownUser", "Bilinmeyen kullanıcı")),
+      ownerUserName: text(shared?.OwnerUserName || shared?.ownerUserName, L("unknownUser", "Unknown user")),
       note: text(shared?.Note || shared?.note),
       sharedAtUtc: Number(shared?.SharedAtUtc || shared?.sharedAtUtc || 0),
       item: merged
@@ -6099,15 +6099,15 @@ function renderShareSummary(outgoingShares = []) {
 
   if (!names.length) return "";
 
-  return `<div class="monwuiwl-item-sharemeta">${escapeHtml(L("watchlistSharedWith", "Paylaşıldı"))}: ${escapeHtml(names.join(", "))}</div>`;
+  return `<div class="monwuiwl-item-sharemeta">${escapeHtml(L("watchlistSharedWith", "Shared with"))}: ${escapeHtml(names.join(", "))}</div>`;
 }
 
 function getShareOverlayTitle(view) {
   const itemName = text(view?.item?.name || view?.item?.parentName);
   if (!itemName) {
-    return L("watchlistShareTitle", "İzleme listesi öğesini paylaş");
+    return L("watchlistShareTitle", "Share watchlist item");
   }
-  return `${L("watchlistShareAction", "Paylaş")}: ${itemName}`;
+  return `${L("watchlistShareAction", "Share")}: ${itemName}`;
 }
 
 function renderItemCard(view) {
@@ -6121,8 +6121,8 @@ function renderItemCard(view) {
     ? `★ ${Number(item.communityRating).toFixed(1)}`
     : "";
   const official = text(item.officialRating);
-  const typeLabel = item.itemType || L("content", "İçerik");
-  const playedText = isPlayed ? L("played", "İzlendi") : "";
+  const typeLabel = item.itemType || L("content", "Content");
+  const playedText = isPlayed ? L("played", "Watched") : "";
   const meta = [typeLabel, year, runtime, rating, official, playedText].filter(Boolean).join(" • ");
   const tags = (item.genres || []).slice(0, 3);
   const poster = item.posterUrl
@@ -6136,15 +6136,15 @@ function renderItemCard(view) {
       : (item.parentName ? escapeHtml(item.parentName) : "");
 
   const noteHtml = view.kind === "shared" && view.note
-    ? `<div class="monwuiwl-item-sharemeta"><strong>${escapeHtml(L("watchlistShareNote", "Not"))}:</strong> ${escapeHtml(view.note)}</div>`
+    ? `<div class="monwuiwl-item-sharemeta"><strong>${escapeHtml(L("watchlistShareNote", "Note"))}:</strong> ${escapeHtml(view.note)}</div>`
     : "";
 
   const shareMeta = view.kind === "shared"
-    ? `<div class="monwuiwl-item-sharemeta">${escapeHtml(L("watchlistSharedBy", "Paylaşan"))}: ${escapeHtml(view.ownerUserName)}${view.sharedAtUtc ? ` • ${escapeHtml(formatDate(view.sharedAtUtc))}` : ""}</div>`
+    ? `<div class="monwuiwl-item-sharemeta">${escapeHtml(L("watchlistSharedBy", "Shared by"))}: ${escapeHtml(view.ownerUserName)}${view.sharedAtUtc ? ` • ${escapeHtml(formatDate(view.sharedAtUtc))}` : ""}</div>`
     : renderShareSummary(view.outgoingShares);
 
   const secondaryAction = view.kind === "own" && isWatchlistSharingEnabled()
-    ? `<button class="monwuiwl-btn" data-monwuiwl-share="${escapeHtml(view.itemId)}">${escapeHtml(L("watchlistShareAction", "Paylaş"))}</button>`
+    ? `<button class="monwuiwl-btn" data-monwuiwl-share="${escapeHtml(view.itemId)}">${escapeHtml(L("watchlistShareAction", "Share"))}</button>`
     : "";
 
   return `
@@ -6164,7 +6164,7 @@ function renderItemCard(view) {
         <div class="monwuiwl-item-actions">
           <button class="monwuiwl-btn primary" data-monwuiwl-play-now="${escapeHtml(view.itemId)}">${escapeHtml(playActionLabel)}</button>
           ${secondaryAction}
-          <button class="monwuiwl-btn danger" data-monwuiwl-remove="${escapeHtml(view.kind === "shared" ? view.shareId : view.itemId)}" data-monwuiwl-remove-kind="${escapeHtml(view.kind)}">${escapeHtml(L("watchlistRemoveAction", "Kaldır"))}</button>
+          <button class="monwuiwl-btn danger" data-monwuiwl-remove="${escapeHtml(view.kind === "shared" ? view.shareId : view.itemId)}" data-monwuiwl-remove-kind="${escapeHtml(view.kind)}">${escapeHtml(L("watchlistRemoveAction", "Remove"))}</button>
         </div>
       </div>
     </article>
@@ -6205,7 +6205,7 @@ function renderSection(title, items, sectionKey = "") {
         <div class="monwuiwl-section-head">
           <h3 class="monwuiwl-section-title">${escapeHtml(sectionTitle)}</h3>
         </div>
-        <div class="monwuiwl-empty">${escapeHtml(L("watchlistEmptySection", "Burada henüz öğe yok."))}</div>
+        <div class="monwuiwl-empty">${escapeHtml(L("watchlistEmptySection", "No Items Here Yet."))}</div>
       </section>
     `;
   }
@@ -6220,7 +6220,7 @@ function renderSection(title, items, sectionKey = "") {
         <h3 class="monwuiwl-section-title">${escapeHtml(sectionTitle)}</h3>
       </div>
       <div class="monwuiwl-grid" ${sectionKey ? `data-monwuiwl-section-grid="${escapeHtml(sectionKey)}"` : ""}>${initialItems.map(renderItemCard).join("")}</div>
-      ${showLoader ? `<div class="monwuiwl-loading" data-monwuiwl-section-loading="${escapeHtml(sectionKey)}">${escapeHtml(L("loading", "Yükleniyor..."))}</div>` : ""}
+      ${showLoader ? `<div class="monwuiwl-loading" data-monwuiwl-section-loading="${escapeHtml(sectionKey)}">${escapeHtml(L("loading", "Loading..."))}</div>` : ""}
     </section>
   `;
 }
@@ -6230,11 +6230,11 @@ function getRenderedTabData(model, activeTab) {
   const ownItems = model?.[currentTab]?.own || [];
   const sharedItems = model?.[currentTab]?.shared || [];
   const ownTitle = currentTab === "albums"
-    ? L("watchlistOwnAlbums", "Albüm listen")
+    ? L("watchlistOwnAlbums", "Your album watchlist")
     : L("watchlistOwnItems", "Senin listen");
   const sharedTitle = currentTab === "albums"
-    ? L("watchlistSharedAlbums", "Seninle paylaşılan albümler")
-    : L("watchlistSharedItems", "Seninle paylaşılanlar");
+    ? L("watchlistSharedAlbums", "Albums shared with you")
+    : L("watchlistSharedItems", "Shared with you");
 
   return {
     currentTab,
@@ -6331,13 +6331,13 @@ function renderModalShell(model, activeTab) {
       <div class="monwuiwl-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(tabTitle)}">
         <div class="monwuiwl-header">
           <div>
-            <h2 class="monwuiwl-title">${escapeHtml(L("watchlistOpen", "İzleme Listesi"))}</h2>
-            <p class="monwuiwl-subtitle">${escapeHtml(L("watchlistModalSubtitle", "Öğeler cihazdan bağımsız sunucu tarafında tutulur. İstersen diğer kullanıcılarla not ekleyerek paylaşabilirsin."))}</p>
+            <h2 class="monwuiwl-title">${escapeHtml(L("watchlistOpen", "Watchlist"))}</h2>
+            <p class="monwuiwl-subtitle">${escapeHtml(L("watchlistModalSubtitle", "Share items if you like. Adding a note is optional."))}</p>
           </div>
           <div class="monwuiwl-header-actions">
             ${renderSmartFillCountMarkup()}
             ${renderSmartFillButtonMarkup()}
-            <button class="monwuiwl-close" data-monwuiwl-close="1" aria-label="${escapeHtml(L("closeButton", "Kapat"))}">✕</button>
+            <button class="monwuiwl-close" data-monwuiwl-close="1" aria-label="${escapeHtml(L("closeButton", "Close"))}">✕</button>
           </div>
         </div>
 
@@ -6539,7 +6539,7 @@ function updateWatchlistSectionAfterRemoval(root, sectionKey, title, items, chan
       const loader = document.createElement("div");
       loader.className = "monwuiwl-loading";
       loader.setAttribute("data-monwuiwl-section-loading", sectionKey);
-      loader.textContent = L("loading", "Yükleniyor...");
+      loader.textContent = L("loading", "Loading...");
       section.appendChild(loader);
     }
 
@@ -6886,18 +6886,18 @@ async function renderWatchlistModal(root, state = {}) {
     } else {
       root.innerHTML = `
         <div class="monwuiwl-backdrop">
-          <div class="monwuiwl-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("watchlistOpen", "İzleme Listesi"))}">
+          <div class="monwuiwl-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("watchlistOpen", "Watchlist"))}">
             <div class="monwuiwl-header">
               <div>
-                <h2 class="monwuiwl-title">${escapeHtml(L("watchlistOpen", "İzleme Listesi"))}</h2>
-                <p class="monwuiwl-subtitle">${escapeHtml(L("loading", "Yükleniyor..."))}</p>
+                <h2 class="monwuiwl-title">${escapeHtml(L("watchlistOpen", "Watchlist"))}</h2>
+                <p class="monwuiwl-subtitle">${escapeHtml(L("loading", "Loading..."))}</p>
               </div>
               <div class="monwuiwl-header-actions">
-                <button class="monwuiwl-close" data-monwuiwl-close="1" aria-label="${escapeHtml(L("closeButton", "Kapat"))}">✕</button>
+                <button class="monwuiwl-close" data-monwuiwl-close="1" aria-label="${escapeHtml(L("closeButton", "Close"))}">✕</button>
               </div>
             </div>
             <div class="monwuiwl-body">
-              <div class="monwuiwl-loading">${escapeHtml(L("loading", "Yükleniyor..."))}</div>
+              <div class="monwuiwl-loading">${escapeHtml(L("loading", "Loading..."))}</div>
             </div>
           </div>
         </div>
@@ -6928,18 +6928,18 @@ async function renderWatchlistModal(root, state = {}) {
     if (root.__renderToken !== renderToken) return;
     root.innerHTML = `
       <div class="monwuiwl-backdrop">
-        <div class="monwuiwl-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("watchlistOpen", "İzleme Listesi"))}">
+        <div class="monwuiwl-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("watchlistOpen", "Watchlist"))}">
           <div class="monwuiwl-header">
             <div>
-              <h2 class="monwuiwl-title">${escapeHtml(L("watchlistOpen", "İzleme Listesi"))}</h2>
-              <p class="monwuiwl-subtitle">${escapeHtml(L("watchlistLoadError", "İzleme listesi yüklenemedi."))}</p>
+              <h2 class="monwuiwl-title">${escapeHtml(L("watchlistOpen", "Watchlist"))}</h2>
+              <p class="monwuiwl-subtitle">${escapeHtml(L("watchlistLoadError", "Unable to load the watchlist."))}</p>
             </div>
             <div class="monwuiwl-header-actions">
-              <button class="monwuiwl-close" data-monwuiwl-close="1" aria-label="${escapeHtml(L("closeButton", "Kapat"))}">✕</button>
+              <button class="monwuiwl-close" data-monwuiwl-close="1" aria-label="${escapeHtml(L("closeButton", "Close"))}">✕</button>
             </div>
           </div>
           <div class="monwuiwl-body">
-            <div class="monwuiwl-error">${escapeHtml(error?.message || L("watchlistLoadError", "İzleme listesi yüklenemedi."))}</div>
+            <div class="monwuiwl-error">${escapeHtml(error?.message || L("watchlistLoadError", "Unable to load the watchlist."))}</div>
           </div>
         </div>
       </div>
@@ -7082,8 +7082,8 @@ function bindModalInteractions(root) {
         }, 1400);
       } else {
         const message = studioName
-          ? `${studioName}: ${L("watchlistPreviewStudioCopyFailed", "Studio ID kopyalanamadı.")}`
-          : L("watchlistPreviewStudioCopyFailed", "Studio ID kopyalanamadı.");
+          ? `${studioName}: ${L("watchlistPreviewStudioCopyFailed", "Studio ID could not be copied.")}`
+          : L("watchlistPreviewStudioCopyFailed", "Studio ID could not be copied.");
         notifyStudioHubResult(message, "error", "clipboard", 2400);
       }
 
@@ -7094,8 +7094,8 @@ function bindModalInteractions(root) {
 
           if (autoAddResult?.attempted && autoAddResult?.added === false && autoAddResult?.existing !== true) {
             const message = studioName
-              ? `${studioName}: ${text(autoAddResult?.error?.message, L("watchlistPreviewStudioAutoAddFailed", "Koleksiyon otomatik eklenemedi."))}`
-              : text(autoAddResult?.error?.message, L("watchlistPreviewStudioAutoAddFailed", "Koleksiyon otomatik eklenemedi."));
+              ? `${studioName}: ${text(autoAddResult?.error?.message, L("watchlistPreviewStudioAutoAddFailed", "The studio collection could not be added automatically."))}`
+              : text(autoAddResult?.error?.message, L("watchlistPreviewStudioAutoAddFailed", "The studio collection could not be added automatically."));
             notifyStudioHubResult(message, "error", "triangle-exclamation", 3200);
             return;
           }
@@ -7106,40 +7106,40 @@ function bindModalInteractions(root) {
 
           if (autoAddResult?.added && logoResult?.uploaded) {
             const message = studioName
-              ? `${studioName}: ${L("watchlistPreviewStudioAutoAdded", "Koleksiyon listesine otomatik kaydedildi.")} ${L("watchlistPreviewStudioTmdbLogoSaved", "TMDb logosu da otomatik kaydedildi.")}`
-              : `${L("watchlistPreviewStudioAutoAdded", "Koleksiyon listesine otomatik kaydedildi.")} ${L("watchlistPreviewStudioTmdbLogoSaved", "TMDb logosu da otomatik kaydedildi.")}`;
+              ? `${studioName}: ${L("watchlistPreviewStudioAutoAdded", "Saved to the collection list automatically.")} ${L("watchlistPreviewStudioTmdbLogoSaved", "The TMDb logo was saved automatically as well.")}`
+              : `${L("watchlistPreviewStudioAutoAdded", "Saved to the collection list automatically.")} ${L("watchlistPreviewStudioTmdbLogoSaved", "The TMDb logo was saved automatically as well.")}`;
             notifyStudioHubResult(message, "success", "building", 3000);
             return;
           }
 
           if (autoAddResult?.existing && logoResult?.uploaded) {
             const message = studioName
-              ? `${studioName}: ${L("manualCollectionDuplicate", "Bu koleksiyon zaten ekli.")} ${L("watchlistPreviewStudioTmdbLogoSavedSingle", "TMDb logosu otomatik kaydedildi.")}`
-              : `${L("manualCollectionDuplicate", "Bu koleksiyon zaten ekli.")} ${L("watchlistPreviewStudioTmdbLogoSavedSingle", "TMDb logosu otomatik kaydedildi.")}`;
+              ? `${studioName}: ${L("manualCollectionDuplicate", "This collection is already added.")} ${L("watchlistPreviewStudioTmdbLogoSavedSingle", "The TMDb logo was saved automatically.")}`
+              : `${L("manualCollectionDuplicate", "This collection is already added.")} ${L("watchlistPreviewStudioTmdbLogoSavedSingle", "The TMDb logo was saved automatically.")}`;
             notifyStudioHubResult(message, "success", "building", 3000);
             return;
           }
 
           if (autoAddResult?.added) {
             const message = studioName
-              ? `${studioName}: ${L("watchlistPreviewStudioAutoAdded", "Koleksiyon listesine otomatik kaydedildi.")}`
-              : L("watchlistPreviewStudioAutoAdded", "Koleksiyon listesine otomatik kaydedildi.");
+              ? `${studioName}: ${L("watchlistPreviewStudioAutoAdded", "Saved to the collection list automatically.")}`
+              : L("watchlistPreviewStudioAutoAdded", "Saved to the collection list automatically.");
             notifyStudioHubResult(message, "success", "building", 2600);
             return;
           }
 
           if (autoAddResult?.existing) {
             const message = studioName
-              ? `${studioName}: ${L("manualCollectionDuplicate", "Bu koleksiyon zaten ekli.")}`
-              : L("manualCollectionDuplicate", "Bu koleksiyon zaten ekli.");
+              ? `${studioName}: ${L("manualCollectionDuplicate", "This collection is already added.")}`
+              : L("manualCollectionDuplicate", "This collection is already added.");
             notifyStudioHubResult(message, "success", "building", 2600);
             return;
           }
 
           if (logoResult?.uploaded) {
             const message = studioName
-              ? `${studioName}: ${L("watchlistPreviewStudioTmdbLogoSavedSingle", "TMDb logosu otomatik kaydedildi.")}`
-              : L("watchlistPreviewStudioTmdbLogoSavedSingle", "TMDb logosu otomatik kaydedildi.");
+              ? `${studioName}: ${L("watchlistPreviewStudioTmdbLogoSavedSingle", "The TMDb logo was saved automatically.")}`
+              : L("watchlistPreviewStudioTmdbLogoSavedSingle", "The TMDb logo was saved automatically.");
             notifyStudioHubResult(message, "success", "image", 2600);
           }
         } finally {
@@ -7191,9 +7191,9 @@ function bindModalInteractions(root) {
             played: isMarkedPlayed(playableItem)
           });
         }
-        window.showMessage?.(L("watchlistRemoved", "Öğe listeden çıkarıldı"), "success");
+        window.showMessage?.(L("watchlistRemoved", "Item removed from your list"), "success");
       } catch (error) {
-        window.showMessage?.(error?.message || L("watchlistActionError", "İşlem başarısız"), "error");
+        window.showMessage?.(error?.message || L("watchlistActionError", "Unable to complete the action"), "error");
       } finally {
         removeButton.disabled = false;
       }
@@ -7240,7 +7240,7 @@ function normalizeShareOverlayHost(root) {
 async function openShareOverlay(root, itemId) {
   ensureStyles();
   if (!isWatchlistSharingEnabled()) {
-    window.showMessage?.(L("watchlistSharingDisabled", "İzleme listesi paylaşımı kapalı"), "info");
+    window.showMessage?.(L("watchlistSharingDisabled", "Watchlist sharing is disabled"), "info");
     return;
   }
 
@@ -7256,7 +7256,7 @@ async function openShareOverlay(root, itemId) {
     allOwnItems.find((item) => text(item?.itemId) === itemId);
 
   if (!view) {
-    window.showMessage?.(L("watchlistItemMissing", "Paylaşılacak öğe bulunamadı"), "error");
+    window.showMessage?.(L("watchlistItemMissing", "Unable to find the item to share"), "error");
     return;
   }
 
@@ -7266,11 +7266,11 @@ async function openShareOverlay(root, itemId) {
 export async function openWatchlistShareOverlayForItem(item, options = {}) {
   ensureStyles();
   if (!isWatchlistSharingEnabled()) {
-    throw new Error(L("watchlistSharingDisabled", "İzleme listesi paylaşımı kapalı"));
+    throw new Error(L("watchlistSharingDisabled", "Watchlist sharing is disabled"));
   }
 
   const itemId = text(options?.itemId || item?.Id || item?.ItemId || item?.itemId);
-  if (!itemId) throw new Error("itemId gerekli");
+  if (!itemId) throw new Error("itemId is required");
 
   const users = await fetchShareableUsers();
   const view = createShareViewFromItem(item, itemId);
@@ -7288,7 +7288,7 @@ function openShareOverlayForView(root, itemId, view, users, options = {}) {
   overlay.innerHTML = `
     <div class="monwuiwl-share-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(shareTitle)}">
       <h3 class="monwuiwl-share-title">${escapeHtml(shareTitle)}</h3>
-      <p class="monwuiwl-share-help">${escapeHtml(L("watchlistShareSubtitle", "Birden fazla kullanıcı seçebilir ve paylaşım sırasında kısa bir not ekleyebilirsin."))}</p>
+      <p class="monwuiwl-share-help">${escapeHtml(L("watchlistShareSubtitle", "You can select multiple users and include a short note before sharing."))}</p>
       <div class="monwuiwl-share-list">
         ${users.length
           ? users.map((user) => `
@@ -7297,14 +7297,14 @@ function openShareOverlayForView(root, itemId, view, users, options = {}) {
               <span>${escapeHtml(user.name)}</span>
             </label>
           `).join("")
-          : `<div class="monwuiwl-empty">${escapeHtml(L("watchlistNoUsers", "Paylaşılacak kullanıcı bulunamadı."))}</div>`
+          : `<div class="monwuiwl-empty">${escapeHtml(L("watchlistNoUsers", "No users are available to share with."))}</div>`
         }
       </div>
-      <label class="monwuiwl-share-note-label" for="monwuiwl-share-note">${escapeHtml(L("watchlistShareNoteLabel", "Paylaşım notu"))}</label>
-      <textarea id="monwuiwl-share-note" class="monwuiwl-share-note" placeholder="${escapeHtml(L("watchlistShareNotePlaceholder", "İstersen kısa bir not bırakabilirsin."))}"></textarea>
+      <label class="monwuiwl-share-note-label" for="monwuiwl-share-note">${escapeHtml(L("watchlistShareNoteLabel", "Sharing note"))}</label>
+      <textarea id="monwuiwl-share-note" class="monwuiwl-share-note" placeholder="${escapeHtml(L("watchlistShareNotePlaceholder", "Leave a short note if you wish."))}"></textarea>
       <div class="monwuiwl-share-footer">
-        <button class="monwuiwl-share-cancel" type="button">${escapeHtml(L("cancel", "İptal"))}</button>
-        <button class="monwuiwl-share-submit" type="button">${escapeHtml(L("watchlistShareAction", "Paylaş"))}</button>
+        <button class="monwuiwl-share-cancel" type="button">${escapeHtml(L("cancel", "Cancel"))}</button>
+        <button class="monwuiwl-share-submit" type="button">${escapeHtml(L("watchlistShareAction", "Share"))}</button>
       </div>
     </div>
   `;
@@ -7329,7 +7329,7 @@ function openShareOverlayForView(root, itemId, view, users, options = {}) {
     const note = text(overlay.querySelector(".monwuiwl-share-note")?.value);
 
     if (!selectedIds.length) {
-      window.showMessage?.(L("watchlistSelectUsers", "En az bir kullanıcı seç"), "error");
+      window.showMessage?.(L("watchlistSelectUsers", "Select at least one user"), "error");
       return;
     }
 
@@ -7340,10 +7340,10 @@ function openShareOverlayForView(root, itemId, view, users, options = {}) {
         item: options?.item,
         snapshot: options?.snapshot
       });
-      window.showMessage?.(L("watchlistSharedSuccess", "Öğe kullanıcılarla paylaşıldı"), "success");
+      window.showMessage?.(L("watchlistSharedSuccess", "Item shared with the selected users"), "success");
       closeOverlay();
     } catch (error) {
-      window.showMessage?.(error?.message || L("watchlistShareError", "Paylaşım başarısız"), "error");
+      window.showMessage?.(error?.message || L("watchlistShareError", "Unable to share the item"), "error");
     } finally {
       submitButton.disabled = false;
     }
@@ -7453,7 +7453,7 @@ function refreshTabsSliderButton() {
     return true;
   }
 
-  const label = L("watchlistOpen", "İzleme Listesi");
+  const label = L("watchlistOpen", "Watchlist");
   const legacyMarkup = getWatchlistTabsButtonMarkup(label);
   const muiMarkup = getWatchlistMuiTabsButtonMarkup(label);
 

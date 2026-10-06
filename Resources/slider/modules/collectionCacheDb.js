@@ -1,4 +1,4 @@
-import { getSessionInfo } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { createScopedJsonDb, prepareLegacyIndexedDbForDeletion } from "./scopedJsonCache.js";
 
 const DB_NAME = "jms_collection_cache";

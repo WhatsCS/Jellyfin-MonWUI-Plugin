@@ -3,14 +3,14 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Jellyfin.Plugin.JMSFusion.Core;
+using Jellyfin.Plugin.JMSFusionV2.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("Plugins/JMSFusion/ScopedCache")]
+    [Route("Plugins/JMSFusionV2/ScopedCache")]
     public class ScopedCacheController : ControllerBase
     {
         private readonly ScopedCacheJsonService _cacheService;
@@ -54,7 +54,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[JMSFusion] Scoped cache read failed for {CacheType}", normalizedCacheType);
+                _logger.LogError(ex, "[JMSFusionV2] Scoped cache read failed for {CacheType}", normalizedCacheType);
                 return StatusCode(500, new { ok = false, error = ex.Message });
             }
         }
@@ -87,7 +87,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[JMSFusion] Scoped cache write failed for {CacheType}", normalizedCacheType);
+                _logger.LogError(ex, "[JMSFusionV2] Scoped cache write failed for {CacheType}", normalizedCacheType);
                 return StatusCode(500, new { ok = false, error = ex.Message });
             }
         }
@@ -115,7 +115,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[JMSFusion] Scoped cache delete failed for {CacheType}", normalizedCacheType);
+                _logger.LogError(ex, "[JMSFusionV2] Scoped cache delete failed for {CacheType}", normalizedCacheType);
                 return StatusCode(500, new { ok = false, error = ex.Message });
             }
         }

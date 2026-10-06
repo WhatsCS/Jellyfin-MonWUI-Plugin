@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/comments")]
-    [Route("Plugins/JMSFusion/comments")]
+    [Route("JMSFusionV2/comments")]
+    [Route("Plugins/JMSFusionV2/comments")]
     public class CommentsController : ControllerBase
     {
         private static readonly object SyncRoot = new();
@@ -32,18 +32,18 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanItemId = Clean(itemId);
             if (string.IsNullOrWhiteSpace(cleanItemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
 
@@ -76,24 +76,24 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanItemId = Clean(itemId);
             if (string.IsNullOrWhiteSpace(cleanItemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             var content = NormalizeContent(req?.Content);
             if (string.IsNullOrWhiteSpace(content))
             {
-                return BadRequest(new { ok = false, error = "content gerekli" });
+                return BadRequest(new { ok = false, error = "Content is required" });
             }
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -170,25 +170,25 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanCommentId = Clean(commentId);
             if (string.IsNullOrWhiteSpace(cleanCommentId))
             {
-                return BadRequest(new { ok = false, error = "commentId gerekli" });
+                return BadRequest(new { ok = false, error = "commentId is required" });
             }
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
 
                 var comment = cfg.ItemComments.FirstOrDefault(entry => Same(entry.Id, cleanCommentId));
                 if (comment is null)
                 {
-                    return NotFound(new { ok = false, error = "yorum bulunamadı" });
+                    return NotFound(new { ok = false, error = "Comment not found" });
                 }
 
                 if (!Same(comment.OwnerUserId, user.UserId))
@@ -214,7 +214,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             }
         }
 
-        private static bool NormalizeConfig(JMSFusionConfiguration cfg)
+        private static bool NormalizeConfig(JMSFusionV2Configuration cfg)
         {
             var changed = false;
 
@@ -296,7 +296,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return source;
         }
 
-        private static bool TrimCommentsForItem(JMSFusionConfiguration cfg, string itemId)
+        private static bool TrimCommentsForItem(JMSFusionV2Configuration cfg, string itemId)
         {
             var comments = cfg.ItemComments
                 .Where(comment => Same(comment.ItemId, itemId))
@@ -317,7 +317,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 removeIds.Contains(Clean(comment.Id))) > 0;
         }
 
-        private static bool TrimTotalComments(JMSFusionConfiguration cfg)
+        private static bool TrimTotalComments(JMSFusionV2Configuration cfg)
         {
             var comments = cfg.ItemComments
                 .OrderByDescending(CommentSortTimestamp)
@@ -340,7 +340,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return Math.Max(comment?.UpdatedAtUtc ?? 0, comment?.CreatedAtUtc ?? 0);
         }
 
-        private static void TouchRevision(JMSFusionConfiguration cfg)
+        private static void TouchRevision(JMSFusionV2Configuration cfg)
         {
             cfg.ItemCommentsRevision = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
@@ -353,7 +353,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 "";
 
             var userName =
-                Request.Headers["X-JMSFusion-UserName"].FirstOrDefault() ??
+                Request.Headers["X-JMSFusionV2-UserName"].FirstOrDefault() ??
                 Request.Headers["X-Emby-UserName"].FirstOrDefault() ??
                 "";
 

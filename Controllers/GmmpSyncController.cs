@@ -9,11 +9,11 @@ using Jellyfin.Database.Implementations.Enums;
 using MediaBrowser.Controller.Library;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/gmmp")]
-    [Route("Plugins/JMSFusion/gmmp")]
+    [Route("JMSFusionV2/gmmp")]
+    [Route("Plugins/JMSFusionV2/gmmp")]
     public class GmmpSyncController : ControllerBase
     {
         private static readonly ConcurrentDictionary<string, GmmpStateRecord> StateRecords =
@@ -133,7 +133,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return BadRequest(new
                 {
                     ok = false,
-                    error = "SessionId veya DeviceId gerekli."
+                    error = "SessionId or DeviceId is required."
                 });
             }
 
@@ -192,7 +192,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             CleanupExpiredEntries();
 
-            var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+            var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
             var cfg = plugin.Configuration;
             var isAdmin = IsAdminUser(userCheck.User);
 
@@ -261,7 +261,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return BadRequest(new
                 {
                     ok = false,
-                    error = "SessionId/DeviceId ve Name gerekli."
+                    error = "SessionId/DeviceId and Name are required."
                 });
             }
 
@@ -319,7 +319,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return BadRequest(new
                 {
                     ok = false,
-                    error = "SessionId veya DeviceId gerekli."
+                    error = "SessionId or DeviceId is required."
                 });
             }
 
@@ -333,7 +333,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return StatusCode(403, new
                 {
                     ok = false,
-                    error = "Bu GMMP oturumu icin erisim yok."
+                    error = "Access denied for this GMMP session."
                 });
             }
 
@@ -536,7 +536,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return (null, Guid.Empty, Unauthorized(new
                 {
                     ok = false,
-                    error = "X-Emby-UserId gerekli."
+                    error = "X-Emby-UserId is required."
                 }));
             }
 
@@ -546,7 +546,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return (null, Guid.Empty, Unauthorized(new
                 {
                     ok = false,
-                    error = "Kullanici bulunamadi."
+                    error = "User not found."
                 }));
             }
 

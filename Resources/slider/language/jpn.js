@@ -210,7 +210,7 @@ export const languageLabels = {
   cinemaPreRollOverlayHint: "音声が自動的に開始しない場合は、画面をタップしてください。Esc キーですぐにスキップできます。",
   dbManagementTab: "DB 管理",
   dbManagementDescription: "ここからサーバーに保存されているスコープ付き JSON キャッシュファイルのバックアップ、復元、または削除を行えます。",
-  dbManagementBlockedHint: "ファイルはアクティブなサーバーとユーザースコープの /plugins/configurations/JMSFusion/scoped-cache/ に保存されています。",
+  dbManagementBlockedHint: "ファイルはアクティブなサーバーとユーザースコープの /plugins/configurations/JMSFusionV2/scoped-cache/ に保存されています。",
   dbManagementListTitle: "管理可能なキャッシュファイル",
   sliderCacheDbTitle: "スライダー汎用キャッシュ",
   sliderCacheDbDescription: "スライダーアイテムの詳細、クエリ結果、短期 API キャッシュエントリがここに保存されます。",
@@ -2379,19 +2379,19 @@ export const languageLabels = {
   },
   webConfig: {
     heroEyebrow: "プラグイン設定",
-    heroTitle: "JMSFusion コントロールセンター",
+    heroTitle: "JMSFusionV2 コントロールセンター",
     heroBody: "<code>/slider</code> のアセットソースを管理し、グローバル設定を配布し、実行時ステータスを確認し、HTML スニペットと Web 権限の詳細を 1 画面で確認できます。",
     heroLangLabel: "選択中の言語",
     heroRootLabel: "Web UI ルート",
     tabs: {
-      jmsfusion: "JMSFusion",
+      JMSFusionV2: "JMSFusionV2",
       monwuiSettings: "MonWUI 設定",
       status: "ステータス",
       snippet: "HTML スニペット・Web パス・権限"
     },
     sections: {
       configTitle: "基本設定",
-      configBody: "JMSFusion がスライダーアセットを配信する場所と、プレイヤーモジュールパスの解決方法を選択します。",
+      configBody: "JMSFusionV2 がスライダーアセットを配信する場所と、プレイヤーモジュールパスの解決方法を選択します。",
       adminTitle: "管理者アクション",
       adminBody: "プラグイン設定を保存するか、現在の管理者スナップショットをすべてのユーザープロファイルにグローバル配布します。",
       statusTitle: "実行時ステータス",
@@ -2400,7 +2400,7 @@ export const languageLabels = {
       inMemoryBody: "ディスク上のファイルを変更せずに、レスポンス時に index.html が書き換えられているかを確認します。",
       monwuiSettingsTitle: "MonWUI 設定",
       snippetTitle: "HTML スニペット",
-      snippetBody: "JMSFusion が Jellyfin Web に挿入する正確なスニペットです。",
+      snippetBody: "JMSFusionV2 が Jellyfin Web に挿入する正確なスニペットです。",
       envTitle: "Web パスと権限",
       envBody: "検出された Web ルート、ファイル書き込み権限、パッチ適用用の推奨 ACL コマンドを表示します。"
     },
@@ -2456,7 +2456,7 @@ export const languageLabels = {
       inactiveTitle: "インメモリ挿入は検出されませんでした。",
       inactiveHint: "スニペットを index.html に永続化したい場合は「パッチ」を使用してください。",
       fallbackToggleLabel: "物理 index.html パッチのフォールバックを有効化",
-      fallbackToggleHint: "既定では無効です。実行時挿入が動作しない場合、または明示的にディスクパッチが必要な場合のみ有効化してください。有効時は JMSFusion が起動時および設定変更時に index.html のパッチ適用を試みます。"
+      fallbackToggleHint: "既定では無効です。実行時挿入が動作しない場合、または明示的にディスクパッチが必要な場合のみ有効化してください。有効時は JMSFusionV2 が起動時および設定変更時に index.html のパッチ適用を試みます。"
     },
     env: {
       runningUser: "実行ユーザー",

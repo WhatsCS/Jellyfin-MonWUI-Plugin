@@ -1,4 +1,4 @@
-import { getServerBase } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getServerBase } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { cleanAvatars, updateHeaderUserAvatar, clearAvatarCache } from "./userAvatar.js";
 import { getConfig } from "./config.js";
 
@@ -28,22 +28,22 @@ function sleep(ms) {
 async function fromManifest() {
   const url = absUrl(`${AVATAR_DIR}/index.json`);
   const r = await fetch(url, { cache: "no-store" });
-  if (!r.ok) throw new Error("manifest yok");
+  if (!r.ok) throw new Error("Manifest not found");
   const j = await r.json();
   const list = (j.files || []).map(normalizePng).filter(Boolean);
-  if (!list.length) throw new Error("manifest boş");
+  if (!list.length) throw new Error("Manifest is empty");
   return list;
 }
 
 async function fromDirListing() {
   const r = await fetch(absUrl(`${AVATAR_DIR}/`), { cache: "no-store" });
-  if (!r.ok) throw new Error("dir listing yok");
+  if (!r.ok) throw new Error("Directory listing not available");
   const html = await r.text();
   const doc = new DOMParser().parseFromString(html, "text/html");
   const files = [...doc.querySelectorAll("a[href]")]
     .map(a => normalizePng(a.getAttribute("href")))
     .filter(Boolean);
-  if (!files.length) throw new Error("png yok");
+  if (!files.length) throw new Error("No PNG files found");
   return files;
 }
 
@@ -62,7 +62,7 @@ async function fromProbe(max = 2000, stopAfterMiss = 60) {
       if (miss >= stopAfterMiss) break;
     }
   }
-  if (!out.length) throw new Error("probe boş");
+  if (!out.length) throw new Error("Probe returned no results");
   return out;
 }
 
@@ -130,7 +130,7 @@ async function uploadViaJellyfinUi(blob) {
 
   if (!input) {
     const btn = document.querySelector("#btnAddImage");
-    if (!btn) throw new Error("btnAddImage yok");
+    if (!btn) throw new Error("btnAddImage not found");
     btn.click();
     const t0 = Date.now();
     while (!input && Date.now() - t0 < 1500) {
@@ -139,7 +139,7 @@ async function uploadViaJellyfinUi(blob) {
     }
   }
 
-  if (!input) throw new Error("file input yok");
+  if (!input) throw new Error("File input not found");
 
   const dt = new DataTransfer();
   dt.items.add(file);
@@ -162,7 +162,7 @@ async function openAvatarModal() {
   header.className = "jms-avatarHeader";
 
   const title = document.createElement("strong");
-  title.textContent = L("avatarSec", "Avatar Seç");
+  title.textContent = L("avatarSec", "Choose Avatar");
 
   const search = document.createElement("input");
   search.placeholder = L("ara", "Ara…");
@@ -200,7 +200,7 @@ async function openAvatarModal() {
             await updateHeaderUserAvatar?.();
             back.remove();
           } catch (e) {
-            alert(L("avatarYuklenemedi", "Avatar yüklenemedi"));
+            alert(L("avatarYuklenemedi", "Avatar upload failed"));
           }
         };
         grid.appendChild(c);
@@ -219,7 +219,7 @@ export function initUserProfileAvatarPicker() {
 
     const b = document.createElement("button");
     b.className = "emby-button raised jms-avatarPickBtn";
-    b.textContent = L("resimSec", "Resim Seç");
+    b.textContent = L("resimSec", "Choose Image");
     b.onclick = openAvatarModal;
     btn.insertAdjacentElement("afterend", b);
   };

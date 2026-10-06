@@ -66,7 +66,7 @@ function ensureSettingsUI() {
   delaySlider.step = "0.1";
   delaySlider.value = localStorage.getItem("lyricsDelay") || "0";
   delaySlider.className = "lyrics-delay-slider";
-  delaySlider.setAttribute("aria-label", config.languageLabels.lyricsDelay || "Şarkı sözü gecikmesi");
+  delaySlider.setAttribute("aria-label", config.languageLabels.lyricsDelay || "Delay");
 
   const delayValue = document.createElement("span");
   delayValue.className = "lyrics-setting-value";
@@ -87,7 +87,7 @@ function ensureSettingsUI() {
     manualInput.value = delaySlider.value;
     manualInput.className = "lyrics-setting-manual-input";
     manualInput.style.width = "4em";
-    manualInput.setAttribute("aria-label", config.languageLabels.lyricsDelay || "Şarkı sözü gecikmesi");
+    manualInput.setAttribute("aria-label", config.languageLabels.lyricsDelay || "Delay");
 
     delayValue.style.display = "none";
     delayValue.parentNode.insertBefore(manualInput, delayValue.nextSibling);
@@ -124,7 +124,7 @@ function ensureSettingsUI() {
   durationContainer.className = "lyrics-setting-group";
 
   const durationLabel = document.createElement("span");
-  durationLabel.textContent = config.languageLabels.lyricsDuration || "Aktiflik Süresi: ";
+  durationLabel.textContent = config.languageLabels.lyricsDuration || "Active Duration";
 
   const durationSlider = document.createElement("input");
   durationSlider.type = "range";
@@ -135,7 +135,7 @@ function ensureSettingsUI() {
   durationSlider.step = "0.5";
   durationSlider.value = localStorage.getItem("lyricsDuration") || "5";
   durationSlider.className = "lyrics-duration-slider";
-  durationSlider.setAttribute("aria-label", config.languageLabels.lyricsDuration || "Şarkı sözü aktiflik süresi");
+  durationSlider.setAttribute("aria-label", config.languageLabels.lyricsDuration || "Active Duration");
 
   const durationValue = document.createElement("span");
   durationValue.className = "lyrics-setting-value";
@@ -158,7 +158,7 @@ function ensureSettingsUI() {
     manualInput.value = durationSlider.value;
     manualInput.className = "lyrics-setting-manual-input";
     manualInput.style.width = "4em";
-    manualInput.setAttribute("aria-label", config.languageLabels.lyricsDuration || "Şarkı sözü aktiflik süresi");
+    manualInput.setAttribute("aria-label", config.languageLabels.lyricsDuration || "Active Duration");
 
     durationValue.style.display = "none";
     durationValue.parentNode.insertBefore(manualInput, durationValue.nextSibling);
@@ -194,7 +194,7 @@ function ensureSettingsUI() {
 
   const updateBtn = document.createElement("span");
   updateBtn.className = "update-lyrics-btn";
-  updateBtn.title = config.languageLabels.updateLyrics || "Şarkı sözünü güncelle";
+  updateBtn.title = config.languageLabels.updateLyrics || "Sync";
   updateBtn.innerHTML = '<i class="fa-solid fa-rotate"></i>';
   updateBtn.addEventListener("click", () => {
     const track = getCurrentLyricsTrack();
@@ -229,7 +229,7 @@ function setLoading() {
   safeClear(contentContainer);
   const loading = document.createElement("div");
   loading.className = "lyrics-loading";
-  loading.textContent = config.languageLabels.loadingLyrics || "Yükleniyor...";
+  loading.textContent = config.languageLabels.loadingLyrics || "Loading lyrics...";
   contentContainer.appendChild(loading);
 }
 
@@ -238,7 +238,7 @@ function setNoLyrics(message = "") {
   safeClear(contentContainer);
   const n = document.createElement("div");
   n.className = "lyrics-not-found";
-  n.textContent = message || config.languageLabels.noLyricsFound || "Şarkı sözü yok";
+  n.textContent = message || config.languageLabels.noLyricsFound || "No lyrics found";
   contentContainer.appendChild(n);
 }
 
@@ -291,7 +291,7 @@ export async function fetchLyrics(trackOverride = null) {
   if (!currentTrack) return null;
 
   if (isRadioTrack(currentTrack)) {
-    setNoLyrics(config.languageLabels.radioNoLyrics || "Canli radyo yayini icin sarki sozu yok");
+    setNoLyrics(config.languageLabels.radioNoLyrics || "Lyrics are not available for live radio streams");
     return null;
   }
 
@@ -365,7 +365,7 @@ export async function getEmbeddedLyrics(trackId) {
       headers: { "X-Emby-Token": token },
       signal: fetchAbort.signal
     });
-    if (!response.ok) throw new Error("Stream alınamadı");
+    if (!response.ok) throw new Error("Could not fetch stream");
 
     const buffer = await response.arrayBuffer();
     const lyrics = normalizeLyricsPayload(await parseID3Tags(buffer));
@@ -678,7 +678,7 @@ export function clearLyricsRuntimeCaches() {
 
 async function updateSingleTrackLyrics(trackId) {
   if (String(trackId || "").startsWith("radio:")) {
-    setNoLyrics(config.languageLabels.radioNoLyrics || "Canli radyo yayini icin sarki sozu yok");
+    setNoLyrics(config.languageLabels.radioNoLyrics || "Lyrics are not available for live radio streams");
     return false;
   }
 
@@ -698,7 +698,7 @@ async function updateSingleTrackLyrics(trackId) {
       return true;
     }
   } catch (err) {
-    console.error("Şarkı sözü güncelleme hatası:", err);
+    console.error("Error updating lyrics:", err);
     showNotification(
       `<i class="fas fa-closed-captioning-slash"></i> ${config.languageLabels.syncSingleError}`,
       2000,

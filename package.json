@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "devDependencies": {
+    "esbuild": "0.25.10",
+    "terser": "5.44.1"
+  },
+  "scripts": {
+    "minify:assets": "node tools/minify-assets.mjs"
+  }
+}

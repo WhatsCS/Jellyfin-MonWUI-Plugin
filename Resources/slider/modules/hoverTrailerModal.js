@@ -1,6 +1,6 @@
 import { getConfig } from './config.js';
 import { getLanguageLabels, getDefaultLanguage } from '../language/index.js';
-import { playNow, getVideoStreamUrl, fetchItemDetails, fetchPlayableItemDetails, updateFavoriteStatus, goToDetailsPage, fetchLocalTrailers, pickBestLocalTrailer, getCachedUserTopGenres } from '../../Plugins/JMSFusion/runtime/api.js';
+import { playNow, getVideoStreamUrl, fetchItemDetails, fetchPlayableItemDetails, updateFavoriteStatus, goToDetailsPage, fetchLocalTrailers, pickBestLocalTrailer, getCachedUserTopGenres } from '../../Plugins/JMSFusionV2/runtime/api.js';
 import {
   getYoutubeEmbedUrl,
   isValidUrl,
@@ -420,7 +420,7 @@ export async function updateModalContent(item, videoUrl) {
         modalState.modalVideo.style.opacity = '1';
       }
       if (await gatePlaybackStart(item?.Id)) modal.initVideoPlayer(trailerUrl);
-      addTrailerTip(modal, cfg.languageLabels?.yerelFragman || 'Yerel fragman');
+      addTrailerTip(modal, cfg.languageLabels?.yerelFragman || "Local Trailer");
     } else if (isYTValid) {
       hideTrailerIframe(modal);
       if (modalState.modalVideo) {
@@ -428,15 +428,15 @@ export async function updateModalContent(item, videoUrl) {
         modalState.modalVideo.src = '';
       }
       showYT(trailerInfo.level === 'series'
-        ? (cfg.languageLabels?.diziFragmani || 'Dizi fragmanı')
-        : (cfg.languageLabels?.fragman || 'Fragman'));
+        ? (cfg.languageLabels?.diziFragmani || "Series Trailer")
+        : (cfg.languageLabels?.fragman || "Trailer"));
     } else {
       hideTrailerIframe(modal);
       if (modalState.modalVideo) {
         modalState.modalVideo.style.display = 'none';
         modalState.modalVideo.src = '';
       }
-      showNoTrailerMessage(modal, cfg.languageLabels?.trailerNotAvailable || 'Fragman bulunamadı');
+      showNoTrailerMessage(modal, cfg.languageLabels?.trailerNotAvailable || "Trailer Not Available");
     }
   }
   else if (preferTrailer) {
@@ -447,7 +447,7 @@ export async function updateModalContent(item, videoUrl) {
         modalState.modalVideo.style.opacity = '1';
       }
       if (await gatePlaybackStart(item?.Id)) modal.initVideoPlayer(trailerUrl);
-      addTrailerTip(modal, cfg.languageLabels?.yerelFragman || 'Yerel fragman');
+      addTrailerTip(modal, cfg.languageLabels?.yerelFragman || "Local Trailer");
     } else if (isYTValid) {
       if (modalState.modalVideo) {
         try { modalState.modalVideo.pause(); } catch {}
@@ -456,8 +456,8 @@ export async function updateModalContent(item, videoUrl) {
         modalState.modalVideo.src = '';
       }
       showYT(trailerInfo.level === 'series'
-        ? (cfg.languageLabels?.diziFragmani || 'Dizi fragmanı')
-        : (cfg.languageLabels?.fragman || 'Fragman'));
+        ? (cfg.languageLabels?.diziFragmani || "Series Trailer")
+        : (cfg.languageLabels?.fragman || "Trailer"));
     } else if (videoUrl) {
       if (await gatePlaybackStart(item?.Id)) modal.initVideoPlayer(videoUrl);
     } else {
@@ -479,12 +479,12 @@ export async function updateModalContent(item, videoUrl) {
         modalState.modalVideo.style.opacity = '1';
       }
       if (await gatePlaybackStart(item?.Id)) modal.initVideoPlayer(trailerUrl);
-      addTrailerTip(modal, cfg.languageLabels?.yerelFragman || 'Yerel fragman');
+      addTrailerTip(modal, cfg.languageLabels?.yerelFragman || "Local Trailer");
     } else if (isYTValid) {
       if (await gatePlaybackStart(item?.Id)) {
         showYT(trailerInfo.level === 'series'
-          ? (cfg.languageLabels?.diziFragmani || 'Dizi fragmanı')
-          : (cfg.languageLabels?.fragman || 'Fragman'));
+          ? (cfg.languageLabels?.diziFragmani || "Series Trailer")
+          : (cfg.languageLabels?.fragman || "Trailer"));
       }
     } else {
       hideTrailerIframe(modal);
@@ -759,10 +759,10 @@ export function createVideoModal({ showButtons = true, context = 'monwui-dot' } 
   playButton.addEventListener('click', async (e) => {
     e.stopPropagation();
     const itemId = modal.dataset.itemId;
-    if (!itemId) { alert("Oynatma başarısız: itemId bulunamadı"); return; }
+    if (!itemId) { alert("Playback failed: itemId not found"); return; }
     closeVideoModal();
     try { await playNow(itemId); }
-    catch (error) { console.error("Oynatma hatası:", error); alert("Oynatma başarısız: " + error.message); }
+    catch (error) { console.error("Playback error:", error); alert("Playback failed: " + error.message); }
     finally { closeVideoModal(); }
   });
 
@@ -791,7 +791,7 @@ export function createVideoModal({ showButtons = true, context = 'monwui-dot' } 
         slide.dataset.played = isPlayed.toString();
       }
     } catch (error) {
-      console.error("Favori durumu güncelleme hatası:", error);
+      console.error("Error updating favorite status:", error);
     }
   });
 
@@ -849,7 +849,7 @@ export function createVideoModal({ showButtons = true, context = 'monwui-dot' } 
           volumeButton.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
         }
       } catch (err) {
-        console.error('Player ses kontrol hatası:', err);
+        console.error('Player volume control error:', err);
         toggleYouTubeVolumeManual(trailerIframe, volumeButton);
       }
       return;
@@ -1023,7 +1023,7 @@ export function createVideoModal({ showButtons = true, context = 'monwui-dot' } 
     applyPreviewTrailerAudioToVideo(video, { config: getConfig(), soundOn: modalState._soundOn });
     video.addEventListener('loadedmetadata', () => {
       video.currentTime = 10 * 60;
-      Promise.resolve(video.play()).catch(e => { if (e.name !== 'AbortError') console.warn('Video oynatma hatası:', e); });
+      Promise.resolve(video.play()).catch(e => { if (e.name !== 'AbortError') console.warn('Video playback error:', e); });
     }, { once: true });
   };
 
@@ -1351,7 +1351,7 @@ function ensureBadgeIO() {
         card.dataset.hastrailer = has ? 'true' : 'false';
         if (has) {
           const labels = (getConfig()?.languageLabels) || {};
-          mountTrailerBadge(card, labels.fragman || 'Fragman');
+          mountTrailerBadge(card, labels.fragman || "Trailer");
         }
       } catch {
         card.dataset.hastrailer = 'false';
@@ -1593,7 +1593,7 @@ function scanAndMarkCardsForTrailers() {
         if (!card || card.__jmsTrailerBadgePending) continue;
         if (card.dataset.hastrailer === 'true') {
           const labels = (getConfig()?.languageLabels) || {};
-          mountTrailerBadge(card, labels.fragman || 'Fragman');
+          mountTrailerBadge(card, labels.fragman || "Trailer");
           try { __trailerBadgeObserver.unobserve(card); } catch {}
           continue;
         }
@@ -1613,7 +1613,7 @@ function scanAndMarkCardsForTrailers() {
           card.dataset.hastrailer = has ? 'true' : 'false';
           if (has) {
             const labels = (getConfig()?.languageLabels) || {};
-            mountTrailerBadge(card, labels.fragman || 'Fragman');
+            mountTrailerBadge(card, labels.fragman || "Trailer");
           }
         } finally {
           card.__jmsTrailerBadgePending = false;
@@ -1628,7 +1628,7 @@ function scanAndMarkCardsForTrailers() {
     if (isLiveTvCardElement(card)) return;
     if (card.dataset.hastrailer === 'true') {
       const labels = (getConfig()?.languageLabels) || {};
-      mountTrailerBadge(card, labels.fragman || 'Fragman');
+      mountTrailerBadge(card, labels.fragman || "Trailer");
       return;
     }
     if (card.dataset.hastrailer === 'false' || card.__jmsTrailerBadgeObserved) return;
@@ -2202,7 +2202,7 @@ function ensureYTAPI() {
         modalState._ytApiLoading = false;
         resolve();
       } else {
-        console.warn('YouTube API zaman aşımına uğradı, API olmadan devam ediyor');
+        console.warn('YouTube API timed out; continuing without the API');
         modalState._ytApiReady = false;
         modalState._ytApiLoading = false;
         resolve();
@@ -3077,7 +3077,7 @@ export function setupHoverForAllItems() {
           await updateModalContent(itemDetails, videoUrl);
         } catch (error) {
           if (error.name !== 'AbortError') {
-            console.error('Öğe hover hatası:', error);
+            console.error('Item hover error:', error);
             if (modalState.videoModal) modalState.videoModal.style.display = 'none';
           }
         }
@@ -3361,9 +3361,9 @@ function formatSeasonEpisodeLine(ep) {
 }
 
 export function getPlayButtonText({ isPlayed, hasPartialPlayback, labels }) {
-  if (isPlayed && !hasPartialPlayback) return L('izlendi', 'İzlendi');
+  if (isPlayed && !hasPartialPlayback) return L('izlendi', "Watched");
   if (hasPartialPlayback) return L('devamet', 'Devam et');
-  return L('izle', 'İzle');
+  return L('izle', "Watch");
 }
 
 function hasPartialPlaybackState({
@@ -3521,7 +3521,7 @@ export async function openPreviewModalForItem(itemId, anchorEl, opts = {}) {
     }
     return true;
   } catch (e) {
-    console.error('openPreviewModalForItem hatası:', e);
+    console.error('openPreviewModalForItem error:', e);
     if (openedModal) {
       try { closeVideoModal(); } catch {}
     }

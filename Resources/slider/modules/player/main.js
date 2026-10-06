@@ -17,7 +17,7 @@ import { togglePlayPause } from "./player/playback.js";
 import { faIconHtml } from "../faIcons.js";
 import { loadCSS } from "../playerStyles.js";
 import { apiUrl } from "./core/auth.js";
-import { getEmbyHeaders, getSessionInfo } from "../../../Plugins/JMSFusion/runtime/api.js";
+import { getEmbyHeaders, getSessionInfo } from "../../../Plugins/JMSFusionV2/runtime/api.js";
 import { applyHeaderIconButtonMode, findHeaderMountTarget, getHeaderMountWaitSelector } from "../headerCompat.js";
 
 export { isMobileDevice } from "../playerStyles.js";
@@ -204,7 +204,7 @@ async function postRemoteGmmpState(payload, { keepalive = false } = {}) {
   }
 
   try {
-    const response = await fetch(apiUrl("/Plugins/JMSFusion/gmmp/state"), {
+    const response = await fetch(apiUrl("/Plugins/JMSFusionV2/gmmp/state"), {
       method: "POST",
       headers: buildGmmpSyncHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(payload),
@@ -349,7 +349,7 @@ async function pollRemoteGmmpCommands() {
 
   gmmpRemoteCommandBusy = true;
   try {
-    const url = new URL(apiUrl("/Plugins/JMSFusion/gmmp/commands"));
+    const url = new URL(apiUrl("/Plugins/JMSFusionV2/gmmp/commands"));
     if (sessionId) {
       url.searchParams.set("sessionId", sessionId);
     }
@@ -487,7 +487,7 @@ async function setGmmpPaused(paused) {
   await ensureGmmpInit({ show: false });
   const audio = musicPlayerState?.audio;
   if (!audio) {
-    throw new Error("GMMP audio bulunamadi");
+    throw new Error("GMMP audio not found");
   }
 
   if (!!audio.paused !== !!paused) {
@@ -519,7 +519,7 @@ async function setGmmpMuted(muted) {
   await ensureGmmpInit({ show: false });
   const audio = musicPlayerState?.audio;
   if (!audio) {
-    throw new Error("GMMP audio bulunamadi");
+    throw new Error("GMMP audio not found");
   }
 
   const nextMuted = !!muted;
@@ -564,7 +564,7 @@ async function setGmmpVolume(volumeLevel) {
   await ensureGmmpInit({ show: false });
   const audio = musicPlayerState?.audio;
   if (!audio) {
-    throw new Error("GMMP audio bulunamadi");
+    throw new Error("GMMP audio not found");
   }
 
   const normalized = clamp(volumeLevel, 0, 100) / 100;
@@ -747,7 +747,7 @@ async function fetchGmmpNativePlaybackItemDetails(itemId) {
   if (!id) return null;
 
   try {
-    const api = await import("../../../Plugins/JMSFusion/runtime/api.js");
+    const api = await import("../../../Plugins/JMSFusionV2/runtime/api.js");
     if (typeof api?.fetchItemDetails === "function") {
       return await api.fetchItemDetails(id);
     }
@@ -1289,7 +1289,7 @@ function waitForElement(selector, timeout = 5000) {
 
     const to = setTimeout(() => {
       observer.disconnect();
-      reject(new Error(`Zaman aşımı bekleniyor ${selector}`));
+      reject(new Error(`Timed out waiting for ${selector}`));
     }, timeout);
     const cleanupResolve = (el) => {
       clearTimeout(to);
@@ -1305,7 +1305,7 @@ function createPlayerButton() {
     const btn = document.createElement("button");
     btn.id = "jellyfinPlayerToggle";
     btn.type = "button";
-    btn.setAttribute("aria-label", "GMMP Aç/Kapa");
+    btn.setAttribute("aria-label", "Toggle GMMP");
     btn.title = "GMMP";
     btn.innerHTML = faIconHtml("play", "gmmp");
     return btn;
@@ -1425,7 +1425,7 @@ async function onToggleClick() {
       togglePlayerVisibility();
     }
   } catch (err) {
-    console.error("GMMP geçiş hatası:", err);
+    console.error("GMMP toggle error:", err);
   } finally {
     initInProgress = false;
   }

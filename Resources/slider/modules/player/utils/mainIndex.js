@@ -46,7 +46,7 @@ export async function initPlayer() {
 
     return playerElements;
   } catch (err) {
-    console.error("Oynatıcı başlatılırken hata:", err);
+    console.error("Error initializing player:", err);
     throw err;
   }
 }

@@ -1,7 +1,7 @@
 import { musicPlayerState } from "../core/state.js";
 import { buildLyricsRecord, normalizeLyricsPayload } from "../lyrics/normalizer.js";
 import { createScopedJsonDb, prepareLegacyIndexedDbForDeletion } from "../../scopedJsonCache.js";
-import { getSessionInfo } from "../../../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo } from "../../../../Plugins/JMSFusionV2/runtime/api.js";
 
 const GMMP_MUSIC_DB_NAME = "GMMP-MusicDB";
 const GMMP_CACHE_TYPE = "gmmpMusic";
@@ -364,7 +364,7 @@ class MusicDB {
       }
 
       const legacy = await readLegacyMusicIndexedDb().catch((error) => {
-        console.warn("[JMSFusion] GMMP legacy IndexedDB migration read failed:", error);
+        console.warn("[JMSFusionV2] GMMP legacy IndexedDB migration read failed:", error);
         return null;
       });
 

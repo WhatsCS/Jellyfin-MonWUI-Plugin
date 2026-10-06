@@ -4,7 +4,7 @@ const DEFAULT_TRAILER_COUNT = 2;
 const MAX_TRAILER_COUNT = 5;
 const CINEMA_PREROLL_LANGUAGE_OPTIONS = Object.freeze([
   { value: "auto", label: "🌐 Auto" },
-  { value: "tr-TR", label: "🇹🇷 Türkçe" },
+  { value: "tr-TR", label: "🇹🇷 Turkish" },
   { value: "en-US", label: "🇺🇸 English (US)" },
   { value: "en-GB", label: "🇬🇧 English (UK)" },
   { value: "de-DE", label: "🇩🇪 Deutsch" },
@@ -132,23 +132,23 @@ export function createCinemaPreRollPanel(config, labels) {
   panel.id = "cinema-preroll-panel";
   panel.className = "settings-panel";
 
-  const section = createSection(labels.cinemaPreRollTab || "Sinema Ön Gösterimleri");
+  const section = createSection(labels.cinemaPreRollTab || "Cinema Pre-Roll");
 
   const enableCheckbox = createCheckbox(
     "cinemaPreRollEnabled",
-    labels.cinemaPreRollEnabled || "Film/dizi başlamadan önce vizyondaki fragmanları oynat",
+    labels.cinemaPreRollEnabled || "Play theatrical trailers before the main title begins",
     config.cinemaPreRollEnabled === true
   );
   section.appendChild(enableCheckbox);
   appendDescriptionText(
     section,
     labels.cinemaPreRollDescription ||
-      "TMDb vizyondaki içerik listesinden fragmanlar seçilir ve asıl içerikten önce sinema ön gösterimi gibi oynatılır."
+      "Trailers are selected from TMDb's now playing catalogue and presented before the main movie or episode as a cinema-style pre-show sequence."
   );
   appendDescriptionText(
     section,
     labels.cinemaPreRollHint ||
-      "Bu özelliğin çalışabilmesi için MonWUI Ayarları sekmesinde geçerli bir TMDb API anahtarı tanımlanmış olmalıdır."
+      "This feature requires a valid TMDb API key configured in the MonWUI Settings tab."
   );
 
   const subOptions = document.createElement("div");
@@ -160,7 +160,7 @@ export function createCinemaPreRollPanel(config, labels) {
   const countLabel = document.createElement("label");
   countLabel.className = "settings-label";
   countLabel.htmlFor = "cinemaPreRollTrailerCount";
-  countLabel.textContent = labels.cinemaPreRollTrailerCount || "Oynatılacak fragman sayısı";
+  countLabel.textContent = labels.cinemaPreRollTrailerCount || "Number of pre-show trailers";
 
   const countSelect = document.createElement("select");
   countSelect.id = "cinemaPreRollTrailerCount";
@@ -181,14 +181,14 @@ export function createCinemaPreRollPanel(config, labels) {
 
   const fullscreenCheckbox = createCheckbox(
     "cinemaPreRollStartFullscreen",
-    labels.cinemaPreRollStartFullscreen || "Ön gösterimleri mümkün olduğunda tam ekran başlat",
+    labels.cinemaPreRollStartFullscreen || "Start pre-show trailers in fullscreen when possible",
     config.cinemaPreRollStartFullscreen === true
   );
   subOptions.appendChild(fullscreenCheckbox);
   appendDescriptionText(
     subOptions,
     labels.cinemaPreRollStartFullscreenHint ||
-      "Desteklenen tarayıcılarda ön gösterim oynatıcısı otomatik olarak tam ekran moduna geçmeyi dener. Bazı cihazlarda ilk dokunuş gerekebilir."
+      "On supported browsers, the pre-show player will attempt to open in fullscreen for a more theatrical presentation. Some devices may still require an initial tap because of browser restrictions."
   );
 
   const languageRow = document.createElement("div");
@@ -198,7 +198,7 @@ export function createCinemaPreRollPanel(config, labels) {
   languageLabel.className = "settings-label";
   languageLabel.htmlFor = "cinemaPreRollLanguage";
   languageLabel.textContent =
-    labels.cinemaPreRollLanguage || "TMDb dili";
+    labels.cinemaPreRollLanguage || "TMDb language";
 
   const languageSelect = document.createElement("select");
   languageSelect.id = "cinemaPreRollLanguage";
@@ -211,7 +211,7 @@ export function createCinemaPreRollPanel(config, labels) {
     option.value = entry.value;
     option.textContent =
       entry.value === "auto"
-        ? (labels.cinemaPreRollLanguageAuto || "Otomatik - Eklenti / tarayıcı dilini kullan")
+        ? (labels.cinemaPreRollLanguageAuto || "Auto - Follow the plugin / browser language")
         : entry.label;
     option.selected = currentLanguage === entry.value;
     languageSelect.appendChild(option);
@@ -222,7 +222,7 @@ export function createCinemaPreRollPanel(config, labels) {
   appendDescriptionText(
     subOptions,
     labels.cinemaPreRollLanguageHint ||
-      "Bu alan TMDb başlık, açıklama ve fragman havuzunun dilini belirler."
+      "This controls the language used for TMDb titles, overviews, and trailer pool results."
   );
 
   const regionModeRow = document.createElement("div");
@@ -232,7 +232,7 @@ export function createCinemaPreRollPanel(config, labels) {
   regionModeLabel.className = "settings-label";
   regionModeLabel.htmlFor = "cinemaPreRollRegionMode";
   regionModeLabel.textContent =
-    labels.cinemaPreRollRegionMode || "TMDb bölge modu";
+    labels.cinemaPreRollRegionMode || "TMDb region mode";
 
   const regionModeSelect = document.createElement("select");
   regionModeSelect.id = "cinemaPreRollRegionMode";
@@ -243,11 +243,11 @@ export function createCinemaPreRollPanel(config, labels) {
   [
     {
       value: "global",
-      label: labels.cinemaPreRollRegionModeGlobal || "Küresel - TMDb'ye bölge göndermeden kullan"
+      label: labels.cinemaPreRollRegionModeGlobal || "Global - Do not send a region to TMDb"
     },
     {
       value: "custom",
-      label: labels.cinemaPreRollRegionModeCustom || "Ülke seç - Aşağıdaki ülkeyi kullan"
+      label: labels.cinemaPreRollRegionModeCustom || "Country - Use the selected country below"
     }
   ].forEach((entry) => {
     const option = document.createElement("option");
@@ -262,7 +262,7 @@ export function createCinemaPreRollPanel(config, labels) {
   appendDescriptionText(
     subOptions,
     labels.cinemaPreRollRegionModeHint ||
-      "Küresel modda TMDb isteğine bölge parametresi eklenmez. Ülke modunda yalnızca seçilen ülkenin vizyon ve gelecek listeleri kullanılır."
+      "Global omits the region parameter from TMDb. Country mode uses only the selected country's now playing and upcoming lists."
   );
 
   const customRegionRow = document.createElement("div");
@@ -272,7 +272,7 @@ export function createCinemaPreRollPanel(config, labels) {
   customRegionLabel.className = "settings-label";
   customRegionLabel.htmlFor = "cinemaPreRollCustomRegion";
   customRegionLabel.textContent =
-    labels.cinemaPreRollCustomRegion || "TMDb ülkesi";
+    labels.cinemaPreRollCustomRegion || "TMDb country";
 
   const customRegionSelect = document.createElement("select");
   customRegionSelect.id = "cinemaPreRollCustomRegion";
@@ -293,7 +293,7 @@ export function createCinemaPreRollPanel(config, labels) {
   const customRegionHint = appendDescriptionText(
     subOptions,
     labels.cinemaPreRollCustomRegionHint ||
-      "Ön gösterim havuzunun hangi ülkenin vizyon ve gelecek listelerinden besleneceğini seçer. Ayar değiştiğinde önbellek yeni ülkeye göre yenilenir."
+      "Choose which country's now playing and upcoming lists feed the pre-show pool. Changing it refreshes the cache for the selected country."
   );
 
   const fallbackModeRow = document.createElement("div");
@@ -303,7 +303,7 @@ export function createCinemaPreRollPanel(config, labels) {
   fallbackModeLabel.className = "settings-label";
   fallbackModeLabel.htmlFor = "cinemaPreRollFallbackMode";
   fallbackModeLabel.textContent =
-    labels.cinemaPreRollFallbackMode || "Eksik fragmanları tamamlama";
+    labels.cinemaPreRollFallbackMode || "Fill missing trailers";
 
   const fallbackModeSelect = document.createElement("select");
   fallbackModeSelect.id = "cinemaPreRollFallbackMode";
@@ -314,15 +314,15 @@ export function createCinemaPreRollPanel(config, labels) {
   [
     {
       value: "custom",
-      label: labels.cinemaPreRollFallbackModeCustom || "Seçilen ülkeyle tamamla"
+      label: labels.cinemaPreRollFallbackModeCustom || "Fill from selected country"
     },
     {
       value: "global",
-      label: labels.cinemaPreRollFallbackModeGlobal || "Global listeyle tamamla"
+      label: labels.cinemaPreRollFallbackModeGlobal || "Fill from the global list"
     },
     {
       value: "none",
-      label: labels.cinemaPreRollFallbackModeNone || "Tamamlama kullanma"
+      label: labels.cinemaPreRollFallbackModeNone || "Do not fill"
     }
   ].forEach((entry) => {
     const option = document.createElement("option");
@@ -337,7 +337,7 @@ export function createCinemaPreRollPanel(config, labels) {
   appendDescriptionText(
     subOptions,
     labels.cinemaPreRollFallbackModeHint ||
-      "Seçilen ülke 150 fragmanlık havuzu dolduramazsa kalan adayların hangi kaynaktan alınacağını belirler."
+      "If the selected country cannot fill the 150-trailer pool, choose where the remaining candidates should come from."
   );
 
   const fallbackRegionRow = document.createElement("div");
@@ -347,7 +347,7 @@ export function createCinemaPreRollPanel(config, labels) {
   fallbackRegionLabel.className = "settings-label";
   fallbackRegionLabel.htmlFor = "cinemaPreRollFallbackRegion";
   fallbackRegionLabel.textContent =
-    labels.cinemaPreRollFallbackRegion || "Tamamlama ülkesi";
+    labels.cinemaPreRollFallbackRegion || "Fallback country";
 
   const fallbackRegionSelect = document.createElement("select");
   fallbackRegionSelect.id = "cinemaPreRollFallbackRegion";
@@ -368,7 +368,7 @@ export function createCinemaPreRollPanel(config, labels) {
   const fallbackRegionHint = appendDescriptionText(
     subOptions,
     labels.cinemaPreRollFallbackRegionHint ||
-      "US yerine hangi ülkenin vizyon ve gelecek listelerinin yedek kaynak olarak kullanılacağını seçer."
+      "If there are not enough trailers, choose which country's now playing and upcoming content should be used as the fallback source."
   );
   section.appendChild(subOptions);
 

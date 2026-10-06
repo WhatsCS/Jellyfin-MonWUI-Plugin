@@ -106,13 +106,21 @@ function localizeStudioHubError(message) {
 
   const mapped = {
     "Bu işlem sadece admin kullanıcılar içindir.": getStudioHubLabel("studioHubAdminOnlyAction", "This action is only available to admin users."),
+    "This action is only available to administrators.": getStudioHubLabel("studioHubAdminOnlyAction", "This action is only available to admin users."),
     "StudioId ve başlık gerekli.": getStudioHubLabel("studioHubStudioIdAndTitleRequired", "Studio ID and title are required."),
+    "Studio ID and title are required.": getStudioHubLabel("studioHubStudioIdAndTitleRequired", "Studio ID and title are required."),
     "StudioId gerekli.": getStudioHubLabel("studioHubStudioIdRequired", "Studio ID is required."),
+    "Studio ID is required.": getStudioHubLabel("studioHubStudioIdRequired", "Studio ID is required."),
     "Yüklenecek logo gerekli.": getStudioHubLabel("studioHubLogoFileRequired", "A logo file is required for upload."),
+    "A logo file is required.": getStudioHubLabel("studioHubLogoFileRequired", "A logo file is required for upload."),
     "Yüklenecek video gerekli.": getStudioHubLabel("studioHubVideoFileRequired", "A video file is required for upload."),
+    "A video file is required.": getStudioHubLabel("studioHubVideoFileRequired", "A video file is required for upload."),
     "Koleksiyon adı gerekli.": getStudioHubLabel("studioHubCollectionNameRequired", "Collection name is required."),
+    "Collection name is required.": getStudioHubLabel("studioHubCollectionNameRequired", "Collection name is required."),
     "Manuel koleksiyon bulunamadı.": getStudioHubLabel("studioHubManualCollectionNotFound", "Manual collection not found."),
+    "Manual collection not found.": getStudioHubLabel("studioHubManualCollectionNotFound", "Manual collection not found."),
     "X-Emby-UserId gerekli.": getStudioHubLabel("ctrlApiUserHeaderRequired", "X-Emby-UserId header is required."),
+    "X-Emby-UserId is required.": getStudioHubLabel("ctrlApiUserHeaderRequired", "X-Emby-UserId header is required."),
   };
 
   return mapped[raw] || raw;
@@ -328,7 +336,7 @@ export function getStudioHubManualEntriesFromConfig(cfg) {
 
 export async function fetchStudioHubVideoEntries({ force = false } = {}) {
   const headers = await getAuthHeaders();
-  const res = await fetch(withServer(`/Plugins/JMSFusion/studio-hubs/video${force ? `?ts=${Date.now()}` : ""}`), {
+  const res = await fetch(withServer(`/Plugins/JMSFusionV2/studio-hubs/video${force ? `?ts=${Date.now()}` : ""}`), {
     method: "GET",
     cache: "no-store",
     headers
@@ -340,7 +348,7 @@ export async function fetchStudioHubVideoEntries({ force = false } = {}) {
 
 export async function fetchStudioHubManualEntries({ force = false } = {}) {
   const headers = await getAuthHeaders();
-  const res = await fetch(withServer(`/Plugins/JMSFusion/studio-hubs/collection${force ? `?ts=${Date.now()}` : ""}`), {
+  const res = await fetch(withServer(`/Plugins/JMSFusionV2/studio-hubs/collection${force ? `?ts=${Date.now()}` : ""}`), {
     method: "GET",
     cache: "no-store",
     headers
@@ -417,14 +425,14 @@ export function buildStudioHubVideoUrl(entry) {
   const fileName = String(entry?.fileName || entry?.FileName || "").trim();
   if (!fileName) return null;
   const updatedAt = Number(entry?.updatedAtUtc || entry?.UpdatedAtUtc || Date.now());
-  return withServer(`/Plugins/JMSFusion/studio-hubs/video/${encodeURIComponent(fileName)}?v=${encodeURIComponent(updatedAt)}`);
+  return withServer(`/Plugins/JMSFusionV2/studio-hubs/video/${encodeURIComponent(fileName)}?v=${encodeURIComponent(updatedAt)}`);
 }
 
 export function buildStudioHubLogoUrl(entry) {
   const fileName = String(entry?.logoFileName || entry?.LogoFileName || "").trim();
   if (!fileName) return null;
   const updatedAt = Number(entry?.updatedAtUtc || entry?.UpdatedAtUtc || Date.now());
-  return withServer(`/Plugins/JMSFusion/studio-hubs/logo/${encodeURIComponent(fileName)}?v=${encodeURIComponent(updatedAt)}`);
+  return withServer(`/Plugins/JMSFusionV2/studio-hubs/logo/${encodeURIComponent(fileName)}?v=${encodeURIComponent(updatedAt)}`);
 }
 
 export function buildStudioHubHref(studioId, serverId = "") {
@@ -453,7 +461,7 @@ export async function fetchStudioHubVisibility({ force = false, profile } = {}) 
   }
 
   const headers = await getAuthHeaders();
-  const res = await fetch(withServer(`/Plugins/JMSFusion/studio-hubs/visibility?profile=${encodeURIComponent(normalizedProfile)}&ts=${Date.now()}`), {
+  const res = await fetch(withServer(`/Plugins/JMSFusionV2/studio-hubs/visibility?profile=${encodeURIComponent(normalizedProfile)}&ts=${Date.now()}`), {
     method: "GET",
     headers,
     cache: "no-store"
@@ -485,7 +493,7 @@ export async function saveStudioHubVisibility(hiddenNames, { profile, orderNames
   const headers = await getAuthHeaders();
   headers["Content-Type"] = "application/json";
 
-  const res = await fetch(withServer(`/Plugins/JMSFusion/studio-hubs/visibility?profile=${encodeURIComponent(normalizedProfile)}`), {
+  const res = await fetch(withServer(`/Plugins/JMSFusionV2/studio-hubs/visibility?profile=${encodeURIComponent(normalizedProfile)}`), {
     method: "POST",
     headers,
     body: JSON.stringify({
@@ -536,7 +544,7 @@ export async function createStudioHubManualEntry({ studioId, name }) {
   const headers = await getAuthHeaders();
   headers["Content-Type"] = "application/json";
 
-  const res = await fetch(withServer("/Plugins/JMSFusion/studio-hubs/collection"), {
+  const res = await fetch(withServer("/Plugins/JMSFusionV2/studio-hubs/collection"), {
     method: "POST",
     headers,
     body: JSON.stringify({ studioId: cleanStudioId, name: cleanName }),
@@ -610,7 +618,7 @@ export async function deleteStudioHubManualEntry(studioId) {
   if (!cleanStudioId) throw new Error(getStudioHubLabel("studioHubStudioIdRequired", "Studio ID is required."));
 
   const headers = await getAuthHeaders();
-  const res = await fetch(withServer(`/Plugins/JMSFusion/studio-hubs/collection?studioId=${encodeURIComponent(cleanStudioId)}`), {
+  const res = await fetch(withServer(`/Plugins/JMSFusionV2/studio-hubs/collection?studioId=${encodeURIComponent(cleanStudioId)}`), {
     method: "DELETE",
     headers,
     cache: "no-store"
@@ -646,7 +654,7 @@ export async function uploadStudioHubLogo(studioId, file) {
   formData.append("studioId", cleanStudioId);
   formData.append("file", file, file.name || `${cleanStudioId}.png`);
 
-  const res = await fetch(withServer("/Plugins/JMSFusion/studio-hubs/logo"), {
+  const res = await fetch(withServer("/Plugins/JMSFusionV2/studio-hubs/logo"), {
     method: "POST",
     headers,
     body: formData,
@@ -853,7 +861,7 @@ export async function deleteStudioHubLogo(studioId) {
   if (!cleanStudioId) throw new Error(getStudioHubLabel("studioHubStudioIdRequired", "Studio ID is required."));
 
   const headers = await getAuthHeaders();
-  const res = await fetch(withServer(`/Plugins/JMSFusion/studio-hubs/logo?studioId=${encodeURIComponent(cleanStudioId)}`), {
+  const res = await fetch(withServer(`/Plugins/JMSFusionV2/studio-hubs/logo?studioId=${encodeURIComponent(cleanStudioId)}`), {
     method: "DELETE",
     headers,
     cache: "no-store"
@@ -884,7 +892,7 @@ export async function uploadStudioHubVideo(name, file) {
   formData.append("name", cleanName);
   formData.append("file", file, file.name || `${cleanName}.mp4`);
 
-  const res = await fetch(withServer("/Plugins/JMSFusion/studio-hubs/video"), {
+  const res = await fetch(withServer("/Plugins/JMSFusionV2/studio-hubs/video"), {
     method: "POST",
     headers,
     body: formData,
@@ -911,7 +919,7 @@ export async function deleteStudioHubVideo(name) {
   if (!cleanName) throw new Error(getStudioHubLabel("studioHubCollectionNameRequired", "Collection name is required."));
 
   const headers = await getAuthHeaders();
-  const res = await fetch(withServer(`/Plugins/JMSFusion/studio-hubs/video?name=${encodeURIComponent(cleanName)}`), {
+  const res = await fetch(withServer(`/Plugins/JMSFusionV2/studio-hubs/video?name=${encodeURIComponent(cleanName)}`), {
     method: "DELETE",
     headers,
     cache: "no-store"

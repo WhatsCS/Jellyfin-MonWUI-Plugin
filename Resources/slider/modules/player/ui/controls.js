@@ -74,7 +74,7 @@ function notifyVolumeThrottled(volume, isMuted = false) {
 
 function updateVolumeUI(volume, isMuted = false) {
   if (!areVolumeControlsReady()) {
-    console.warn('Ses kontrolleri güncelleme için hazır değil');
+    console.warn('Audio controls are not ready to update');
     return;
   }
 
@@ -87,8 +87,8 @@ export function toggleMute() {
   const { audio, volumeBtn, volumeSlider } = musicPlayerState;
 
   if (!audio || !volumeBtn || !volumeSlider) {
-    console.error('Ses kontrolleri başlatılamadı');
-    showNotification('<i class="fas fa-volume-mute crossed-icon"></i> Ses kontrolleri yüklenemedi', 2000, 'error');
+    console.error('Could not initialize audio controls');
+    showNotification('<i class="fas fa-volume-mute crossed-icon"></i> Could not load audio controls', 2000, 'error');
     return;
   }
 
@@ -98,7 +98,7 @@ export function toggleMute() {
     volumeSlider.dataset.lastVolume = volumeSlider.value;
     volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
     showNotification(
-      `<i class="fas fa-volume-mute"></i> ${config.languageLabels.volOff || 'Ses kapatıldı'}`,
+      `<i class="fas fa-volume-mute"></i> ${config.languageLabels.volOff || "Volume Off"}`,
       2000,
       'kontrol'
     );
@@ -114,7 +114,7 @@ export function toggleMute() {
 
 export function changeVolume(delta) {
   if (!areVolumeControlsReady()) {
-    console.error('Ses kontrolleri başlatılamadı');
+    console.error('Could not initialize audio controls');
     return;
   }
 
@@ -139,7 +139,7 @@ export function changeVolume(delta) {
 export function setupVolumeControls() {
   const slider = musicPlayerState.volumeSlider;
   if (!slider) {
-    console.warn('Ses kaydırıcısı bulunamadı');
+    console.warn('Volume slider not found');
     return;
   }
 
@@ -173,16 +173,16 @@ export function toggleRepeatMode() {
 
   const repeatBtn = document.querySelector('.player-btn.repeat-btn');
   if (!repeatBtn) {
-    console.warn('Tekrar butonu bulunamadı');
+    console.warn('Repeat button not found');
     return;
   }
 
   const mode = musicPlayerState.userSettings.repeatMode;
 
   const titles = {
-    'none': config.languageLabels?.repeatModOff || 'Tekrar kapalı',
-    'one': config.languageLabels?.repeatModOne || 'Tek şarkı tekrarı',
-    'all': config.languageLabels?.repeatModAll || 'Tüm liste tekrarı'
+    'none': config.languageLabels?.repeatModOff || "Off",
+    'one': config.languageLabels?.repeatModOne || "Single Track",
+    'all': config.languageLabels?.repeatModAll || "All Tracks"
   };
 
   const isActive = mode !== 'none';
@@ -195,9 +195,9 @@ export function toggleRepeatMode() {
     : '<i class="fas fa-repeat"></i>';
 
   const notificationMessages = {
-    'none': `<i class="fas fa-repeat crossed-icon"></i> ${config.languageLabels?.repeatMod || 'Tekrar modu'}: ${config.languageLabels?.repeatModOff || 'kapalı'}`,
-    'one': `${getRepeatOneIconHtml()} ${config.languageLabels?.repeatMod || 'Tekrar modu'}: ${config.languageLabels?.repeatModOne || 'tek şarkı'}`,
-    'all': `<i class="fas fa-repeat"></i> ${config.languageLabels?.repeatMod || 'Tekrar modu'}: ${config.languageLabels?.repeatModAll || 'tüm liste'}`
+    'none': `<i class="fas fa-repeat crossed-icon"></i> ${config.languageLabels?.repeatMod || 'Tekrar modu'}: ${config.languageLabels?.repeatModOff || "Off"}`,
+    'one': `${getRepeatOneIconHtml()} ${config.languageLabels?.repeatMod || 'Tekrar modu'}: ${config.languageLabels?.repeatModOne || "Single Track"}`,
+    'all': `<i class="fas fa-repeat"></i> ${config.languageLabels?.repeatMod || 'Tekrar modu'}: ${config.languageLabels?.repeatModAll || "All Tracks"}`
   };
 
   showNotification(
@@ -211,7 +211,7 @@ export function toggleRepeatMode() {
 
 export function toggleShuffle() {
   if (!musicPlayerState || !musicPlayerState.userSettings) {
-    console.error('Müzik çalar durumu veya kullanıcı ayarları yüklenmedi');
+    console.error('Music player state or user settings have not loaded');
     return;
   }
 
@@ -220,18 +220,18 @@ export function toggleShuffle() {
 
   const shuffleBtn = document.querySelector('.player-btn .fa-random')?.parentElement;
   if (!shuffleBtn) {
-    console.warn('Karıştırma butonu bulunamadı');
+    console.warn('Shuffle button not found');
     return;
   }
 
   const titles = {
-    true: config.languageLabels?.shuffleOn || 'Karıştırma açık',
-    false: config.languageLabels?.shuffleOff || 'Karıştırma kapalı'
+    true: config.languageLabels?.shuffleOn || "On",
+    false: config.languageLabels?.shuffleOff || "Off"
   };
 
   const notificationMessages = {
-    true: `${config.languageLabels?.shuffle || 'Karıştırma'}: ${config.languageLabels?.shuffleOn || 'açık'}`,
-    false: `${config.languageLabels?.shuffle || 'Karıştırma'}: ${config.languageLabels?.shuffleOff || 'kapalı'}`
+    true: `${config.languageLabels?.shuffle || "Shuffle"}: ${config.languageLabels?.shuffleOn || "On"}`,
+    false: `${config.languageLabels?.shuffle || "Shuffle"}: ${config.languageLabels?.shuffleOff || "Off"}`
   };
 
   shuffleBtn.classList.remove('active', 'passive');
@@ -260,18 +260,18 @@ function createKeyboardHelpModal() {
   modal.style.display = 'none';
 
   modal.innerHTML = `
-    <h3 style="margin-top:0;margin-bottom:10px;">🎹 Klavye Kısayolları</h3>
+    <h3 style="margin-top:0;margin-bottom:10px;">🎹 Keyboard Shortcuts</h3>
     <ul style="list-style:none;padding-left:0;">
-      <li><b>G</b>: Oynatıcıyı göster/gizle</li>
-      <li><b>↑</b> veya <b>+</b>: Sesi artır</li>
-      <li><b>↓</b> veya <b>-</b>: Sesi azalt</li>
-      <li><b>M</b>: Sesi aç/kapat</li>
-      <li><b>S</b>: Karıştırma modunu değiştir</li>
-      <li><b>R</b>: Tekrar modunu değiştir</li>
-      <li><b>←</b>: Önceki parça</li>
-      <li><b>→</b>: Sonraki parça</li>
-      <li><b>?</b>: Yardımı aç/kapat</li>
-      <li><b>Esc</b>: Yardımı kapat</li>
+      <li><b>G</b>: Show/hide player</li>
+      <li><b>↑</b> or <b>+</b>: Increase volume</li>
+      <li><b>↓</b> or <b>-</b>: Decrease volume</li>
+      <li><b>M</b>: Mute/unmute</li>
+      <li><b>S</b>: Toggle shuffle mode</li>
+      <li><b>R</b>: Change repeat mode</li>
+      <li><b>←</b>: Previous track</li>
+      <li><b>→</b>: Next track</li>
+      <li><b>?</b>: Toggle help</li>
+      <li><b>Esc</b>: Close help</li>
     </ul>
   `;
   document.body.appendChild(modal);
@@ -364,8 +364,8 @@ export function toggleRemoveOnPlayMode() {
   const btn = document.querySelector('.remove-on-play-btn');
   if (!btn) return;
 
-  const onTitle  = config.languageLabels.removeOnPlayOn  || "Çaldıktan sonra sil: Açık";
-  const offTitle = config.languageLabels.removeOnPlayOff || "Çaldıktan sonra sil: Kapalı";
+  const onTitle  = config.languageLabels.removeOnPlayOn  || "Remove after play: On";
+  const offTitle = config.languageLabels.removeOnPlayOff || "Remove after play: Off";
   btn.title = setting ? onTitle : offTitle;
   btn.classList.remove('active', 'passive');
   btn.classList.add(setting ? 'active' : 'passive');
@@ -375,8 +375,8 @@ export function toggleRemoveOnPlayMode() {
     : '<i class="fa-solid fa-trash"></i>';
 
   const message = setting
-    ? `<i class="fa-solid fa-trash"></i> ${config.languageLabels.removeOnPlayOn || "Çaldıktan sonra sil modu açık"}`
-    : `<i class="fa-solid fa-trash crossed-icon"></i> ${config.languageLabels.removeOnPlayOff || "Çaldıktan sonra sil modu kapalı"}`;
+    ? `<i class="fa-solid fa-trash"></i> ${config.languageLabels.removeOnPlayOn || "Remove after play: On"}`
+    : `<i class="fa-solid fa-trash crossed-icon"></i> ${config.languageLabels.removeOnPlayOff || "Remove after play: Off"}`;
 
   showNotification(message, 2000, 'kontrol');
 }

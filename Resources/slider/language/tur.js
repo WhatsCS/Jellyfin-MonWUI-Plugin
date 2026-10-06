@@ -210,7 +210,7 @@ export const languageLabels = {
   cinemaPreRollOverlayHint: "Ses otomatik başlamazsa ekrana dokunabilirsin. Hızlı geçmek için Esc tuşunu kullan.",
   dbManagementTab: "DB Yönetimi",
   dbManagementDescription: "Buradan sunucudaki scoped JSON cache dosyalarını yedekleyebilir, geri yükleyebilir veya silebilirsiniz.",
-  dbManagementBlockedHint: "Dosyalar /plugins/configurations/JMSFusion/scoped-cache/ altında, aktif sunucu ve kullanıcı scope'una göre saklanır.",
+  dbManagementBlockedHint: "Dosyalar /plugins/configurations/JMSFusionV2/scoped-cache/ altında, aktif sunucu ve kullanıcı scope'una göre saklanır.",
   dbManagementListTitle: "Yönetilebilir Cache Dosyaları",
   sliderCacheDbTitle: "Slider genel cache",
   sliderCacheDbDescription: "Genel slider içerik detayları, sorgu sonuçları ve kısa süreli API önbellek kayıtları burada tutulur.",
@@ -2379,19 +2379,19 @@ export const languageLabels = {
   },
   webConfig: {
     heroEyebrow: "Eklenti Yapılandırması",
-    heroTitle: "JMSFusion Kontrol Merkezi",
+    heroTitle: "JMSFusionV2 Kontrol Merkezi",
     heroBody: "<code>/slider</code> kaynak yolunu yönet, global ayarları yayınla, çalışma durumunu kontrol et ve HTML snippet ile web izin detaylarını tek ekrandan incele.",
     heroLangLabel: "Seçili Dil",
     heroRootLabel: "Web Arayüz Yolu",
     tabs: {
-      jmsfusion: "JMSFusion",
+      JMSFusionV2: "JMSFusionV2",
       monwuiSettings: "MonWUI Ayarları",
       status: "Status",
       snippet: "HTML Snippet, Web Path ve Permissions"
     },
     sections: {
       configTitle: "Temel Ayarlar",
-      configBody: "JMSFusion'ın slider varlıklarını nereden sunacağını ve player modül yolunun nasıl çözüleceğini belirle.",
+      configBody: "JMSFusionV2'ın slider varlıklarını nereden sunacağını ve player modül yolunun nasıl çözüleceğini belirle.",
       adminTitle: "Yönetici İşlemleri",
       adminBody: "Eklenti ayarlarını kaydet veya mevcut yönetici snapshot'unu tüm kullanıcı profillerine global olarak yayınla.",
       statusTitle: "Çalışma Durumu",
@@ -2400,7 +2400,7 @@ export const languageLabels = {
       inMemoryBody: "index.html dosyasının disk üzerindeki dosyalara dokunmadan yanıt anında yeniden yazılıp yazılmadığını kontrol eder.",
       monwuiSettingsTitle: "MonWUI Ayarları",
       snippetTitle: "HTML Snippet",
-      snippetBody: "JMSFusion'ın Jellyfin Web içine enjekte ettiği tam snippet.",
+      snippetBody: "JMSFusionV2'ın Jellyfin Web içine enjekte ettiği tam snippet.",
       envTitle: "Web Yolu ve İzinler",
       envBody: "Algılanan web kökü, dosya yazma izinleri ve patch işlemi için önerilen ACL komutları."
     },
@@ -2456,7 +2456,7 @@ export const languageLabels = {
       inactiveTitle: "Bellek içi enjeksiyon algılanmadı.",
       inactiveHint: "Snippet'i kalıcı olarak index.html içine yazmak istiyorsan Patch kullan.",
       fallbackToggleLabel: "Fiziksel index.html patch yedeğini etkinleştir",
-      fallbackToggleHint: "Varsayılan olarak kapalıdır. Bunu yalnızca çalışma zamanı enjeksiyonu çalışmıyorsa veya özellikle disk üzerine patch yazman gerekiyorsa aç. Etkin olduğunda JMSFusion, başlangıçta ve yapılandırma değişikliklerinde index.html dosyasını patchlemeyi dener."
+      fallbackToggleHint: "Varsayılan olarak kapalıdır. Bunu yalnızca çalışma zamanı enjeksiyonu çalışmıyorsa veya özellikle disk üzerine patch yazman gerekiyorsa aç. Etkin olduğunda JMSFusionV2, başlangıçta ve yapılandırma değişikliklerinde index.html dosyasını patchlemeyi dener."
     },
     env: {
       runningUser: "Çalışan kullanıcı",

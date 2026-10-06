@@ -1,5 +1,5 @@
 import { getConfig } from "../../config.js";
-import { getEmbyHeaders, getSessionInfo } from "../../../../Plugins/JMSFusion/runtime/api.js";
+import { getEmbyHeaders, getSessionInfo } from "../../../../Plugins/JMSFusionV2/runtime/api.js";
 import { musicPlayerState } from "./state.js";
 
 const RADIO_BROWSER_MIRRORS = [
@@ -1384,7 +1384,7 @@ async function fetchRadioBrowser(path, options = {}) {
     }
   }
 
-  throw lastError || new Error("Radio Browser istegi basarisiz");
+  throw lastError || new Error("Radio Browser request failed");
 }
 
 function buildSearchPath({
@@ -1472,7 +1472,7 @@ export async function getAutoDiscoveredStations({ limit = 18 } = {}) {
 export async function resolveRadioStream(track) {
   const station = normalizeRadioStation(track, { source: track?.Source || "radio" });
   if (!station) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   if (station.stationuuid) {
@@ -1495,7 +1495,7 @@ export async function resolveRadioStream(track) {
 
   const fallback = await unwrapRadioPlaylistUrl(station.url_resolved || station.url);
   if (!fallback?.url) {
-    throw new Error(getConfig()?.languageLabels?.radioStreamNotFound || "Yayin adresi bulunamadi");
+    throw new Error(getConfig()?.languageLabels?.radioStreamNotFound || "Stream URL not found");
   }
 
   const matchedStation =
@@ -1561,7 +1561,7 @@ function readSharedStationsFromConfig(configData) {
 }
 
 async function fetchJmsConfig() {
-  const response = await fetch("/JMSFusion/config", {
+  const response = await fetch("/JMSFusionV2/config", {
     method: "GET",
     cache: "no-store",
     headers: getEmbyHeaders({
@@ -1576,7 +1576,7 @@ async function fetchJmsConfig() {
     throw new Error(`HTTP ${response.status}`);
   }
 
-  setSharedBackendMode("jmsfusion");
+  setSharedBackendMode("JMSFusionV2");
   return response.json().then((data) => {
     const unwrapped = data?.cfg;
     return unwrapped && typeof unwrapped === "object" ? unwrapped : (data || {});
@@ -1616,7 +1616,7 @@ export function getRadioPersistenceInfo() {
     mode: sharedBackendMode === "unknown" ? "auto" : sharedBackendMode,
     staticPath: STATIC_SHARED_RADIO_PATH,
     localKey: LOCAL_SHARED_RADIO_KEY,
-    supportsServerWrite: sharedBackendMode === "jmsfusion"
+    supportsServerWrite: sharedBackendMode === "JMSFusionV2"
   };
 }
 
@@ -1639,7 +1639,7 @@ function withContributorMetadata(station) {
 async function persistSharedRadioStations(stations) {
   const sharedRecords = stations.map(toSharedRecord);
 
-  const response = await fetch("/JMSFusion/config", {
+  const response = await fetch("/JMSFusionV2/config", {
     method: "POST",
     cache: "no-store",
     headers: getEmbyHeaders({
@@ -1664,7 +1664,7 @@ export async function fetchSharedRadioStations() {
     musicPlayerState.radioSharedStations = stations;
     return stations;
   } catch (error) {
-    if (sharedBackendMode !== "jmsfusion") {
+    if (sharedBackendMode !== "JMSFusionV2") {
       return loadManualSharedStations();
     }
 
@@ -1678,7 +1678,7 @@ export async function fetchSharedRadioStations() {
 export async function saveSharedRadioStation(rawStation) {
   const station = withContributorMetadata(normalizeRadioStation(rawStation, { source: "shared" }));
   if (!station) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   const configData = await fetchJmsConfig().catch(() => ({}));
@@ -1701,12 +1701,12 @@ export async function removeSharedRadioStation(rawStation) {
     source: text(rawStation?.source || rawStation?.Source, "shared")
   });
   if (!station) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   const targetKey = stationKey(station);
   if (!targetKey) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   const configData = await fetchJmsConfig().catch(() => ({}));
@@ -1727,7 +1727,7 @@ export async function removeSharedRadioStation(rawStation) {
 export async function submitStationToDirectory(rawStation) {
   const station = normalizeRadioStation(rawStation);
   if (!station) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   const payload = {
@@ -1777,7 +1777,7 @@ export function cleanupAttachedRadioStream(audio) {
 }
 
 export async function attachRadioStream(audio, url, options = {}) {
-  if (!audio) throw new Error("Audio elementi bulunamadi");
+  if (!audio) throw new Error("Audio element not found");
 
   const onMetadata = typeof options.onMetadata === "function"
     ? options.onMetadata
@@ -1786,7 +1786,7 @@ export async function attachRadioStream(audio, url, options = {}) {
 
   const streamUrl = normalizeUrl(url);
   if (!streamUrl) {
-    throw new Error(getConfig()?.languageLabels?.radioStreamNotFound || "Yayin adresi bulunamadi");
+    throw new Error(getConfig()?.languageLabels?.radioStreamNotFound || "Stream URL not found");
   }
 
   cleanupAttachedRadioStream(audio);

@@ -1,4 +1,4 @@
-import { getSessionInfo, getEmbyHeaders, makeApiRequest, updateFavoriteStatus } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, getEmbyHeaders, makeApiRequest, updateFavoriteStatus } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig, getDeviceProfileAuto, getHomeSectionsRuntimeConfig } from './config.js';
 import { getLanguageLabels } from "../language/index.js";
 import { attachMiniPosterHover } from "./studioHubsUtils.js";
@@ -435,7 +435,7 @@ async function toggleFavorite(itemId, isFavorite, buttonElement, item) {
     setTimeout(() => { buttonElement.style.transform = 'scale(1)'; }, 200);
     return true;
   } catch (error) {
-    console.error('Favori işlemi hatası:', error);
+    console.error('Favorite operation error:', error);
     buttonElement.style.animation = 'shake 0.5s';
     setTimeout(() => { buttonElement.style.animation = ''; }, 500);
     return false;
@@ -547,7 +547,7 @@ function showPreviewPopover(anchorEl, studioName, items) {
 function createPreviewButton(card, studioName, studioId, userId) {
   const btn = document.createElement('button');
   btn.className = 'hub-preview-btn';
-  btn.setAttribute('aria-label', `${studioName} ${(config.languageLabels.previewButtonLabel || "Önizleme")}`);
+  btn.setAttribute('aria-label', `${studioName} ${(config.languageLabels.previewButtonLabel || "Preview")}`);
   btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';
 
   let isFetching = false;
@@ -563,7 +563,7 @@ function createPreviewButton(card, studioName, studioId, userId) {
       const fetched = await fetchStudioItemsViaUsers(studioId, studioName, userId, signal);
       studioItems = selectTopNWithMinRating(fetched, MIN_RATING, 5);
     } catch (err) {
-      console.error('Ön izleme verileri alınamadı:', err);
+      console.error('Could not fetch preview data:', err);
       studioItems = [];
     } finally {
       isFetching = false;
@@ -753,7 +753,7 @@ async function resolveLogoUrl(name) {
 async function fetchStudios(signal) {
   const url = `/Studios?Limit=300&Recursive=true&SortBy=SortName&SortOrder=Ascending`;
   const res = await fetch(withServer(url), { headers: hJSON(), signal, credentials: 'same-origin' });
-  if (!res.ok) throw new Error("Studios alınamadı");
+  if (!res.ok) throw new Error("Could not fetch studios");
   const data = await res.json();
   const items = Array.isArray(data?.Items) ? data.Items : (Array.isArray(data) ? data : []);
   return items.map(s => ({
@@ -1150,7 +1150,7 @@ export async function renderStudioHubs() {
     }
 
   } catch (e) {
-    console.warn("Studio hubs render hatası:", e);
+    console.warn("Studio hubs rendering error:", e);
     setStudioHubsReady(true);
   } finally {
     __studioHubBusy = false;

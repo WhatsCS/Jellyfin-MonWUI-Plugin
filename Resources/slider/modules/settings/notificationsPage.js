@@ -9,18 +9,18 @@ export function createNotificationsPanel(config, labels) {
     panel.id = 'notifications-panel';
     panel.className = 'settings-panel';
 
-    const section = createSection(labels.notificationsSettings || 'Bildirim Ayarları');
+    const section = createSection(labels.notificationsSettings || "Notification Settings");
 
     const enableCheckbox = createCheckbox(
     'enableNotifications',
-    labels.enableNotifications || 'Bildirim Simgesini Etkinleştir',
+    labels.enableNotifications || "Enable Notification Icon",
     config.enableNotifications
 );
     section.appendChild(enableCheckbox);
 
     const enableToastNewCheckbox = createCheckbox(
     'enableToastNew',
-    labels.enableToastNew || 'Yeni eklenenler için toast bildirimi etkinleştir.',
+    labels.enableToastNew || "Enable toast for newly added content.",
     config.enableToastNew
 );
     section.appendChild(enableToastNewCheckbox);
@@ -28,7 +28,7 @@ export function createNotificationsPanel(config, labels) {
 
     const enableToastSystemCheckbox = createCheckbox(
     'enableToastSystem',
-    labels.enableToastSystem || 'Sistem bildirimleri için toast bildirimi etkinleştir.',
+    labels.enableToastSystem || "Enable toast for system notifications.",
     config.enableToastSystem
 );
     section.appendChild(enableToastSystemCheckbox);
@@ -44,7 +44,7 @@ export function createNotificationsPanel(config, labels) {
     maxNotificationsDiv.className = 'setting-item limit-container';
 
     const maxNotificationsLabel = document.createElement('label');
-    maxNotificationsLabel.textContent = labels.maxNotifications || 'Gösterilecek Bildirim Limiti:';
+    maxNotificationsLabel.textContent = labels.maxNotifications || 'Showilecek Bildirim Limiti:';
 
     const maxNotificationsInput = document.createElement('input');
     maxNotificationsInput.type = 'number';
@@ -62,7 +62,7 @@ export function createNotificationsPanel(config, labels) {
     toastDurationDiv.className = 'setting-item limit-container';
 
     const toastDurationLabel = document.createElement('label');
-    toastDurationLabel.textContent = labels.toastDuration || 'Toast Süresi (ms):';
+    toastDurationLabel.textContent = labels.toastDuration || 'Toast Duration (ms):';
 
     const toastDurationInput = document.createElement('input');
     toastDurationInput.type = 'number';
@@ -96,7 +96,7 @@ export function createNotificationsPanel(config, labels) {
 
     const enableRenderResumeCheckbox = createCheckbox(
     'enableRenderResume',
-    labels.enableRenderResume || 'İzlenmesi Yarım Kalanları Görüntüle',
+    labels.enableRenderResume || 'Show Partially Watched Items',
     config.enableRenderResume
 );
     section.appendChild(enableRenderResumeCheckbox);
@@ -105,7 +105,7 @@ export function createNotificationsPanel(config, labels) {
     renderResumeDiv.className = 'setting-item limit-container';
 
     const renderResumeLabel = document.createElement('label');
-    renderResumeLabel.textContent = labels.playingLimit || 'İzlemeye Devam Et Limiti';
+    renderResumeLabel.textContent = labels.playingLimit || "Continue Watching Limit";
 
     const renderResumeInput = document.createElement('input');
     renderResumeInput.type = 'number';

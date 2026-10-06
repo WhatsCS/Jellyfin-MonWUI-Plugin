@@ -1,4 +1,4 @@
-<div id="JMSFusionConfigPage"
+<div id="JMSFusionV2ConfigPage"
      data-role="page"
      class="page type-interior pluginConfigurationPage"
      translate="no" data-jf-no-translate="1">
@@ -7,7 +7,7 @@
     <section class="jms-hero-card">
       <div class="jms-hero-copy">
         <div class="jms-eyebrow" id="heroEyebrow">Plugin Configuration</div>
-        <h2 id="pageTitle">JMSFusion Control Center</h2>
+        <h2 id="pageTitle">JMSFusionV2 Control Center</h2>
         <p id="pageIntro">
           Manage the <code>/slider</code> asset source, publish global settings, inspect runtime status,
           and review HTML snippet and web permission details from a cleaner interface.
@@ -27,13 +27,13 @@
     </section>
 
     <div class="jms-tabbar" role="tablist" aria-label="Configuration sections">
-      <button id="tabJmsfusion"
+      <button id="tabJMSFusionV2"
               type="button"
               class="jms-tab is-active"
               role="tab"
               aria-selected="true"
-              aria-controls="panelJmsfusion"
-              data-tab="jmsfusion">JMSFusion</button>
+              aria-controls="panelJMSFusionV2"
+              data-tab="JMSFusionV2">JMSFusionV2</button>
       <button id="tabMonwuiSettings"
               type="button"
               class="jms-tab"
@@ -59,16 +59,16 @@
 
     <div id="msg" class="fieldDescription" style="min-height:24px;"></div>
 
-    <section id="panelJmsfusion"
+    <section id="panelJMSFusionV2"
              class="jms-panel is-active"
-             data-panel="jmsfusion"
+             data-panel="JMSFusionV2"
              role="tabpanel"
-             aria-labelledby="tabJmsfusion">
+             aria-labelledby="tabJMSFusionV2">
       <div class="jms-grid jms-grid--split">
         <div class="jms-card">
           <div class="jms-card-head">
             <h3 id="configCardTitle">Core Settings</h3>
-            <p id="configCardBody">Choose where JMSFusion serves slider assets from and how the player module path is resolved.</p>
+            <p id="configCardBody">Choose where JMSFusionV2 serves slider assets from and how the player module path is resolved.</p>
           </div>
 
           <form id="configForm" onsubmit="return false;">
@@ -169,7 +169,7 @@
         <div class="jms-card">
           <div class="jms-card-head">
             <h3 id="snippetCardTitle">HTML Snippet</h3>
-            <p id="snippetCardBody">The exact snippet JMSFusion injects into Jellyfin web.</p>
+            <p id="snippetCardBody">The exact snippet JMSFusionV2 injects into Jellyfin web.</p>
           </div>
           <div id="snippet" class="jms-code-shell">
             <div class="jms-empty" id="snippetPlaceholder">Snippet has not been loaded yet.</div>
@@ -227,7 +227,7 @@
   </div>
 
   <style>
-#JMSFusionConfigPage {
+#JMSFusionV2ConfigPage {
   --jms-accent: #00a6a6;
   --jms-accent-strong: #0d7c86;
   --jms-accent-soft: rgba(0, 166, 166, 0.14);
@@ -244,26 +244,26 @@
   --jms-radius-md: 14px;
 }
 
-.theme-dark #JMSFusionConfigPage {
+.theme-dark #JMSFusionV2ConfigPage {
   --jms-border: rgba(235, 245, 246, 0.12);
   --jms-shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
 }
 
-#JMSFusionConfigPage .content-primary {
+#JMSFusionV2ConfigPage .content-primary {
   max-width: 1180px;
   margin: 0 auto;
   padding: 24px;
 }
 
-#JMSFusionConfigPage .jms-hero-card,
-#JMSFusionConfigPage .jms-card {
+#JMSFusionV2ConfigPage .jms-hero-card,
+#JMSFusionV2ConfigPage .jms-card {
   background: var(--cardBackgroundColor);
   border: 1px solid var(--jms-border);
   border-radius: var(--jms-radius-xl);
   box-shadow: var(--jms-shadow);
 }
 
-#JMSFusionConfigPage .jms-hero-card {
+#JMSFusionV2ConfigPage .jms-hero-card {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
   gap: 24px;
@@ -273,7 +273,7 @@
     radial-gradient(circle at left center, rgba(0, 166, 166, 0.15), transparent 38%);
 }
 
-#JMSFusionConfigPage .jms-eyebrow {
+#JMSFusionV2ConfigPage .jms-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -284,7 +284,7 @@
   color: var(--jms-accent-strong);
 }
 
-#JMSFusionConfigPage .jms-eyebrow::before {
+#JMSFusionV2ConfigPage .jms-eyebrow::before {
   content: "";
   width: 10px;
   height: 10px;
@@ -293,14 +293,14 @@
   box-shadow: 0 0 0 6px var(--jms-accent-soft);
 }
 
-#JMSFusionConfigPage #pageTitle {
+#JMSFusionV2ConfigPage #pageTitle {
   margin: 14px 0 10px;
   font-size: clamp(28px, 3vw, 42px);
   line-height: 1.04;
   color: var(--textColor);
 }
 
-#JMSFusionConfigPage #pageIntro {
+#JMSFusionV2ConfigPage #pageIntro {
   margin: 0;
   max-width: 760px;
   color: var(--labelTextColor);
@@ -308,27 +308,27 @@
   font-size: 15px;
 }
 
-#JMSFusionConfigPage #pageIntro code {
+#JMSFusionV2ConfigPage #pageIntro code {
   padding: 2px 6px;
   border-radius: 999px;
   background: var(--jms-accent-soft);
   color: var(--textColor);
 }
 
-#JMSFusionConfigPage .jms-hero-meta {
+#JMSFusionV2ConfigPage .jms-hero-meta {
   display: grid;
   gap: 14px;
   align-content: center;
 }
 
-#JMSFusionConfigPage .jms-hero-pill {
+#JMSFusionV2ConfigPage .jms-hero-pill {
   padding: 16px 18px;
   border-radius: var(--jms-radius-lg);
   border: 1px solid var(--jms-border);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent);
 }
 
-#JMSFusionConfigPage .jms-hero-pill__label {
+#JMSFusionV2ConfigPage .jms-hero-pill__label {
   display: block;
   margin-bottom: 6px;
   font-size: 12px;
@@ -337,21 +337,21 @@
   color: var(--labelTextColor);
 }
 
-#JMSFusionConfigPage .jms-hero-pill strong {
+#JMSFusionV2ConfigPage .jms-hero-pill strong {
   display: block;
   font-size: 16px;
   color: var(--textColor);
   word-break: break-word;
 }
 
-#JMSFusionConfigPage .jms-tabbar {
+#JMSFusionV2ConfigPage .jms-tabbar {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin: 20px 0 14px;
 }
 
-#JMSFusionConfigPage .jms-tab {
+#JMSFusionV2ConfigPage .jms-tab {
   appearance: none;
   border: 1px solid var(--jms-border);
   border-radius: 999px;
@@ -364,60 +364,60 @@
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
 }
 
-#JMSFusionConfigPage .jms-tab:hover {
+#JMSFusionV2ConfigPage .jms-tab:hover {
   transform: translateY(-1px);
   border-color: rgba(0, 166, 166, 0.35);
 }
 
-#JMSFusionConfigPage .jms-tab.is-active {
+#JMSFusionV2ConfigPage .jms-tab.is-active {
   color: #ffffff;
   border-color: transparent;
   background: linear-gradient(135deg, var(--jms-accent-strong), var(--jms-accent));
   box-shadow: 0 14px 30px rgba(13, 124, 134, 0.28);
 }
 
-#JMSFusionConfigPage .jms-panel {
+#JMSFusionV2ConfigPage .jms-panel {
   margin-top: 10px;
 }
 
-#JMSFusionConfigPage .jms-panel[hidden] {
+#JMSFusionV2ConfigPage .jms-panel[hidden] {
   display: none !important;
 }
 
-#JMSFusionConfigPage .jms-grid {
+#JMSFusionV2ConfigPage .jms-grid {
   display: grid;
   gap: 18px;
 }
 
-#JMSFusionConfigPage .jms-grid--split {
+#JMSFusionV2ConfigPage .jms-grid--split {
   grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
 }
 
-#JMSFusionConfigPage .jms-grid--single {
+#JMSFusionV2ConfigPage .jms-grid--single {
   grid-template-columns: minmax(0, 1fr);
 }
 
-#JMSFusionConfigPage .jms-card {
+#JMSFusionV2ConfigPage .jms-card {
   padding: 22px;
 }
 
-#JMSFusionConfigPage .jms-card-head {
+#JMSFusionV2ConfigPage .jms-card-head {
   margin-bottom: 18px;
 }
 
-#JMSFusionConfigPage .jms-card-head h3 {
+#JMSFusionV2ConfigPage .jms-card-head h3 {
   margin: 0 0 8px;
   font-size: 20px;
   color: var(--textColor);
 }
 
-#JMSFusionConfigPage .jms-card-head p {
+#JMSFusionV2ConfigPage .jms-card-head p {
   margin: 0;
   color: var(--labelTextColor);
   line-height: 1.6;
 }
 
-#JMSFusionConfigPage .inputContainer {
+#JMSFusionV2ConfigPage .inputContainer {
   margin-bottom: 16px;
   padding: 18px;
   border-radius: var(--jms-radius-lg);
@@ -425,29 +425,29 @@
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
 }
 
-#JMSFusionConfigPage .inputContainer:last-child {
+#JMSFusionV2ConfigPage .inputContainer:last-child {
   margin-bottom: 0;
 }
 
-#JMSFusionConfigPage .inputLabel {
+#JMSFusionV2ConfigPage .inputLabel {
   display: block;
   margin-bottom: 10px;
   color: var(--textColor);
   font-weight: 700;
 }
 
-#JMSFusionConfigPage .inputLabel--checkbox {
+#JMSFusionV2ConfigPage .inputLabel--checkbox {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   margin-bottom: 0;
 }
 
-#JMSFusionConfigPage .inputLabel--checkbox input {
+#JMSFusionV2ConfigPage .inputLabel--checkbox input {
   margin-top: 2px;
 }
 
-#JMSFusionConfigPage .emby-input {
+#JMSFusionV2ConfigPage .emby-input {
   width: 100%;
   min-height: 46px;
   padding: 12px 14px;
@@ -458,55 +458,55 @@
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-#JMSFusionConfigPage .emby-input:focus {
+#JMSFusionV2ConfigPage .emby-input:focus {
   outline: none;
   border-color: rgba(0, 166, 166, 0.45);
   box-shadow: 0 0 0 4px rgba(0, 166, 166, 0.14);
 }
 
-#JMSFusionConfigPage .fieldDescription {
+#JMSFusionV2ConfigPage .fieldDescription {
   margin-top: 10px;
   color: var(--labelTextColor);
   line-height: 1.55;
   font-size: 13px;
 }
 
-#JMSFusionConfigPage #msg {
+#JMSFusionV2ConfigPage #msg {
   padding: 12px 16px;
   border-radius: 14px;
   border: 1px solid transparent;
   background: var(--cardBackgroundColor);
 }
 
-#JMSFusionConfigPage #msg.ok {
+#JMSFusionV2ConfigPage #msg.ok {
   color: var(--jms-success);
   background: var(--jms-success-soft);
   border-color: rgba(31, 157, 104, 0.22);
 }
 
-#JMSFusionConfigPage #msg.warn {
+#JMSFusionV2ConfigPage #msg.warn {
   color: var(--jms-gold);
   background: var(--jms-gold-soft);
   border-color: rgba(240, 180, 41, 0.22);
 }
 
-#JMSFusionConfigPage #msg.err {
+#JMSFusionV2ConfigPage #msg.err {
   color: var(--jms-danger);
   background: var(--jms-danger-soft);
   border-color: rgba(214, 69, 80, 0.22);
 }
 
-#JMSFusionConfigPage .buttonContainer {
+#JMSFusionV2ConfigPage .buttonContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
 }
 
-#JMSFusionConfigPage .buttonContainer--tight {
+#JMSFusionV2ConfigPage .buttonContainer--tight {
   margin-bottom: 18px;
 }
 
-#JMSFusionConfigPage .raised {
+#JMSFusionV2ConfigPage .raised {
   appearance: none;
   border: 1px solid var(--jms-border);
   border-radius: 14px;
@@ -519,24 +519,24 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
-#JMSFusionConfigPage .raised:hover {
+#JMSFusionV2ConfigPage .raised:hover {
   transform: translateY(-1px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   border-color: rgba(0, 166, 166, 0.3);
 }
 
-#JMSFusionConfigPage .button-submit {
+#JMSFusionV2ConfigPage .button-submit {
   color: #ffffff;
   border-color: transparent;
   background: linear-gradient(135deg, var(--jms-accent-strong), var(--jms-accent));
 }
 
-#JMSFusionConfigPage .jms-status-list {
+#JMSFusionV2ConfigPage .jms-status-list {
   display: grid;
   gap: 12px;
 }
 
-#JMSFusionConfigPage .jms-status-row {
+#JMSFusionV2ConfigPage .jms-status-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 14px;
@@ -547,22 +547,22 @@
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
 }
 
-#JMSFusionConfigPage .jms-status-label {
+#JMSFusionV2ConfigPage .jms-status-label {
   color: var(--textColor);
   font-weight: 600;
 }
 
-#JMSFusionConfigPage .jms-status-value {
+#JMSFusionV2ConfigPage .jms-status-value {
   color: var(--labelTextColor);
   text-align: right;
 }
 
-#JMSFusionConfigPage .jms-status-value code {
+#JMSFusionV2ConfigPage .jms-status-value code {
   word-break: break-all;
 }
 
-#JMSFusionConfigPage .jms-inline-state,
-#JMSFusionConfigPage .jms-empty {
+#JMSFusionV2ConfigPage .jms-inline-state,
+#JMSFusionV2ConfigPage .jms-empty {
   padding: 16px;
   border-radius: 14px;
   border: 1px dashed var(--jms-border);
@@ -570,19 +570,19 @@
   line-height: 1.6;
 }
 
-#JMSFusionConfigPage .jms-inline-state.ok {
+#JMSFusionV2ConfigPage .jms-inline-state.ok {
   border-style: solid;
   color: var(--jms-success);
   background: var(--jms-success-soft);
 }
 
-#JMSFusionConfigPage .jms-inline-state.warn {
+#JMSFusionV2ConfigPage .jms-inline-state.warn {
   border-style: solid;
   color: var(--jms-gold);
   background: var(--jms-gold-soft);
 }
 
-#JMSFusionConfigPage .jms-inline-toggle {
+#JMSFusionV2ConfigPage .jms-inline-toggle {
   display: grid;
   gap: 10px;
   margin-top: 14px;
@@ -590,23 +590,23 @@
   border-top: 1px solid var(--jms-border);
 }
 
-#JMSFusionConfigPage .jms-inline-toggle .inputLabel--checkbox,
-#JMSFusionConfigPage .jms-inline-toggle .fieldDescription {
+#JMSFusionV2ConfigPage .jms-inline-toggle .inputLabel--checkbox,
+#JMSFusionV2ConfigPage .jms-inline-toggle .fieldDescription {
   color: inherit;
 }
 
-#JMSFusionConfigPage .jms-inline-toggle .fieldDescription {
+#JMSFusionV2ConfigPage .jms-inline-toggle .fieldDescription {
   margin-top: 0;
   opacity: 0.92;
 }
 
-#JMSFusionConfigPage .jms-empty--error {
+#JMSFusionV2ConfigPage .jms-empty--error {
   border-style: solid;
   color: var(--jms-danger);
   background: var(--jms-danger-soft);
 }
 
-#JMSFusionConfigPage .jms-badge {
+#JMSFusionV2ConfigPage .jms-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -618,36 +618,36 @@
   white-space: nowrap;
 }
 
-#JMSFusionConfigPage .jms-badge.is-good {
+#JMSFusionV2ConfigPage .jms-badge.is-good {
   color: var(--jms-success);
   background: var(--jms-success-soft);
 }
 
-#JMSFusionConfigPage .jms-badge.is-bad {
+#JMSFusionV2ConfigPage .jms-badge.is-bad {
   color: var(--jms-danger);
   background: var(--jms-danger-soft);
 }
 
-#JMSFusionConfigPage .jms-badge.is-warn {
+#JMSFusionV2ConfigPage .jms-badge.is-warn {
   color: var(--jms-gold);
   background: var(--jms-gold-soft);
 }
 
-#JMSFusionConfigPage .jms-code-shell,
-#JMSFusionConfigPage .jms-env-box,
-#JMSFusionConfigPage pre.preformatted {
+#JMSFusionV2ConfigPage .jms-code-shell,
+#JMSFusionV2ConfigPage .jms-env-box,
+#JMSFusionV2ConfigPage pre.preformatted {
   border-radius: 16px;
   border: 1px solid var(--jms-border);
   background: var(--inputBackgroundColor);
 }
 
-#JMSFusionConfigPage .jms-code-shell {
+#JMSFusionV2ConfigPage .jms-code-shell {
   overflow: hidden;
 }
 
-#JMSFusionConfigPage .jms-code-shell pre,
-#JMSFusionConfigPage .jms-code-shell code,
-#JMSFusionConfigPage pre.preformatted {
+#JMSFusionV2ConfigPage .jms-code-shell pre,
+#JMSFusionV2ConfigPage .jms-code-shell code,
+#JMSFusionV2ConfigPage pre.preformatted {
   margin: 0;
   padding: 16px;
   white-space: pre-wrap;
@@ -658,18 +658,18 @@
   color: var(--textColor);
 }
 
-#JMSFusionConfigPage .jms-env-box {
+#JMSFusionV2ConfigPage .jms-env-box {
   display: grid;
   gap: 16px;
   padding: 18px;
 }
 
-#JMSFusionConfigPage .jms-env-item {
+#JMSFusionV2ConfigPage .jms-env-item {
   display: grid;
   gap: 8px;
 }
 
-#JMSFusionConfigPage .jms-env-label {
+#JMSFusionV2ConfigPage .jms-env-label {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -677,8 +677,8 @@
   font-weight: 700;
 }
 
-#JMSFusionConfigPage .jms-env-item code,
-#JMSFusionConfigPage .jms-env-file-row code {
+#JMSFusionV2ConfigPage .jms-env-item code,
+#JMSFusionV2ConfigPage .jms-env-file-row code {
   padding: 3px 6px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.06);
@@ -686,37 +686,37 @@
   font-family: Consolas, Monaco, monospace;
 }
 
-#JMSFusionConfigPage .jms-env-files {
+#JMSFusionV2ConfigPage .jms-env-files {
   display: grid;
   gap: 12px;
 }
 
-#JMSFusionConfigPage .jms-env-file-row {
+#JMSFusionV2ConfigPage .jms-env-file-row {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 12px;
   align-items: center;
 }
 
-#JMSFusionConfigPage .jms-env-file-row span {
+#JMSFusionV2ConfigPage .jms-env-file-row span {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-#JMSFusionConfigPage .ok {
+#JMSFusionV2ConfigPage .ok {
   color: var(--jms-success);
 }
 
-#JMSFusionConfigPage .warn {
+#JMSFusionV2ConfigPage .warn {
   color: var(--jms-gold);
 }
 
-#JMSFusionConfigPage .jms-settings-page-host {
+#JMSFusionV2ConfigPage .jms-settings-page-host {
   min-height: 360px;
 }
 
-#JMSFusionConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell {
+#JMSFusionV2ConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell {
   display: block !important;
   position: relative !important;
   inset: auto !important;
@@ -725,7 +725,7 @@
   animation: none !important;
 }
 
-#JMSFusionConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-modal-content {
+#JMSFusionV2ConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-modal-content {
   width: 100% !important;
   max-width: none !important;
   height: min(94vh, 980px) !important;
@@ -733,57 +733,57 @@
   box-shadow: none !important;
 }
 
-#JMSFusionConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-modal-content h2 {
+#JMSFusionV2ConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-modal-content h2 {
   display: none !important;
 }
 
-#JMSFusionConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell form,
-#JMSFusionConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-tabs,
-#JMSFusionConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-tab-content {
+#JMSFusionV2ConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell form,
+#JMSFusionV2ConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-tabs,
+#JMSFusionV2ConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-tab-content {
   min-height: 0 !important;
 }
 
 @media (max-width: 900px) {
-  #JMSFusionConfigPage .jms-hero-card,
-  #JMSFusionConfigPage .jms-grid--split {
+  #JMSFusionV2ConfigPage .jms-hero-card,
+  #JMSFusionV2ConfigPage .jms-grid--split {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 720px) {
-  #JMSFusionConfigPage .content-primary {
+  #JMSFusionV2ConfigPage .content-primary {
     padding: 14px;
   }
 
-  #JMSFusionConfigPage .jms-hero-card,
-  #JMSFusionConfigPage .jms-card {
+  #JMSFusionV2ConfigPage .jms-hero-card,
+  #JMSFusionV2ConfigPage .jms-card {
     padding: 18px;
     border-radius: 18px;
   }
 
-  #JMSFusionConfigPage .buttonContainer {
+  #JMSFusionV2ConfigPage .buttonContainer {
     flex-direction: column;
   }
 
-  #JMSFusionConfigPage .raised,
-  #JMSFusionConfigPage .jms-tab {
+  #JMSFusionV2ConfigPage .raised,
+  #JMSFusionV2ConfigPage .jms-tab {
     width: 100%;
   }
 
-  #JMSFusionConfigPage .jms-status-row,
-  #JMSFusionConfigPage .jms-env-file-row {
+  #JMSFusionV2ConfigPage .jms-status-row,
+  #JMSFusionV2ConfigPage .jms-env-file-row {
     grid-template-columns: 1fr;
   }
 
-  #JMSFusionConfigPage .jms-status-value {
+  #JMSFusionV2ConfigPage .jms-status-value {
     text-align: left;
   }
 
-  #JMSFusionConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-modal-content {
+  #JMSFusionV2ConfigPage .jms-settings-page-host > #settings-modal.jms-settings-page-shell .settings-modal-content {
     height: min(86vh, 1100px) !important;
     max-height: min(86vh, 1100px) !important;
   }
 }
 </style>
-  <script src="../Plugins/JMSFusion/assets/UiJs" type="text/javascript" data-jf-no-translate="1"></script>
+  <script src="../Plugins/JMSFusionV2/assets/UiJs" type="text/javascript" data-jf-no-translate="1"></script>
 </div>

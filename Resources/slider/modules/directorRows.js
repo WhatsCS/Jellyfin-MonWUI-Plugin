@@ -1,4 +1,4 @@
-import { getSessionInfo, makeApiRequest, getCachedUserTopGenres } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, makeApiRequest, getCachedUserTopGenres } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig, getHomeSectionsRuntimeConfig } from "./config.js";
 import { getLanguageLabels } from "../language/index.js";
 import { attachMiniPosterHover } from "./studioHubsUtils.js";
@@ -499,7 +499,7 @@ function attachDirectorScrollIdleLoader() {
       'aria-label',
       (labels.loadMoreDirectors ||
         config.languageLabels?.loadMoreDirectors ||
-        'Daha fazla yönetmen göster')
+        'Show more directors')
     );
     STATE._loadMoreArrow = arrow;
 
@@ -697,7 +697,7 @@ const COMMON_FIELDS = [
 function getDirectorRowCardTypeBadge(itemType) {
   const ll = config.languageLabels || {};
   if (itemType === "Series") {
-    return { label: ll.dizi || labels.dizi || "Dizi", icon: "tv" };
+    return { label: ll.dizi || labels.dizi || "Series", icon: "tv" };
   }
   if (itemType === "BoxSet") {
     return {
@@ -705,7 +705,7 @@ function getDirectorRowCardTypeBadge(itemType) {
       icon: "layerGroup"
     };
   }
-  return { label: ll.film || labels.film || "Film", icon: "film" };
+  return { label: ll.film || labels.film || "Movie", icon: "film" };
 }
 
 function pickBestItemByRating(items) {
@@ -887,8 +887,8 @@ function formatRuntime(ticks) {
 
 function getRuntimeWithIcons(runtime) {
   if (!runtime) return '';
-  return runtime.replace(/(\d+)s/g, `$1${config.languageLabels?.sa || 'sa'}`)
-               .replace(/(\d+)d/g, `$1${config.languageLabels?.dk || 'dk'}`);
+  return runtime.replace(/(\d+)s/g, `$1${config.languageLabels?.sa || "h"}`)
+               .replace(/(\d+)d/g, `$1${config.languageLabels?.dk || "m"}`);
 }
 
 function getDetailsUrl(itemId, serverId) {
@@ -972,7 +972,7 @@ function mountDirectorHero(heroHost, heroItem, serverId, directorName, { aboveFo
   if (same) {
     const label = existing.querySelector('.dir-row-hero-label');
     if (label) {
-      label.textContent = `${(config.languageLabels?.yonetmen || "yönetmen")} ${directorName || ""}`.trim();
+      label.textContent = `${(config.languageLabels?.yonetmen || "Director")} ${directorName || ""}`.trim();
     }
     try { heroHost.style.visibility = 'visible'; } catch {}
     return { hero: existing, changed: false };
@@ -1019,7 +1019,7 @@ function createRecommendationCard(item, serverId, aboveFold = false) {
     maxTitleLength: 42,
   });
   const progressHtml = (progress > 0.02 && progress < 0.999)
-    ? `<div class="rr-progress-wrap" aria-label="${escapeHtml(config.languageLabels?.progress || "İlerleme")}">
+    ? `<div class="rr-progress-wrap" aria-label="${escapeHtml(config.languageLabels?.progress || "Progress")}">
          <div class="rr-progress-bar" style="width:${Math.round(progress * 100)}%"></div>
        </div>`
     : "";
@@ -1080,7 +1080,7 @@ function createRecommendationCard(item, serverId, aboveFold = false) {
     noImg.className = 'prc-noimg-label';
     noImg.textContent =
       (config.languageLabels && (config.languageLabels.noImage || config.languageLabels.loadingText))
-      || (labels.noImage || 'Görsel yok');
+      || (labels.noImage || 'No Image');
     noImg.style.minHeight = '100%';
     noImg.style.height = '100%';
     noImg.style.display = 'flex';
@@ -1169,7 +1169,7 @@ function createDirectorHeroCard(item, serverId, directorName, { aboveFold = fals
   const heroProgressPct = Math.round(heroProgress * 100);
   const heroProgressHtml = (heroProgress > 0.02 && heroProgress < 0.999)
     ? `
-      <div class="dir-hero-progress-wrap" aria-label="${escapeHtml(config.languageLabels?.progress || "İlerleme")}">
+      <div class="dir-hero-progress-wrap" aria-label="${escapeHtml(config.languageLabels?.progress || "Progress")}">
         <div class="dir-hero-progress-bar" style="width:${heroProgressPct}%"></div>
       </div>
       <div class="dir-hero-progress-pct">${heroProgressPct}%</div>
@@ -1188,7 +1188,7 @@ function createDirectorHeroCard(item, serverId, directorName, { aboveFold = fals
     <div class="dir-row-hero-inner">
       <div class="dir-row-hero-meta-container">
         <div class="dir-row-hero-label">
-          ${(config.languageLabels?.yonetmen || "yönetmen")} ${escapeHtml(directorName || "")}
+          ${(config.languageLabels?.yonetmen || "Director")} ${escapeHtml(directorName || "")}
         </div>
 
         ${logo ? `
@@ -1735,7 +1735,7 @@ async function fetchItemsByDirector(userId, directorId, limit = getDirectorRowCa
     const NEED = rowCardCount + 1;
     return filterAndTrimByRating(items, MIN_RATING, NEED);
   } catch (e) {
-    dirRowsWarn("directorRows: yönetmen içerik çekilemedi:", e);
+    dirRowsWarn("directorRows: could not fetch director content:", e);
     return [];
   }
 }
@@ -2654,7 +2654,7 @@ async function initAndRenderFirstBatch(mountState) {
   STATE.maxRenderCount = rowCount;
 
   if (STATE.directors.length < rowCount) {
-    dirRowsWarn(`DirectorRows: sadece ${STATE.directors.length}/${rowCount} yönetmen bulunabildi (kütüphane kısıtlı olabilir).`);
+    dirRowsWarn(`DirectorRows: found only ${STATE.directors.length}/${rowCount} directors (the library may be limited).`);
   }
 
   STATE.nextIndex = 0;
@@ -2662,7 +2662,7 @@ async function initAndRenderFirstBatch(mountState) {
   setDirectorRowsDone(false);
   try { window.__directorFirstRowReady = false; } catch {}
 
-  dirRowsLog(`DirectorRows: ${STATE.directors.length} yönetmen (${fromCache ? "DB cache" : "API"}) , ilk row hemen render ediliyor...`);
+  dirRowsLog(`DirectorRows: ${STATE.directors.length} directors (${fromCache ? "DB cache" : "API"}); rendering the first row now...`);
 
   const originalBatchSize = Math.max(1, Number(STATE.batchSize) || DIRECTOR_ROW_BATCH_SIZE);
   try {
@@ -2716,7 +2716,7 @@ async function renderNextDirectorBatch() {
   }
 
   if (STATE.nextIndex >= STATE.directors.length) {
-    dirRowsLog('Tüm yönetmenler render edildi.');
+    dirRowsLog('All directors rendered.');
     setDirectorRowsDone(true);
     if (STATE.batchObserver) {
       STATE.batchObserver.disconnect();
@@ -2733,7 +2733,7 @@ async function renderNextDirectorBatch() {
   );
   const slice = STATE.directors.slice(STATE.nextIndex, end);
 
-  dirRowsLog(`Render batch: ${STATE.nextIndex}-${end} (${slice.length} yönetmen)`);
+  dirRowsLog(`Render batch: ${STATE.nextIndex}-${end} (${slice.length} directors)`);
 
   const prevCount = STATE.renderedCount;
 
@@ -2773,7 +2773,7 @@ async function renderNextDirectorBatch() {
   setDirectorArrowLoading(false);
 
   if (STATE.nextIndex >= STATE.directors.length || STATE.renderedCount >= STATE.maxRenderCount) {
-    dirRowsLog('Tüm yönetmen rowları yüklendi.');
+    dirRowsLog('All director rows loaded.');
     setDirectorRowsDone(true);
     if (STATE.batchObserver) {
       STATE.batchObserver.disconnect();
@@ -2782,7 +2782,7 @@ async function renderNextDirectorBatch() {
     detachDirectorScrollIdleLoader();
   }
 
-  dirRowsLog(`Render tamamlandı. Toplam: ${STATE.renderedCount}/${STATE.directors.length} yönetmen`);
+  dirRowsLog(`Rendering complete. Total: ${STATE.renderedCount}/${STATE.directors.length} directors`);
 }
 
 function getDirectorUrl(directorId, directorName, serverId) {
@@ -2809,15 +2809,15 @@ function renderDirectorSection(dir, { deferContent = false, sectionIndex = 0 } =
   title.innerHTML = `
     <h2 class="sectionTitle sectionTitle-cards dir-row-title">
       <span class="dir-row-title-text" role="button" tabindex="0"
-        aria-label="${(labels.seeAll || config.languageLabels?.seeAll || 'Tümünü gör')}: ${dirTitleText}">
+        aria-label="${(labels.seeAll || config.languageLabels?.seeAll || "See All")}: ${dirTitleText}">
         ${dirTitleText}
       </span>
       <div class="dir-row-see-all"
-           aria-label="${(labels.seeAll || config.languageLabels?.seeAll || 'Tümünü gör')}"
-           title="${(labels.seeAll || config.languageLabels?.seeAll || 'Tümünü gör')}">
+           aria-label="${(labels.seeAll || config.languageLabels?.seeAll || "See All")}"
+           title="${(labels.seeAll || config.languageLabels?.seeAll || "See All")}">
         ${faIconHtml("chevronRight")}
       </div>
-      <span class="dir-row-see-all-tip">${(labels.seeAll || config.languageLabels?.seeAll || 'Tümünü gör')}</span>
+      <span class="dir-row-see-all-tip">${(labels.seeAll || config.languageLabels?.seeAll || "See All")}</span>
     </h2>
   `;
 
@@ -2831,7 +2831,7 @@ function renderDirectorSection(dir, { deferContent = false, sectionIndex = 0 } =
       try {
         openDirectorExplorer({ Id: dir.Id, Name: dir.Name });
       } catch (err) {
-        console.error('Director explorer açılırken hata:', err);
+        console.error('Error opening director explorer:', err);
       }
     };
     titleBtn.addEventListener('click', open, { passive: false });
@@ -2847,7 +2847,7 @@ function renderDirectorSection(dir, { deferContent = false, sectionIndex = 0 } =
       try {
         openDirectorExplorer({ Id: dir.Id, Name: dir.Name });
       } catch (err) {
-        console.error('Director explorer açılırken hata:', err);
+        console.error('Error opening director explorer:', err);
       }
     }, { passive: false });
   }
@@ -3002,7 +3002,7 @@ async function fillRowWhenReady(row, dir, heroHost){
               itemId: best.Id,
               serverId: STATE.serverId,
               detailsUrl: getDetailsUrl(best.Id, STATE.serverId),
-              detailsText: (config.languageLabels?.details || labels.details || "Ayrıntılar"),
+              detailsText: (config.languageLabels?.details || labels.details || "Details"),
               showDetailsOverlay: false,
             });
           }
@@ -3055,7 +3055,7 @@ async function fillRowWhenReady(row, dir, heroHost){
     return true;
 
   } catch (error) {
-    console.error('Yönetmen içerik yükleme hatası:', error);
+    console.error('Error loading director content:', error);
     cleanupDirectorSection(section);
     return false;
   }

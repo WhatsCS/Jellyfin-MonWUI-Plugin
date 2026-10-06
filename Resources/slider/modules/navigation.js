@@ -4,7 +4,7 @@ import { getConfig, getDeviceProfileAuto } from './config.js';
 import { getLanguageLabels, getDefaultLanguage } from '../language/index.js';
 import { getCurrentIndex, setCurrentIndex, setRemainingTime } from "./sliderState.js";
 import { applyContainerStyles } from "./positionUtils.js";
-import { playNow, fetchItemDetails, getCachedUserTopGenres, getGenresForDot, goToDetailsPage } from "../../Plugins/JMSFusion/runtime/api.js";
+import { playNow, fetchItemDetails, getCachedUserTopGenres, getGenresForDot, goToDetailsPage } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { applySlideAnimation, applyDotPosterAnimation, teardownAnimations, forceReflow, nextAnimToken, hardCleanupSlide } from "./animations.js";
 import { getMetaVibrantColor, getVideoQualityText } from "./containerUtils.js";
 import { previewPreloadCache } from "./hoverTrailerModal.js";
@@ -1108,7 +1108,7 @@ export function createDotNavigation() {
     const dotElements = slidesArray.map((slide, index) => {
     const itemId = slide.dataset.itemId;
     if (!itemId) {
-        console.warn(`Dot oluşturulamadı: monwui-slide ${index} için itemId eksik`);
+        console.warn(`Could not create navigation dot: itemId missing for monwui-slide ${index}`);
         return null;
     }
 
@@ -1144,7 +1144,7 @@ export function createDotNavigation() {
             }
         }
     } catch (e) {
-        console.warn("Video kalite bilgisi yüklenirken hata:", e);
+        console.warn("Error loading video quality information:", e);
     }
 
         const positionTicks = Number(slide.dataset.playbackpositionticks);
@@ -1191,15 +1191,15 @@ export function createDotNavigation() {
         e.stopPropagation();
         const itemId = slide.dataset.itemId;
         if (!itemId) {
-        alert("Oynatma başarısız: itemId bulunamadı");
+        alert("Playback failed: itemId not found");
         return;
       }
       closeVideoModal();
       try {
         await playNow(itemId);
       } catch (error) {
-        console.error("Oynatma hatası:", error);
-        alert("Oynatma başarısız: " + error.message);
+        console.error("Playback error:", error);
+        alert("Playback failed: " + error.message);
       } finally {
         closeVideoModal();
       }
@@ -1271,7 +1271,7 @@ export function createDotNavigation() {
       dot.dataset.played   = isPlayed.toString();
     } catch (error) {
       if (error?.name !== 'AbortError') {
-        console.error('Poster monwui-dot hover hatası:', error);
+        console.error('Poster navigation dot hover error:', error);
         if (modalState.videoModal) modalState.videoModal.style.display = 'none';
       }
     }
@@ -1346,7 +1346,7 @@ export function createDotNavigation() {
               dot.dataset.played = isPlayed.toString();
 
           } catch (error) {
-              console.error(`Dot verileri yüklenirken hata (${dot.dataset.itemId}):`, error);
+              console.error(`Error loading navigation dot data (${dot.dataset.itemId}):`, error);
           }
       }
   }, lowPower ? 350 : 0);

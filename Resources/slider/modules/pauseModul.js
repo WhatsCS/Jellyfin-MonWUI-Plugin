@@ -1,4 +1,4 @@
-import { getSessionInfo, fetchItemDetails, makeApiRequest, isAuthReadyStrict } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, fetchItemDetails, makeApiRequest, isAuthReadyStrict } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig, getPauseFeaturesRuntimeConfig } from "./config.js";
 import { getLanguageLabels, getDefaultLanguage } from "../language/index.js";
 import { withServer } from "./jfUrl.js";
@@ -732,7 +732,7 @@ async function loadCatalogTagsWithCache() {
 }
 
 function normalizeAgeChip(rating) {
-  if (!rating) return labels?.noRating || "Derecelendirme yok";
+  if (!rating) return labels?.noRating || "No Rating";
   const r = String(rating).toUpperCase().trim().replace(/\s+/g, "").replace(/-/g, "");
   if (/(18\+|R18|ADULT|NC17|NC\-?17|XRATED|XXX|ADULTSONLY|AO|TR18|DE18|FSK18)/.test(r)) return "18+";
   if (/(17\+|^R$|TVMA|TR17)/.test(r)) return "17+";
@@ -752,7 +752,7 @@ function normalizeAgeChip(rating) {
 }
 
 function normalizeAgeRating(raw) {
-  if (!raw) return labels?.noRating || "Derecelendirme yok";
+  if (!raw) return labels?.noRating || "No Rating";
   const s = String(raw).toUpperCase().replace(/\s+/g, "").replace(/-/g, "");
   if (/^TVMA$/.test(s)) return "18+";
   if (/^TV14$/.test(s)) return "14+";
@@ -783,7 +783,7 @@ function localizedMaturityHeader() {
   if (lang.startsWith("de")  || lang.startsWith("deu")) return "ALTERSFREIGABE:";
   if (lang.startsWith("fr")  || lang.startsWith("fre")) return "CLASSIFICATION :";
   if (lang.startsWith("ru")  || lang.startsWith("rus")) return "ВОЗРАСТНОЕ ОГРАНИЧЕНИЕ:";
-  return "YETİŞKİNLİK DÜZEYİ:";
+  return "MATURITY RATING:";
 }
 function localizedGenres(genres = []) {
   if (!Array.isArray(genres) || !genres.length) return [];
@@ -1954,7 +1954,7 @@ function kickBindRetries(schedule = [50,150,350,800,1500,2500,4000,6000,8000,120
       labels.descriptorTagMap = autoMap;
     } catch (e) {
       if (!(e?.status === 0 || e?.status === 401 || e?.status === 403 || e?.isAbort)) {
-        console.warn("descriptor tag map init hata:", e);
+        console.warn("descriptor tag map init error:", e);
       }
     }
   }
@@ -1993,7 +1993,7 @@ function kickBindRetries(schedule = [50,150,350,800,1500,2500,4000,6000,8000,120
     </div>
   </div>
   <div class="pause-status-bottom-right" id="pause-status-bottom-right" style="display:none;">
-    <span><i class="fa-solid fa-pause"></i> ${labels.paused || "Duraklatıldı"}</span>
+    <span><i class="fa-solid fa-pause"></i> ${labels.paused || "Paused"}</span>
   </div>`;
     document.body.appendChild(overlay);
 
@@ -2336,7 +2336,7 @@ function kickBindRetries(schedule = [50,150,350,800,1500,2500,4000,6000,8000,120
 
   const isEp = !!isEpisodeContext;
   const iconClass = isEp ? "fa-solid fa-tv" : "fa-solid fa-thumbs-up";
-  const text = isEp ? (labels.unwatchedEpisodes || "İzlemediğiniz Bölümler") : (labels.youMayAlsoLike || "Bunları da beğenebilirsiniz");
+  const text = isEp ? (labels.unwatchedEpisodes || "Unwatched Episodes") : (labels.youMayAlsoLike || "You may also like");
 
   if (headerEl) headerEl.innerHTML = `<i class="${iconClass}"></i> ${text}`;
   if (badgeTextEl) badgeTextEl.textContent = text;
@@ -2664,7 +2664,7 @@ function hideOverlay(opts = {}) {
       }
       renderRecommendations(recs);
     } catch (e) {
-      console.warn("duraklatma ekranı tavsiye hatası:", e);
+      console.warn("Pause screen recommendation error:", e);
       _setRecoHeaderAndBadge(Boolean(ep));
       renderRecommendations([]);
     }
@@ -3360,7 +3360,7 @@ function hideOverlay(opts = {}) {
 
         video.play();
       } catch (e) {
-        console.warn("smartAutoPause auto-resume hata:", e);
+        console.warn("smartAutoPause auto-resume error:", e);
       }
     }
 

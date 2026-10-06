@@ -59,12 +59,12 @@ export function createSliderPanel(config, labels) {
   const effective = getDefaultLanguage();
 
   const languages = [
-    { value: 'auto', label: labels.optionAuto || '🌐 Otomatik (Tarayıcı dili)' },
-    { value: 'tur',  label: labels.optionTurkish || '🇹🇷 Türkçe' },
+    { value: 'auto', label: labels.optionAuto || "🌐 Automatic (Browser language)" },
+    { value: 'tur',  label: labels.optionTurkish || '🇹🇷 Turkish' },
     { value: 'eng',  label: labels.optionEnglish || '🇬🇧 English' },
     { value: 'spa',  label: labels.optionEspanol || '🇪🇸 Español' },
     { value: 'deu',  label: labels.optionGerman  || '🇩🇪 Deutsch' },
-    { value: 'fre',  label: labels.optionFrench  || '🇫🇷 Français' },
+    { value: 'fre',  label: labels.optionFrench  || "🇫🇷 Français" },
     { value: 'rus',  label: labels.optionRussian || '🇷🇺 Русский' },
     { value: 'ita',  label: '🇮🇹 Italiano' },
     { value: 'jpn',  label: '🇯🇵 日本語' },
@@ -90,13 +90,13 @@ export function createSliderPanel(config, labels) {
   const canEditGlobalTmdb = config?.currentUserIsAdmin === true;
 
   const tmdbTitle = document.createElement('h3');
-  tmdbTitle.textContent = labels.tmdbReviewsTitle || 'TMDb Yorumları';
+  tmdbTitle.textContent = labels.tmdbReviewsTitle || 'TMDb Reviews';
 
   const tmdbKeyField = (() => {
     const w = document.createElement('div');
     w.className = 'fsetting-item';
     const l = document.createElement('label');
-    l.textContent = labels.tmdbApiKeyForReviews || 'TMDb API Key (yorumlar için)';
+    l.textContent = labels.tmdbApiKeyForReviews || 'TMDb API Key (for reviews)';
     l.htmlFor = 'tmdbKeyForReviews';
     const i = document.createElement('input');
     i.type = 'password';
@@ -107,13 +107,13 @@ export function createSliderPanel(config, labels) {
     i.disabled = !canEditGlobalTmdb;
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = (labels.showSecret || 'Göster');
+    btn.textContent = (labels.showSecret || 'Show');
     btn.style.cssText = 'margin-left:8px; padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.15); background:transparent; color:inherit; cursor:pointer;';
     btn.disabled = !canEditGlobalTmdb;
     btn.onclick = () => {
       const hidden = i.type === 'password';
       i.type = hidden ? 'text' : 'password';
-      btn.textContent = hidden ? (labels.hideSecret || 'Gizle') : (labels.showSecret || 'Göster');
+      btn.textContent = hidden ? (labels.hideSecret || 'Hide') : (labels.showSecret || 'Show');
     };
 
     const row = document.createElement('div');
@@ -123,8 +123,8 @@ export function createSliderPanel(config, labels) {
     const hint = document.createElement('div');
     hint.className = 'description-text';
     hint.textContent = canEditGlobalTmdb
-      ? (labels.tmdbKeyHint || 'Bu anahtar Jellyfin genel ayarına kaydedilir ve trailer/detailsModal tarafından ortak kullanılır.')
-      : (labels.settingsReadOnly || 'Bu alanı sadece yönetici değiştirebilir.');
+      ? (labels.tmdbKeyHint || "This key is stored in your browser and will remain until cookies are cleared.")
+      : (labels.settingsReadOnly || "Non-administrator users cannot change settings");
 
     w.append(l, row, hint);
     return w;
@@ -135,7 +135,7 @@ export function createSliderPanel(config, labels) {
     labels.tmdbReviewsLang || 'Yorum Dili',
     lsGet(LS_TMDB_LANG, 'tr-TR'),
     [
-      { value: 'tr-TR', label: '🇹🇷 Türkçe (tr-TR)' },
+      { value: 'tr-TR', label: '🇹🇷 Turkish (tr-TR)' },
       { value: 'en-US', label: '🇺🇸 English (en-US)' },
       { value: 'es-ES', label: '🇪🇸 Español (es-ES)' },
       { value: 'de-DE', label: '🇩🇪 Deutsch (de-DE)' },
@@ -144,7 +144,7 @@ export function createSliderPanel(config, labels) {
       { value: 'it-IT', label: '🇮🇹 Italiano (it-IT)' },
       { value: 'ja-JP', label: '🇯🇵 日本語 (ja-JP)' },
       { value: 'pt-BR', label: '🇧🇷 Português (pt-BR)' },
-      { value: '', label: labels.noParam || '🌐 Otomatik (parametresiz)' },
+      { value: '', label: labels.noParam || "Automatic (No parameters)" },
     ]
   );
   tmdbLangSelect.sel.addEventListener('change', () => lsSet(LS_TMDB_LANG, tmdbLangSelect.sel.value));
@@ -161,7 +161,7 @@ export function createSliderPanel(config, labels) {
   const cssDiv = document.createElement('div');
   cssDiv.className = 'fsetting-item';
   const cssLabel = document.createElement('h3');
-  cssLabel.textContent = labels.gorunum || 'CSS Varyantı:';
+  cssLabel.textContent = labels.gorunum || "Appearance";
   const cssSelect = document.createElement('select');
   cssSelect.name = 'cssVariant';
   const activeCssVariant = (() => {
@@ -182,13 +182,13 @@ export function createSliderPanel(config, labels) {
 
   const enableSliderCheckbox = createCheckbox(
     'enableSlider',
-    labels.enableSlider || 'Slider’ı Etkinleştir',
+    labels.enableSlider || 'Enable Slider',
     (config.enableSlider !== false)
   );
 
   const onlyShowSliderOnHomeTabCheckbox = createCheckbox(
     'onlyShowSliderOnHomeTab',
-    labels.onlyShowSliderOnHomeTab || 'Sadece AnaSayfa Sekmesinde Göster',
+    labels.onlyShowSliderOnHomeTab || 'Show Only on Home Tab',
     (config.onlyShowSliderOnHomeTab !== false)
   );
 
@@ -204,7 +204,7 @@ export function createSliderPanel(config, labels) {
 
   const peakDiagonalCheckbox = createCheckbox(
     'peakDiagonal',
-    labels.peakDiagonal || 'Diagonal Görünüm',
+    labels.peakDiagonal || 'Diagonal View',
     (activeCssVariant === 'peakslider') && !!config.peakDiagonal
   );
 
@@ -244,17 +244,17 @@ export function createSliderPanel(config, labels) {
   const baseDesc =
     labels.cssDescriptionBase ||
     labels.cssDescription ||
-    "• Poster boyutlu dot kullanıyorsanız, ana sayfanızı 'Konumlandırma Ayarları' sekmesinden düzenlemelisiniz.";
+    "• If you use poster-sized dots, you should adjust your home page from the 'Position Settings' tab.";
   const mobileNote =
     labels.cssMobileNote ||
-    '• Vitrin görünüm henüz mobil için hazır değil.';
+    "• On mobile devices, it is recommended to select up to 3 neighbors when Diagonal View is enabled";
   cssDesc.innerHTML = `${baseDesc}<br><br>${mobileNote}`;
 
   cssLabel.htmlFor = 'cssVariantSelect';
   cssSelect.id = 'cssVariantSelect';
 
   const peakSpanRightLabel = document.createElement('label');
-  peakSpanRightLabel.textContent = labels.peakSpanRight || 'Kart Sayısı:';
+  peakSpanRightLabel.textContent = labels.peakSpanRight || "Right Neighbor Card Count:";
   const peakSpanRightInput = document.createElement('input');
   peakSpanRightInput.type = 'number';
   peakSpanRightInput.value = config.peakSpanRight || 3;
@@ -266,7 +266,7 @@ export function createSliderPanel(config, labels) {
   peakSpanRightInput.id = 'peakSpanRightInput';
 
   const peakSpanLeftLabel = document.createElement('label');
-  peakSpanLeftLabel.textContent = labels.peakSpanLeft || 'Sol Kart Sayısı:';
+  peakSpanLeftLabel.textContent = labels.peakSpanLeft || "Left Neighbor Card Count:";
   const peakSpanLeftInput = document.createElement('input');
   peakSpanLeftInput.type = 'number';
   peakSpanLeftInput.value = config.peakSpanLeft || 3;
@@ -278,7 +278,7 @@ export function createSliderPanel(config, labels) {
   peakSpanLeftInput.id = 'peakSpanLeftInput';
 
   const peakGapLeftLabel = document.createElement('label');
-  peakGapLeftLabel.textContent = labels.peakGapLeft || 'Sol Komşu X Ekseni (px)';
+  peakGapLeftLabel.textContent = labels.peakGapLeft || "Left Neighbor X Axis (px)";
   const peakGapLeftInput = document.createElement('input');
   peakGapLeftInput.type = 'number';
   peakGapLeftInput.value = config.peakGapLeft || 80;
@@ -290,7 +290,7 @@ export function createSliderPanel(config, labels) {
   peakGapLeftInput.id = 'peakGapLeftInput';
 
   const peakGapRightLabel = document.createElement('label');
-  peakGapRightLabel.textContent = labels.peakGapRight || 'Sağ Komşu X Ekseni (px)';
+  peakGapRightLabel.textContent = labels.peakGapRight || "Right Neighbor X Axis (px)";
   const peakGapRightInput = document.createElement('input');
   peakGapRightInput.type = 'number';
   peakGapRightInput.value = config.peakGapRight || 80;
@@ -322,7 +322,7 @@ export function createSliderPanel(config, labels) {
   const sliderDiv = document.createElement('div');
   sliderDiv.className = 'fsetting-item';
   const sliderLabel = document.createElement('h3');
-  sliderLabel.textContent = labels.sliderDuration || 'Slider Süresi (ms):';
+  sliderLabel.textContent = labels.sliderDuration || 'Slider Duration (ms):';
   const sliderInput = document.createElement('input');
   sliderInput.type = 'number';
   sliderInput.value = config.sliderDuration || 15000;
@@ -333,12 +333,12 @@ export function createSliderPanel(config, labels) {
   sliderInput.id = 'sliderDurationInput';
   const sliderDesc = document.createElement('div');
   sliderDesc.className = 'description-text';
-  sliderDesc.textContent = labels.sliderDurationDescription || 'Bu ayar, ms cinsinden olmalıdır.';
+  sliderDesc.textContent = labels.sliderDurationDescription || "This setting should be in milliseconds.";
   sliderDiv.append(sliderLabel, sliderDesc, sliderInput);
 
   const showSecondsCheckbox = createCheckbox(
     'showProgressAsSeconds',
-    (labels.showProgressAsSeconds || "İlerlemeyi Saniye Olarak Göster"),
+    (labels.showProgressAsSeconds || "Show Progress in Seconds"),
     config.showProgressAsSeconds || false
   );
   sliderDiv.appendChild(showSecondsCheckbox);
@@ -347,37 +347,37 @@ export function createSliderPanel(config, labels) {
   playbackOptionsDiv.className = 'fsetting-item';
 
   const playbackTitle = document.createElement('h3');
-  playbackTitle.textContent = labels.previewPlaybackOptions || 'Yerleşik Oynatım Seçenekleri';
+  playbackTitle.textContent = labels.previewPlaybackOptions || "Built-in Hover Playback Options";
   playbackOptionsDiv.appendChild(playbackTitle);
 
   const playbackCheckboxesDiv = document.createElement('div');
   const trailerPlaybackCheckbox = createCheckbox(
     'enableTrailerPlayback',
-    labels.enableTrailerPlayback || 'Yerleşik Fragman Oynatımına İzin Ver',
+    labels.enableTrailerPlayback || "Play Embedded Trailer on Slider Hover",
     config.enableTrailerPlayback
   );
 
   const videoPlaybackCheckbox = createCheckbox(
     'enableVideoPlayback',
-    labels.enableVideoPlayback || 'Yerleşik Video Oynatımına İzin Ver',
+    labels.enableVideoPlayback || "Play Embedded Video on Slider Hover",
     config.enableVideoPlayback
   );
 
   const trailerThenVideoCheckbox = createCheckbox(
     'enableTrailerThenVideo',
-    labels.enableTrailerThenVideo || 'Önce Fragman, Yoksa Video',
+    labels.enableTrailerThenVideo || "Play Trailer > Video on Slider Hover",
     config.enableTrailerThenVideo
   );
 
   const sliderAutoTrailerPlaybackCheckbox = createCheckbox(
     'sliderAutoTrailerPlayback',
-    labels.sliderAutoTrailerPlayback || 'Aktif slider fragmanını otomatik oynat',
+    labels.sliderAutoTrailerPlayback || "Automatically play the active slider trailer",
     config.sliderAutoTrailerPlayback === true
   );
 
   const disableAllPlaybackCheckbox = createCheckbox(
     'disableAllPlayback',
-    labels.selectNone || 'Hiçbiri',
+    labels.selectNone || 'None',
     config.disableAllPlayback || false
   );
 
@@ -483,7 +483,7 @@ export function createSliderPanel(config, labels) {
   const delayDiv = document.createElement('div');
   delayDiv.className = 'fsetting-item trailer-delay-container';
   const delayLabel = document.createElement('label');
-  delayLabel.textContent = labels.gecikmeInput || 'Yerleşik Fragman Gecikme Süresi (ms):';
+  delayLabel.textContent = labels.gecikmeInput || "Trailer playback delay on slider (ms)";
   const delayInput = document.createElement('input');
   delayInput.type = 'number';
   delayInput.value = config.gecikmeSure || 500;
@@ -500,25 +500,25 @@ export function createSliderPanel(config, labels) {
   backgroundOptionsDiv.className = 'fsetting-item';
 
   const backgroundTitle = document.createElement('h3');
-  backgroundTitle.textContent = labels.backgroundOptions || 'Slider Görsel Gösterim Ayarları';
+  backgroundTitle.textContent = labels.backgroundOptions || "Slider Background Display Settings";
   backgroundOptionsDiv.appendChild(backgroundTitle);
   sliderDiv.appendChild(backgroundOptionsDiv);
 
   const indexZeroDesc = document.createElement('div');
   indexZeroDesc.className = 'description-text';
-  indexZeroDesc.textContent = labels.indexZeroDescription || 'Aktif olduğunda her zaman 0 indeksli görsel seçilir (diğer kalite filtrelerini devre dışı bırakır).';
+  indexZeroDesc.textContent = labels.indexZeroDescription || "When active, always selects the image at index 0 and does not pick among background images.";
   sliderDiv.appendChild(indexZeroDesc);
 
   const indexZeroCheckbox = createCheckbox(
     'indexZeroSelection',
-    labels.indexZeroSelection || 'Her zaman 0 indeksli görseli seç',
+    labels.indexZeroSelection || "Always select default image",
     config.indexZeroSelection
   );
   sliderDiv.appendChild(indexZeroCheckbox);
 
   const manualBackdropCheckbox = createCheckbox(
     'manualBackdropSelection',
-    labels.manualBackdropSelection || 'Slide Arkaplanı Değiştir',
+    labels.manualBackdropSelection || "Change Slide Background",
     config.manualBackdropSelection
   );
   sliderDiv.appendChild(manualBackdropCheckbox);
@@ -526,7 +526,7 @@ export function createSliderPanel(config, labels) {
   const backdropDiv = document.createElement('div');
   backdropDiv.className = 'fsetting-item backdrop-container';
   const backdropLabel = document.createElement('label');
-  backdropLabel.textContent = labels.slideBackgroundImageType || 'Slider Arka Plan Görsel Türü:';
+  backdropLabel.textContent = labels.slideBackgroundImageType || 'Slider Arka Plan Image Type:';
   const backdropSelect = createImageTypeSelect('backdropImageType', config.backdropImageType || 'backdropUrl', true);
   backdropLabel.htmlFor = 'backdropSelect';
   backdropSelect.id = 'backdropSelect';
@@ -536,7 +536,7 @@ export function createSliderPanel(config, labels) {
   const minQualityDiv = document.createElement('div');
   minQualityDiv.className = 'fsetting-item min-quality-container';
   const minQualityLabel = document.createElement('label');
-  minQualityLabel.textContent = labels.minHighQualityWidthInput || 'Minimum Genişlik (px):';
+  minQualityLabel.textContent = labels.minHighQualityWidthInput || "Minimum Width (px)";
 
   const minQualityInput = document.createElement('input');
   minQualityInput.type = 'number';
@@ -547,7 +547,7 @@ export function createSliderPanel(config, labels) {
   const minQualityDesc = document.createElement('div');
   minQualityDesc.className = 'description-text';
   minQualityDesc.textContent = labels.minHighQualitydescriptiontext ||
-    'Bu ayar, arkaplan olarak atanacak görselin minimum genişliğini belirler.("Slide Arkaplanı Değiştir" aktif ise çalışmaz. Eğer belirlenen genişlikte görsel yok ise en kalitelisi seçilecektir.)';
+    "This setting determines the minimum width of the image to be assigned as the background. (It will not work if 'Change Slide Background' is active. If there is no image with the specified width, the highest quality one will be selected.)";
 
   minQualityLabel.htmlFor = 'minHighQualityWidthInput';
   minQualityInput.id = 'minHighQualityWidthInput';
@@ -560,7 +560,7 @@ export function createSliderPanel(config, labels) {
   const backdropMaxWidthDiv = document.createElement('div');
   backdropMaxWidthDiv.className = 'fsetting-item min-quality-container';
   const backdropMaxWidthLabel = document.createElement('label');
-  backdropMaxWidthLabel.textContent = labels.backdropMaxWidthInput || 'Maksimum Ölçek (px):';
+  backdropMaxWidthLabel.textContent = labels.backdropMaxWidthInput || "Max Scale (px):";
 
   const backdropMaxWidthInput = document.createElement('input');
   backdropMaxWidthInput.type = 'number';
@@ -571,7 +571,7 @@ export function createSliderPanel(config, labels) {
   const backdropMaxWidthDesc = document.createElement('div');
   backdropMaxWidthDesc.className = 'description-text';
   backdropMaxWidthDesc.textContent = labels.backdropMaxWidthLabel ||
-    'Arkaplan olarak atanacak görsel girilen değer boyutunda ölçeklenir.("Slide Arkaplanı Değiştir" aktif ise çalışmaz. Görsel, belirlenen değerden küçük ise ölçeklendirmez)';
+    "The image set as background will be scaled to the entered value. (Does not apply if 'Change Slide Background' is active. Images smaller than the value will not be scaled.)";
 
   backdropMaxWidthLabel.htmlFor = 'backdropMaxWidthInput';
   backdropMaxWidthInput.id = 'backdropMaxWidthInput';
@@ -581,7 +581,7 @@ export function createSliderPanel(config, labels) {
   const minPixelDiv = document.createElement('div');
   minPixelDiv.className = 'fsetting-item min-quality-container';
   const minPixelLabel = document.createElement('label');
-  minPixelLabel.textContent = labels.minPixelCountInput || 'Minimum Piksel Sayısı:';
+  minPixelLabel.textContent = labels.minPixelCountInput || "Minimum Pixel Count:";
 
   const minPixelInput = document.createElement('input');
   minPixelInput.type = 'number';
@@ -592,7 +592,7 @@ export function createSliderPanel(config, labels) {
   const minPixelDesc = document.createElement('div');
   minPixelDesc.className = 'description-text';
   minPixelDesc.textContent = labels.minPixelCountDescription ||
-    'Genişlik × yükseklik sonucudur. Bu değerden küçük görseller düşük kaliteli sayılır. Örn: 1920×1080 = 2073600';
+    "The result of width × height. Images below this value are considered low quality. Ex: 1920×1080 = 2073600";
 
   minPixelLabel.htmlFor = 'minPixelInput';
   minPixelInput.id = 'minPixelInput';
@@ -603,7 +603,7 @@ export function createSliderPanel(config, labels) {
   sizeFilterToggleDiv.className = 'fsetting-item min-quality-container';
 
   const sizeFilterLabel = document.createElement('label');
-  sizeFilterLabel.textContent = labels.enableImageSizeFilter || 'Görsel Boyut Filtrelemesini Etkinleştir';
+  sizeFilterLabel.textContent = labels.enableImageSizeFilter || "Enable Image Size Filtering";
   sizeFilterLabel.htmlFor = 'enableImageSizeFilter';
 
   const sizeFilterCheckbox = document.createElement('input');
@@ -619,7 +619,7 @@ export function createSliderPanel(config, labels) {
   const minSizeDiv = document.createElement('div');
   minSizeDiv.className = 'fsetting-item min-quality-container';
   const minSizeLabel = document.createElement('label');
-  minSizeLabel.textContent = labels.minImageSizeKB || 'Minimum Görsel Boyutu (KB):';
+  minSizeLabel.textContent = labels.minImageSizeKB || "Minimum Image Size (KB):";
 
   const minSizeInput = document.createElement('input');
   minSizeInput.type = 'number';
@@ -629,7 +629,7 @@ export function createSliderPanel(config, labels) {
 
   const minSizeDesc = document.createElement('div');
   minSizeDesc.className = 'description-text';
-  minSizeDesc.textContent = labels.minImageSizeDescription || 'Seçilecek görselin minimum dosya boyutunu KB cinsinden belirtir.';
+  minSizeDesc.textContent = labels.minImageSizeDescription || 'Specifies the minimum file size in KB for the image to be selected.';
 
   minSizeLabel.htmlFor = 'minSizeInput';
   minSizeInput.id = 'minSizeInput';
@@ -639,7 +639,7 @@ export function createSliderPanel(config, labels) {
   const maxSizeDiv = document.createElement('div');
   maxSizeDiv.className = 'fsetting-item min-quality-container';
   const maxSizeLabel = document.createElement('label');
-  maxSizeLabel.textContent = labels.maxImageSizeKB || 'Maksimum Görsel Boyutu (KB):';
+  maxSizeLabel.textContent = labels.maxImageSizeKB || "Maximum Image Size (KB):";
 
   const maxSizeInput = document.createElement('input');
   maxSizeInput.type = 'number';
@@ -649,7 +649,7 @@ export function createSliderPanel(config, labels) {
 
   const maxSizeDesc = document.createElement('div');
   maxSizeDesc.className = 'description-text';
-  maxSizeDesc.textContent = labels.maxImageSizeDescription || 'Seçilecek görselin maksimum dosya boyutunu KB cinsinden belirtir.';
+  maxSizeDesc.textContent = labels.maxImageSizeDescription || 'Specifies the maximum file size in KB for the image to be selected.';
 
   maxSizeLabel.htmlFor = 'maxSizeInput';
   maxSizeInput.id = 'maxSizeInput';
@@ -663,7 +663,7 @@ export function createSliderPanel(config, labels) {
   dotOptionsDiv.className = 'fsetting-item';
 
   const dotTitle = document.createElement('h3');
-  dotTitle.textContent = labels.dotOptions || 'Navigasyon (Dot) Ayarları';
+  dotTitle.textContent = labels.dotOptions || "Navigation (Dot) Settings";
   dotOptionsDiv.appendChild(dotTitle);
   sliderDiv.appendChild(dotOptionsDiv);
 
@@ -672,19 +672,19 @@ export function createSliderPanel(config, labels) {
 
   const dotNavCheckbox = createCheckbox(
     'showDotNavigation',
-    labels.showDotNavigation || 'Dot Navigasyonu Göster',
+    labels.showDotNavigation || 'Show Dot Navigation',
     config.showDotNavigation
   );
   sliderDiv.appendChild(dotNavCheckbox);
 
   const posterDotsDesc = document.createElement('div');
   posterDotsDesc.className = 'description-text';
-  posterDotsDesc.textContent = labels.posterDotsDescription || 'Dot navigasyonu poster boyutuna getirir ( Slider Alanınıda konumlandırma gerektirir )';
+  posterDotsDesc.textContent = labels.posterDotsDescription || 'Brings dot navigation to poster size ( Slider Area also requires positioning )';
   sliderDiv.appendChild(posterDotsDesc);
 
   const posterDotsCheckbox = createCheckbox(
     'dotPosterMode',
-    labels.dotPosterMode || 'Poster Boyutlu Dot Navigasyonu',
+    labels.dotPosterMode || 'Poster-Sized Dot Navigation',
     config.dotPosterMode
   );
   sliderDiv.appendChild(posterDotsCheckbox);
@@ -693,7 +693,7 @@ export function createSliderPanel(config, labels) {
   dotVisibleCountDiv.className = 'setting-item dot-visible-count-container';
 
   const dotVisibleCountLabel = document.createElement('label');
-  dotVisibleCountLabel.textContent = labels.dotVisibleCount || 'Görünür dot sayısı:';
+  dotVisibleCountLabel.textContent = labels.dotVisibleCount || "Visible dot count";
   dotVisibleCountLabel.htmlFor = 'dotVisibleCount';
 
   const dotVisibleCountInput = document.createElement('input');
@@ -706,14 +706,14 @@ export function createSliderPanel(config, labels) {
 
   const dotVisibleCountDesc = document.createElement('div');
   dotVisibleCountDesc.className = 'description-text';
-  dotVisibleCountDesc.textContent = labels.dotVisibleCountDescription || '0 = tüm dotlar görünür. Daha düşük değerlerde uzaktaki dotlar hidden sınıfı alır.';
+  dotVisibleCountDesc.textContent = labels.dotVisibleCountDescription || "0 = all dots stay visible. Lower values assign the monwui-dot-hidden class to distant dots.";
 
   dotVisibleCountDiv.append(dotVisibleCountLabel, dotVisibleCountDesc, dotVisibleCountInput);
   sliderDiv.appendChild(dotVisibleCountDiv);
 
   const previewModalCheckbox = createCheckbox(
     'previewModal',
-    labels.previewModal || 'Netflix Tarzı Önizleme Modalı',
+    labels.previewModal || "Enable HoverTrailer on Poster Dot",
     config.previewModal
   );
   sliderDiv.appendChild(previewModalCheckbox);
@@ -722,7 +722,7 @@ export function createSliderPanel(config, labels) {
   dotPreviewDiv.className = 'fsetting-item';
   const dotPreviewLabel = document.createElement('div');
   dotPreviewLabel.id = 'dotPreviewPlaybackModeLabel';
-  dotPreviewLabel.textContent = labels.dotPreviewMode || 'Poster Dot Önizleme Modu:';
+  dotPreviewLabel.textContent = labels.dotPreviewMode || "Poster Dot Preview Mode";
   dotPreviewLabel.style.display = 'block';
   dotPreviewLabel.style.marginBottom = '6px';
 
@@ -772,7 +772,7 @@ export function createSliderPanel(config, labels) {
   dotBgDiv.className = 'fsetting-item';
   dotBgDiv.classList.add('dot-bg-container');
   const dotBgLabel = document.createElement('label');
-  dotBgLabel.textContent = labels.dotBackgroundImageType || 'Dot Arka Plan Görsel Türü:';
+  dotBgLabel.textContent = labels.dotBackgroundImageType || 'Dot Arka Plan Image Type:';
   const dotBgSelect = createImageTypeSelect(
     'dotBackgroundImageType',
     config.dotBackgroundImageType || 'useSlideBackground',
@@ -792,7 +792,7 @@ export function createSliderPanel(config, labels) {
   dotblurDiv.className = 'setting-item';
 
   const dotblurLabel = document.createElement('label');
-  dotblurLabel.textContent = labels.backgroundBlur || 'Arka plan bulanıklığı:';
+  dotblurLabel.textContent = labels.backgroundBlur || "Background blur";
   dotblurLabel.htmlFor = 'dotBackgroundBlur';
 
   const dotblurInput = document.createElement('input');
@@ -819,7 +819,7 @@ export function createSliderPanel(config, labels) {
   dotopacityDiv.className = 'setting-item';
 
   const dotopacityLabel = document.createElement('label');
-  dotopacityLabel.textContent = labels.backgroundOpacity || 'Arka plan şeffaflığı:';
+  dotopacityLabel.textContent = labels.backgroundOpacity || "Background opacity";
   dotopacityLabel.htmlFor = 'dotBackgroundOpacity';
 
   const dotopacityInput = document.createElement('input');

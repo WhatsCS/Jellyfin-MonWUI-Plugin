@@ -10,11 +10,11 @@ using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Library;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/watchlist")]
-    [Route("Plugins/JMSFusion/watchlist")]
+    [Route("JMSFusionV2/watchlist")]
+    [Route("Plugins/JMSFusionV2/watchlist")]
     public class WatchlistController : ControllerBase
     {
         private static readonly object SyncRoot = new();
@@ -129,12 +129,12 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 if (changed)
@@ -211,18 +211,18 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var itemId = Clean(req.ItemId);
             if (string.IsNullOrWhiteSpace(itemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 var created = false;
@@ -276,18 +276,18 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanItemId = Clean(itemId);
             if (string.IsNullOrWhiteSpace(cleanItemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 var removedAfterPlayed = IsTrue(Request.Query["played"].FirstOrDefault()) || IsTrue(Request.Query["completed"].FirstOrDefault());
@@ -343,18 +343,18 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             if (req is null)
             {
-                return BadRequest(new { ok = false, error = "İstek gövdesi gerekli" });
+                return BadRequest(new { ok = false, error = "Request body is required" });
             }
 
             var itemId = Clean(req.ItemId);
             if (string.IsNullOrWhiteSpace(itemId))
             {
-                return BadRequest(new { ok = false, error = "itemId gerekli" });
+                return BadRequest(new { ok = false, error = "itemId is required" });
             }
 
             var targets = (req.Targets ?? new List<ShareTargetDto>())
@@ -370,12 +370,12 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             if (targets.Count == 0)
             {
-                return BadRequest(new { ok = false, error = "En az bir kullanıcı seçilmeli" });
+                return BadRequest(new { ok = false, error = "Select at least one user" });
             }
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
 
@@ -448,30 +448,30 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var user = ReadUserContext();
             if (string.IsNullOrWhiteSpace(user.UserId))
             {
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
             }
 
             var cleanShareId = Clean(shareId);
             if (string.IsNullOrWhiteSpace(cleanShareId))
             {
-                return BadRequest(new { ok = false, error = "shareId gerekli" });
+                return BadRequest(new { ok = false, error = "shareId is required" });
             }
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
 
                 var share = cfg.WatchlistShares.FirstOrDefault(candidate => Same(candidate.Id, cleanShareId));
                 if (share is null)
                 {
-                    return NotFound(new { ok = false, error = "Paylaşım bulunamadı" });
+                    return NotFound(new { ok = false, error = "Share not found" });
                 }
 
                 if (!Same(share.OwnerUserId, user.UserId) && !Same(share.TargetUserId, user.UserId))
                 {
-                    return StatusCode(403, new { ok = false, error = "Bu paylaşımı kaldıramazsın" });
+                    return StatusCode(403, new { ok = false, error = "You cannot remove this share" });
                 }
 
                 changed |= cfg.WatchlistShares.RemoveAll(candidate => Same(candidate.Id, cleanShareId)) > 0;
@@ -525,8 +525,8 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var message = responseItems.Count > 0
                 ? string.Empty
                 : hasAnySignal
-                    ? "İzlenmemiş veya dinlenmemiş uygun içerik bulunamadı."
-                    : "Akıllı öneri üretmek için yeterli izleme geçmişi bulunamadı.";
+                    ? "No eligible unwatched or unplayed content was found."
+                    : "There is not enough viewing history to generate smart recommendations.";
 
             NoCache();
             return Ok(new
@@ -1281,7 +1281,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         {
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 var changed = NormalizeConfig(cfg);
                 if (changed)
@@ -1357,7 +1357,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return Math.Max(0, Math.Min(SmartMaxPerBucket, normalized));
         }
 
-        private static bool TrimOwnerItems(JMSFusionConfiguration cfg, string ownerUserId)
+        private static bool TrimOwnerItems(JMSFusionV2Configuration cfg, string ownerUserId)
         {
             var ownerItems = cfg.WatchlistEntries
                 .Where(entry => Same(entry.OwnerUserId, ownerUserId))
@@ -1379,7 +1379,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return removed;
         }
 
-        private static bool TrimOwnerShares(JMSFusionConfiguration cfg, string ownerUserId)
+        private static bool TrimOwnerShares(JMSFusionV2Configuration cfg, string ownerUserId)
         {
             var shares = cfg.WatchlistShares
                 .Where(share => Same(share.OwnerUserId, ownerUserId))
@@ -1399,7 +1399,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 removeIds.Contains(Clean(share.Id))) > 0;
         }
 
-        private static bool NormalizeConfig(JMSFusionConfiguration cfg)
+        private static bool NormalizeConfig(JMSFusionV2Configuration cfg)
         {
             var changed = false;
 
@@ -1714,7 +1714,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return changed;
         }
 
-        private static bool RegisterHistoryAdd(JMSFusionConfiguration cfg, WatchlistEntry entry, UserContext user, long addedAtUtc)
+        private static bool RegisterHistoryAdd(JMSFusionV2Configuration cfg, WatchlistEntry entry, UserContext user, long addedAtUtc)
         {
             var history = cfg.WatchlistHistoryEntries.FirstOrDefault(candidate =>
                 Same(candidate.OwnerUserId, user.UserId) &&
@@ -1758,7 +1758,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return true;
         }
 
-        private static bool RegisterHistoryRemoval(JMSFusionConfiguration cfg, WatchlistEntry entry, UserContext user, bool removedAfterPlayed)
+        private static bool RegisterHistoryRemoval(JMSFusionV2Configuration cfg, WatchlistEntry entry, UserContext user, bool removedAfterPlayed)
         {
             var history = cfg.WatchlistHistoryEntries.FirstOrDefault(candidate =>
                 Same(candidate.OwnerUserId, user.UserId) &&
@@ -2024,7 +2024,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return clean[..MaxNoteLength];
         }
 
-        private static void TouchRevision(JMSFusionConfiguration cfg)
+        private static void TouchRevision(JMSFusionV2Configuration cfg)
         {
             cfg.WatchlistRevision = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
@@ -2037,7 +2037,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 "";
 
             var userName =
-                Request.Headers["X-JMSFusion-UserName"].FirstOrDefault() ??
+                Request.Headers["X-JMSFusionV2-UserName"].FirstOrDefault() ??
                 Request.Headers["X-Emby-UserName"].FirstOrDefault() ??
                 "";
 
@@ -2053,13 +2053,13 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var context = ReadUserContext();
             if (!Guid.TryParse(context.UserId, out var userId) || userId == Guid.Empty)
             {
-                return (null, null, Unauthorized(new { ok = false, error = "Geçerli X-Emby-UserId gerekli" }));
+                return (null, null, Unauthorized(new { ok = false, error = "A valid X-Emby-UserId is required" }));
             }
 
             var user = _users.GetUserById(userId);
             if (user is null)
             {
-                return (null, null, Unauthorized(new { ok = false, error = "Kullanıcı bulunamadı" }));
+                return (null, null, Unauthorized(new { ok = false, error = "User not found" }));
             }
 
             if (string.IsNullOrWhiteSpace(context.UserName))

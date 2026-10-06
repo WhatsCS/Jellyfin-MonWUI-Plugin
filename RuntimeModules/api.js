@@ -61,9 +61,9 @@ export function getLastPlayNowBlockReason() {
 function getPlayNowSuccessMessage() {
   try {
     const liveConfig = (typeof getConfig === "function" ? getConfig() : null) || config || {};
-    return liveConfig?.languageLabels?.castbasarili || "Oynatma baslatildi";
+    return liveConfig?.languageLabels?.castplaybackstarted || "Playback Started";
   } catch {
-    return "Oynatma baslatildi";
+    return "Playback Started";
   }
 }
 
@@ -208,7 +208,7 @@ async function maybeEnsureParentalPinBeforePlayback(item, options = {}) {
 
     return !!(await mod.ensureParentalPinBeforePlayback(item, options));
   } catch (e) {
-    console.warn("maybeEnsureParentalPinBeforePlayback hata:", e);
+    console.warn("maybeEnsureParentalPinBeforePlayback error:", e);
     return true;
   }
 }
@@ -241,7 +241,7 @@ async function maybePlayCinemaPreRollSessionIfEnabled({ item } = {}) {
 
     return await mod.maybePlayCinemaPreRollSession({ item });
   } catch (error) {
-    console.warn("[JMSFusion] Cinema pre-roll runtime yuklenemedi:", error);
+    console.warn("[JMSFusionV2] Cinema pre-roll runtime yuklenemedi:", error);
     __cinemaPreRollRuntimePromise = null;
     return {
       played: false,
@@ -269,7 +269,7 @@ async function armCinemaPreRollNativePlaybackBypassIfEnabled({ itemId = "", item
 
     return !!mod.armCinemaPreRollNativePlaybackBypass({ itemId, itemIds, delayMs });
   } catch (error) {
-    console.warn("[JMSFusion] Cinema pre-roll native bypass kurulamadı:", error);
+    console.warn("[JMSFusionV2] Could not set up the cinema pre-roll native bypass:", error);
     return false;
   }
 }
@@ -324,7 +324,7 @@ async function startResolvedVideoPlayback({ itemId, item, requesterUserId, persi
       itemType: item?.Type || "",
       mediaType: item?.MediaType || ""
     });
-    console.warn("[JMSFusion] Live TV playback is left to Jellyfin native player.", {
+    console.warn("[JMSFusionV2] Live TV playback is left to Jellyfin native player.", {
       itemId: normalizedItemId,
       type: item?.Type,
       mediaType: item?.MediaType
@@ -365,9 +365,9 @@ async function startResolvedVideoPlayback({ itemId, item, requesterUserId, persi
   });
 
   if (localKick?.tried) {
-    throw new Error("Yerel oynatıcı başlatılamadı. Sayfayı yenileyip tekrar deneyin.");
+    throw new Error("Could not start the native player. Refresh the page and try again.");
   }
-  throw new Error("Yerel oynatıcı bulunamadı. Sayfayı yenileyip tekrar deneyin.");
+  throw new Error("Native player not found. Refresh the page and try again.");
 }
 
 let __lastAuthSnapshot = null;
@@ -691,7 +691,7 @@ function shouldDebugAuthSnapshot() {
 function debugAuthSnapshot(reason, extra = {}) {
   if (!shouldDebugAuthSnapshot()) return;
   try {
-    console.debug("[JMSFusion] auth snapshot sync", { reason, ...extra });
+    console.debug("[JMSFusionV2] auth snapshot sync", { reason, ...extra });
   } catch {}
 }
 
@@ -817,7 +817,7 @@ function onAuthProfileChanged(prev, next) {
   const detail = buildAuthProfileChangeDetail(prev, next);
   if (detail.changed) {
     __authWarmupStart = Date.now();
-    console.log("🔐 Auth profili değişti → tüm cache’ler temizleniyor");
+    console.log("🔐 Authentication profile changed → clearing all caches");
     nukeAllCachesAndLocalUserCaches();
     invalidateServerBaseCache();
     dispatchAuthProfileChanged(detail);
@@ -1142,7 +1142,7 @@ export async function fetchLocalTrailers(itemId, { signal } = {}) {
     const fullUrl = withServer(url);
     const res = await fetch(fullUrl, { headers, signal, credentials: 'same-origin' });
     if (res.status === 401) {
-      console.warn('fetchLocalTrailers: 401 Unauthorized (token eksik/yanlış?)');
+      console.warn('fetchLocalTrailers: 401 Unauthorized (token missing/invalid?)');
       return [];
     }
     if (res.status === 404) return [];
@@ -1220,7 +1220,7 @@ async function safeFetch(url, opts = {}) {
   let token = "";
   try { token = getSessionInfo()?.accessToken || ""; } catch {}
   if (!token && requiresAuth(url)) {
-    const e = new Error("Giriş yapılmadı: access token yok.");
+    const e = new Error("Not signed in: access token is missing.");
     e.status = 401;
     throw e;
   }
@@ -1241,7 +1241,7 @@ async function safeFetch(url, opts = {}) {
     const now = Date.now();
     const inWarmup = (now - __authWarmupStart) < AUTH_WARMUP_MS;
     if (inWarmup) {
-      const err = new Error("Yetkisiz (401) – auth warmup sırasında olabilir.");
+      const err = new Error("Unauthorized (401) – authentication may still be initializing.");
       err.status = 401;
       throw err;
     }
@@ -1251,14 +1251,14 @@ async function safeFetch(url, opts = {}) {
     try {
       clearPersistedIdentity();
     } catch {}
-    const err = new Error("Oturum geçersiz (401) – kimlik temizlendi, tekrar giriş gerekli.");
+    const err = new Error("Invalid session (401) – credentials cleared; sign in again.");
     err.status = 401;
     throw err;
   }
   if (res.status === 404) return null;
   if (!res.ok) {
     const errJson = await res.json().catch(() => ({}));
-    const err = new Error(errJson.message || `API hatası: ${res.status}`);
+    const err = new Error(errJson.message || `API error: ${res.status}`);
     err.status = res.status;
     throw err;
   }
@@ -1669,7 +1669,7 @@ async function makeApiRequest(url, options = {}) {
     let token = "";
     try { token = getSessionInfo()?.accessToken || ""; } catch {}
     if (!token && requiresAuth(url)) {
-      const e = new Error("Giriş yapılmadı: access token yok.");
+      const e = new Error("Not signed in: access token is missing.");
       e.status = 401;
       throw e;
     }
@@ -1742,12 +1742,12 @@ async function makeApiRequest(url, options = {}) {
         };
         return await makeApiRequest(url, retryOpts);
       }
-      const err = new Error("Oturum geçersiz veya yetkisiz (401).");
+      const err = new Error("Session is invalid or unauthorized (401).");
       err.status = 401;
       throw err;
     }
     if (response.status === 403) {
-      const err = new Error(`Yetki yok (403): ${fullUrl}`);
+      const err = new Error(`Access denied (403): ${fullUrl}`);
       err.status = 403;
       throw err;
     }
@@ -1759,7 +1759,7 @@ async function makeApiRequest(url, options = {}) {
         errorData.message ||
         (errorData.Title && errorData.Description
           ? `${errorData.Title}: ${errorData.Description}`
-          : (fallbackText ? fallbackText.slice(0, 500) : `API isteği başarısız oldu (durum: ${response.status})`));
+          : (fallbackText ? fallbackText.slice(0, 500) : `API request failed (status: ${response.status})`));
 
       const err = new Error(errorMsg);
       err.status = response.status;
@@ -1788,7 +1788,7 @@ async function makeApiRequest(url, options = {}) {
     const quiet = options?.__quiet === true;
     const preview = options?.__preview === true;
     if (!quiet && !preview && !is403 && !is404 && !is401 && !is500) {
-      console.error(`${options?.method || "GET"} ${url} için API isteği hatası:`, error);
+      console.error(`API request failed for ${options?.method || "GET"} ${url}:`, error);
     }
     throw error;
   }
@@ -2012,14 +2012,14 @@ async function getCachedItemDetailsInternal(itemId) {
 async function setJellyfinFavoriteStatus(itemId, isFavorite, { signal } = {}) {
   const { userId } = getSessionInfo();
   if (!userId) {
-    const err = new Error("Kullanıcı oturumu bulunamadı.");
+    const err = new Error("User session not found.");
     err.status = 401;
     throw err;
   }
 
   const cleanItemId = String(itemId || "").trim();
   if (!cleanItemId) {
-    throw new Error("itemId gerekli");
+    throw new Error("itemId is required");
   }
 
   return makeApiRequest(`/Users/${encodeURIComponent(userId)}/FavoriteItems/${encodeURIComponent(cleanItemId)}`, {
@@ -2032,7 +2032,7 @@ async function setJellyfinFavoriteStatus(itemId, isFavorite, { signal } = {}) {
 export async function updateFavoriteStatus(itemId, isFavorite, options = {}) {
   const watchlistModule = await import("../../../slider/modules/watchlist.js");
   const cleanItemId = String(itemId || "").trim();
-  if (!cleanItemId) throw new Error("itemId gerekli");
+  if (!cleanItemId) throw new Error("itemId is required");
   if (isLiveTvPlaybackItem(options?.item)) {
     watchlistModule?.suppressFavoriteMirrorOnce?.(cleanItemId, isFavorite);
     return setJellyfinFavoriteStatus(cleanItemId, isFavorite, { signal: options?.signal });
@@ -2726,11 +2726,11 @@ export async function playNow(itemId) {
       safeGet("persist_user_id")
     );
     if (!requesterUserId) {
-      throw new Error("Aktif kullanıcı kimliği bulunamadı. Sayfayı yenileyip tekrar deneyin.");
+      throw new Error("Active user ID not found. Refresh the page and try again.");
     }
 
     let item = await fetchItemDetails(itemId);
-    if (!item) throw new Error("Öğe bulunamadı");
+    if (!item) throw new Error("Item not found");
 
     const type = String(item?.Type || "");
     const mediaType = String(item?.MediaType || "");
@@ -2788,7 +2788,7 @@ export async function playNow(itemId) {
           }
         }
       }
-      console.warn("playNow(music): GMMP handler yok", { type });
+      console.warn("playNow(music): GMMP handler not found", { type });
       return false;
     }
     if (isLiveTvPlaybackItem(item)) {
@@ -2800,7 +2800,7 @@ export async function playNow(itemId) {
         itemType: item?.Type || "",
         mediaType: item?.MediaType || ""
       });
-      console.warn("[JMSFusion] Live TV playNow bypassed; native Jellyfin must handle channel playback.", {
+      console.warn("[JMSFusionV2] Live TV playNow bypassed; native Jellyfin must handle channel playback.", {
         itemId,
         type: item?.Type,
         mediaType: item?.MediaType
@@ -2809,13 +2809,13 @@ export async function playNow(itemId) {
     }
     if (item.Type === "Series") {
       const best = await getBestEpisodeIdForSeries(item.Id, requesterUserId);
-      if (!best) throw new Error("Bölüm bulunamadı");
+      if (!best) throw new Error("Episode not found");
       itemId = best;
       item = await fetchItemDetails(itemId);
     }
     if (item.Type === "Season") {
       const best = await getBestEpisodeIdForSeason(item.Id, item.SeriesId, requesterUserId);
-      if (!best) throw new Error("Bu sezonda hiç bölüm yok!");
+      if (!best) throw new Error("No episodes in this season!");
       itemId = best;
       item = await fetchItemDetails(itemId);
     }
@@ -2848,7 +2848,7 @@ export async function playNow(itemId) {
 
     await __destroyGmmpBeforeVideoPlayNow().catch(() => false);
     const cinemaPreRollResult = await maybePlayCinemaPreRollSessionIfEnabled({ item }).catch((error) => {
-      console.warn("[JMSFusion] Cinema pre-roll oynatimi atlandi:", error);
+      console.warn("[JMSFusionV2] Cinema pre-roll oynatimi atlandi:", error);
       return { played: false, reason: "error" };
     });
     if (cinemaPreRollResult?.reason === "session-active") {
@@ -2870,7 +2870,7 @@ export async function playNow(itemId) {
     });
   } catch (err) {
     setLastPlayNowBlockReason("");
-    console.error("Oynatma hatası:", err);
+    console.error("Playback error:", err);
     let next = null;
     try {
       const prev = window.__jmsLastPlayNowTargetDebug || {};
@@ -2911,7 +2911,7 @@ export async function playNow(itemId) {
       return true;
     }
 
-    const errorMsg = err.message || "Oynatma sırasında bir hata oluştu";
+    const errorMsg = err.message || "An error occurred during playback";
     if (typeof window.showMessage === 'function') {
       window.showMessage(errorMsg, 'error');
     }
@@ -2948,7 +2948,7 @@ async function getRandomEpisodeId(seriesId) {
     : [];
 
   if (!allEpisodes.length) {
-    throw new Error("Bölüm bulunamadı");
+    throw new Error("Episode not found");
   }
   const randomIndex = Math.floor(Math.random() * allEpisodes.length);
   return allEpisodes[randomIndex].Id;
@@ -2997,7 +2997,7 @@ export async function getVideoStreamUrl(
 
     if (item.Type === "Season") {
       const episodes = await makeApiRequest(`/Shows/${item.SeriesId}/Episodes?SeasonId=${itemId}&Fields=Id`, { signal });
-      if (!episodes?.Items?.length) throw new Error("Bu sezonda hiç bölüm yok!");
+      if (!episodes?.Items?.length) throw new Error("No episodes in this season!");
       const episode = episodes.Items[Math.floor(Math.random() * episodes.Items.length)];
       itemId = episode.Id;
       item = await fetchItemDetails(itemId, { signal });
@@ -3028,7 +3028,7 @@ export async function getVideoStreamUrl(
 
       const source = playbackInfo?.MediaSources?.[0];
       if (!source) {
-        console.error("Medya kaynağı bulunamadı (müzik)");
+        console.error("Media source not found (music)");
         return null;
       }
 
@@ -3101,7 +3101,7 @@ export async function getVideoStreamUrl(
 
     const videoSource = playbackInfo?.MediaSources?.[0];
     if (!videoSource) {
-      console.error("Medya kaynağı bulunamadı");
+      console.error("Media source not found");
       return null;
     }
 
@@ -3149,7 +3149,7 @@ export async function getVideoStreamUrl(
     const st = error?.status;
     if (st === 404 || st === 400 || st === 415 || st === 500) return null;
     if (error?.name === "AbortError" || error?.isAbort) return null;
-    console.warn("Stream URL oluşturma hatası:", error);
+    console.warn("Error creating stream URL:", error);
     return null;
   }
 }
@@ -3174,7 +3174,7 @@ export async function getIntroVideoUrl(itemId) {
     }
     return null;
   } catch (error) {
-    console.error("Intro video alınırken hata:", error);
+    console.error("Error fetching intro video:", error);
     return null;
   }
 }
@@ -3263,7 +3263,7 @@ export async function getUserTopGenres(limit = 5, itemType = null) {
 
     return result;
   } catch (error) {
-    console.error("❌ getUserTopGenres hatası:", error);
+    console.error("❌ getUserTopGenres error:", error);
     return ['Action', 'Drama', 'Comedy', 'Sci-Fi', 'Adventure'].slice(0, limit);
   }
 }
@@ -3296,7 +3296,7 @@ function extractGenresFromItems(items) {
         }
       });
     } else {
-      console.warn(`ℹ️ Tür bilgisi okunamadı → ID: ${item.Id} | Ad: ${item.Name || 'İsimsiz'}`);
+      console.warn(`ℹ️ Could not read genre information → ID: ${item.Id} | Name: ${item.Name || 'Unnamed'}`);
     }
   });
 
@@ -3319,7 +3319,7 @@ function checkAndClearCacheOnUserChange(cacheKey, currentUserId) {
     try {
       const cached = JSON.parse(cachedRaw);
       if (cached.userId && cached.userId !== currentUserId) {
-        console.log("👤 Kullanıcı değişti, cache temizleniyor:", cacheKey);
+        console.log("👤 User changed, clearing cache:", cacheKey);
         localStorage.removeItem(cacheKey);
       }
     } catch {
@@ -3354,7 +3354,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('pagehide', clearAllInMemoryCaches, { once: true });
   window.addEventListener('storage', (e) => {
     if (["json-credentials", "embyToken", "serverId"].includes(e.key)) {
-      console.log("🗝️ Storage değişti → cache temizleniyor");
+      console.log("🗝️ Storage changed → clearing cache");
       nukeAllCachesAndLocalUserCaches();
       __lastAuthSnapshot = null;
       invalidateServerBaseCache();
@@ -3396,7 +3396,7 @@ export async function getCachedUserTopGenres(limit = 50, itemType = null) {
     return genres;
 
   } catch (error) {
-    console.error("Tür bilgisi cache alınırken hata:", error);
+    console.error("Error caching genre information:", error);
     return getUserTopGenres(limit, itemType);
   }
 }

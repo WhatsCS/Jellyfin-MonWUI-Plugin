@@ -156,7 +156,7 @@ function resultTitle(result) {
     result?.original_title ||
     result?.originalName ||
     result?.original_name,
-    L("serrUntitled", "İçerik")
+    L("serrUntitled", "Content")
   );
 }
 
@@ -189,8 +189,8 @@ function resultPosterUrl(result, size = "w154") {
 function resultMeta(result) {
   const mediaType = resultMediaType(result);
   const type = mediaType === "tv"
-    ? L("serrTv", "Dizi")
-    : (mediaType === "collection" ? L("boxset", "Koleksiyon") : L("serrMovie", "Film"));
+    ? L("serrTv", "Series")
+    : (mediaType === "collection" ? L("boxset", "Collection") : L("serrMovie", "Movie"));
   const tmdbId = Number(result?.id || result?.tmdbId || result?.tmdb_id || 0);
   return [type, resultYear(result), Number.isFinite(tmdbId) && tmdbId > 0 ? `TMDb ${Math.floor(tmdbId)}` : ""].filter(Boolean).join(" • ");
 }
@@ -693,7 +693,7 @@ function updateRequestCardMetadata(card, req, details) {
 }
 
 function posterFallbackLabel(req) {
-  return requestMediaType(req) === "tv" ? L("serrTv", "Dizi") : L("serrMovie", "Film");
+  return requestMediaType(req) === "tv" ? L("serrTv", "Series") : L("serrMovie", "Movie");
 }
 
 function renderPoster(req, className = "", { ratingSlotHtml = "" } = {}) {
@@ -701,7 +701,7 @@ function renderPoster(req, className = "", { ratingSlotHtml = "" } = {}) {
   const key = posterCacheKey(req);
   const cached = key ? posterCache.get(key) : "";
   const url = direct || cached || "";
-  const title = text(req?.Title || req?.title, L("serrUntitled", "İçerik"));
+  const title = text(req?.Title || req?.title, L("serrUntitled", "Content"));
   const label = posterFallbackLabel(req);
   const attrs = [
     `class="monwui-serr-poster ${escapeHtml(className)}"`,
@@ -727,7 +727,7 @@ function renderBackdrop(req) {
   const cached = hasCached ? backdropCache.get(key) : "";
   const url = direct || cached || poster || "";
   const isPosterFallback = !direct && (!cached || cached === poster) && !!poster;
-  const title = text(req?.Title || req?.title, L("serrUntitled", "İçerik"));
+  const title = text(req?.Title || req?.title, L("serrUntitled", "Content"));
   const attrs = [
     `class="monwui-serr-request-backdrop ${url ? "has-image" : ""} ${isPosterFallback ? "is-poster-fallback" : ""}"`,
     key ? `data-serr-art-key="${escapeHtml(key)}"` : "",
@@ -756,7 +756,7 @@ function hydrateRequestPosters(scope = document) {
       if (!node.isConnected) return;
       updateHydratedRequestTitle(node, req);
       if (!url || node.getAttribute("data-serr-art-ready") === "1") return;
-      const title = text(req?.Title || req?.title, L("serrUntitled", "İçerik"));
+      const title = text(req?.Title || req?.title, L("serrUntitled", "Content"));
       const ratingSlot = node.querySelector?.("[data-serr-rating-slot]");
       node.innerHTML = `<img src="${escapeHtml(url)}" alt="${escapeHtml(title)}" loading="lazy" decoding="async">${ratingSlot ? ratingSlot.outerHTML : ""}`;
       node.setAttribute("data-serr-art-ready", "1");
@@ -776,7 +776,7 @@ function hydrateRequestPosters(scope = document) {
         node.setAttribute("data-serr-art-empty", "1");
         return;
       }
-      const title = text(req?.Title || req?.title, L("serrUntitled", "İçerik"));
+      const title = text(req?.Title || req?.title, L("serrUntitled", "Content"));
       node.innerHTML = `<img src="${escapeHtml(url)}" alt="${escapeHtml(title)}" loading="lazy" decoding="async">`;
       node.classList.add("has-image");
       if (url === directPosterUrl(req) || url === (posterCacheKey(req) ? posterCache.get(posterCacheKey(req)) : "")) {
@@ -1753,21 +1753,21 @@ function weekdayLabels() {
 
 function calendarStatusLabel(status) {
   switch (text(status).toLowerCase()) {
-    case "available": return L("serrStatusCompleted", "Tamamlandı");
-    case "missing": return L("serrCalendarMissing", "Eksik");
-    case "unmonitored": return L("serrCalendarUnmonitored", "İzlenmiyor");
+    case "available": return L("serrStatusCompleted", "Completed");
+    case "missing": return L("serrCalendarMissing", "Missing");
+    case "unmonitored": return L("serrCalendarUnmonitored", "Unmonitored");
     case "upcoming":
-    default: return L("serrCalendarUpcoming", "Yakında");
+    default: return L("serrCalendarUpcoming", "Upcoming");
   }
 }
 
 function calendarReleaseLabel(type) {
   switch (text(type).toLowerCase()) {
-    case "air": return L("episode", "Bölüm");
-    case "cinema": return L("serrCalendarCinema", "Sinema");
-    case "digital": return L("serrCalendarDigital", "Dijital");
-    case "physical": return L("serrCalendarPhysical", "Fiziksel");
-    case "release": return L("serrCalendarRelease", "Yayın");
+    case "air": return L("episode", "Episode");
+    case "cinema": return L("serrCalendarCinema", "Cinema");
+    case "digital": return L("serrCalendarDigital", "Digital");
+    case "physical": return L("serrCalendarPhysical", "Physical");
+    case "release": return L("serrCalendarRelease", "Release");
     default: return "";
   }
 }
@@ -2361,13 +2361,13 @@ function calendarLegendHtml() {
   return [
     calendarLegendDot(calendarServiceLabel("sonarr"), calendarServiceColor("sonarr")),
     calendarLegendDot(calendarServiceLabel("radarr"), calendarServiceColor("radarr")),
-    calendarLegendDot(L("serrCalendarMissing", "Eksik"), calendarStatusColor("missing")),
-    calendarLegendDot(L("serrCalendarUpcoming", "Yakında"), calendarStatusColor("upcoming")),
+    calendarLegendDot(L("serrCalendarMissing", "Missing"), calendarStatusColor("missing")),
+    calendarLegendDot(L("serrCalendarUpcoming", "Upcoming"), calendarStatusColor("upcoming")),
     calendarLegendDot(statusLabel("pending"), calendarStatusColor("pending")),
     calendarLegendDot(statusLabel("approved"), calendarStatusColor("approved")),
     calendarLegendDot(statusLabel("processing"), calendarStatusColor("processing")),
     calendarLegendDot(statusLabel("completed"), calendarStatusColor("completed")),
-    calendarLegendDot(L("serrCalendarUnmonitored", "İzlenmiyor"), calendarStatusColor("unmonitored"))
+    calendarLegendDot(L("serrCalendarUnmonitored", "Unmonitored"), calendarStatusColor("unmonitored"))
   ].join("");
 }
 
@@ -2485,7 +2485,7 @@ function renderCalendarEvent(event) {
   const release = calendarReleaseLabel(event?.releaseType);
   const requestStatusValue = calendarRequestStatus(event);
   const requestStatus = requestStatusValue ? statusLabel(requestStatusValue) : "";
-  const title = text(event?.title, L("serrUntitled", "İçerik"));
+  const title = text(event?.title, L("serrUntitled", "Content"));
   const metaParts = [];
   pushUniqueCalendarPart(metaParts, service);
   pushUniqueCalendarPart(metaParts, release);
@@ -2512,7 +2512,7 @@ function renderCalendarEvent(event) {
 }
 
 function renderCalendarDot(event) {
-  const title = text(event?.title, L("serrUntitled", "İçerik"));
+  const title = text(event?.title, L("serrUntitled", "Content"));
   const poster = calendarPosterUrl(event);
   return `
     <span class="monwui-serr-calendar-dot-wrap" role="button" tabindex="0" data-serr-calendar-event-dot aria-label="${escapeHtml(title)}">
@@ -2670,17 +2670,17 @@ function ensureSerrCalendarModal() {
   modal.__calendarMonth = startOfMonth(new Date());
   modal.innerHTML = `
     <div class="monwui-serr-calendar-backdrop" data-serr-calendar-close></div>
-    <div class="monwui-serr-calendar-dialog" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("serrCalendarTitle", "Arr Takvimi"))}">
+    <div class="monwui-serr-calendar-dialog" role="dialog" aria-modal="true" aria-label="${escapeHtml(L("serrCalendarTitle", "Arr Calendar"))}">
       <div class="monwui-serr-calendar-head">
-        <button type="button" class="monwui-serr-calendar-nav" data-serr-calendar-prev aria-label="${escapeHtml(L("previous", "Önceki"))}"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-        <button type="button" class="monwui-serr-calendar-nav" data-serr-calendar-today aria-label="${escapeHtml(L("today", "Bugün"))}"><i class="fas fa-calendar-day" aria-hidden="true"></i></button>
+        <button type="button" class="monwui-serr-calendar-nav" data-serr-calendar-prev aria-label="${escapeHtml(L("previous", "Previous"))}"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+        <button type="button" class="monwui-serr-calendar-nav" data-serr-calendar-today aria-label="${escapeHtml(L("today", "Today"))}"><i class="fas fa-calendar-day" aria-hidden="true"></i></button>
         <div class="monwui-serr-calendar-title" data-serr-calendar-title></div>
-        <button type="button" class="monwui-serr-calendar-nav" data-serr-calendar-next aria-label="${escapeHtml(L("next", "Sonraki"))}"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
-        <button type="button" class="monwui-serr-calendar-switch" data-serr-calendar-open-manager title="${escapeHtml(L("serrManageRequests", "İstekleri Yönet"))}" aria-label="${escapeHtml(L("serrManageRequests", "İstekleri Yönet"))}">
+        <button type="button" class="monwui-serr-calendar-nav" data-serr-calendar-next aria-label="${escapeHtml(L("next", "Next"))}"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+        <button type="button" class="monwui-serr-calendar-switch" data-serr-calendar-open-manager title="${escapeHtml(L("serrManageRequests", "Manage Requests"))}" aria-label="${escapeHtml(L("serrManageRequests", "Manage Requests"))}">
           <i class="fas fa-list-ul" aria-hidden="true"></i>
-          <span>${escapeHtml(L("serrRequestsShort", "İstekler"))}</span>
+          <span>${escapeHtml(L("serrRequestsShort", "Requests"))}</span>
         </button>
-        <button type="button" class="monwui-serr-calendar-close" data-serr-calendar-close aria-label="${escapeHtml(L("close", "Kapat"))}">×</button>
+        <button type="button" class="monwui-serr-calendar-close" data-serr-calendar-close aria-label="${escapeHtml(L("close", "Close"))}">×</button>
       </div>
       <div class="monwui-serr-calendar-body">
         <div class="monwui-serr-calendar-legend">
@@ -2782,7 +2782,7 @@ async function renderSerrCalendarModal(modal) {
   const grid = modal.querySelector("[data-serr-calendar-grid]");
   if (title) title.textContent = monthTitle(month);
   if (!grid) return;
-  grid.innerHTML = `<div class="monwui-serr-calendar-loading" style="grid-column:1/-1">${escapeHtml(L("loadingText", "Yükleniyor..."))}</div>`;
+  grid.innerHTML = `<div class="monwui-serr-calendar-loading" style="grid-column:1/-1">${escapeHtml(L("loadingText", "Loading…"))}</div>`;
 
   const range = calendarRange(month);
   try {
@@ -2805,24 +2805,24 @@ async function renderSerrCalendarModal(modal) {
       ...days.map((day, index) => renderCalendarDay(day, month, byDay.get(dateKey(day)) || [], index))
     ].join("");
     if (!events.length) {
-      grid.insertAdjacentHTML("beforeend", `<div class="monwui-serr-calendar-empty" style="grid-column:1/-1">${escapeHtml(L("serrCalendarEmpty", "Bu aralıkta takvim kaydı yok."))}</div>`);
+      grid.insertAdjacentHTML("beforeend", `<div class="monwui-serr-calendar-empty" style="grid-column:1/-1">${escapeHtml(L("serrCalendarEmpty", "No calendar entries in this range."))}</div>`);
     }
   } catch (error) {
-    grid.innerHTML = `<div class="monwui-serr-calendar-error" style="grid-column:1/-1">${escapeHtml(error?.message || L("serrRequestFailed", "İşlem tamamlanamadı."))}</div>`;
+    grid.innerHTML = `<div class="monwui-serr-calendar-error" style="grid-column:1/-1">${escapeHtml(error?.message || L("serrRequestFailed", "Unable to create the request."))}</div>`;
   }
 }
 
 function statusLabel(status) {
   switch (text(status).toLowerCase()) {
-    case "pending": return L("serrStatusPending", "Onay bekliyor");
-    case "approved": return L("serrStatusApproved", "Onaylandı");
-    case "processing": return L("serrStatusProcessing", "İşleniyor");
+    case "pending": return L("serrStatusPending", "Pending approval");
+    case "approved": return L("serrStatusApproved", "Approved");
+    case "processing": return L("serrStatusProcessing", "Processing");
     case "completed":
-    case "available": return L("serrStatusCompleted", "Tamamlandı");
-    case "declined": return L("serrStatusDeclined", "Reddedildi");
-    case "failed": return L("serrStatusFailed", "Hatalı");
-    case "withdrawn": return L("serrStatusWithdrawn", "Geri çekildi");
-    default: return L("serrStatusRequested", "İstendi");
+    case "available": return L("serrStatusCompleted", "Completed");
+    case "declined": return L("serrStatusDeclined", "Declined");
+    case "failed": return L("serrStatusFailed", "Failed");
+    case "withdrawn": return L("serrStatusWithdrawn", "Withdrawn");
+    default: return L("serrStatusRequested", "Requested");
   }
 }
 
@@ -2857,17 +2857,17 @@ function renderDownloadProgress(req) {
   const bits = [
     service,
     client,
-    timeLeft ? `${L("arrDownloadRemaining", "Kalan")}: ${timeLeft}` : "",
-    Number.isFinite(count) && count > 1 ? `${count} ${L("arrDownloadItems", "öğe")}` : ""
+    timeLeft ? `${L("arrDownloadRemaining", "Remaining")}: ${timeLeft}` : "",
+    Number.isFinite(count) && count > 1 ? `${count} ${L("arrDownloadItems", "items")}` : ""
   ].filter(Boolean);
 
   return `
     <div class="monwui-serr-download">
       <div class="monwui-serr-download-line">
-        <b>${escapeHtml(L("arrDownloadProgress", "İndirme"))} ${escapeHtml(percent.toFixed(percent >= 10 ? 0 : 1))}%</b>
+        <b>${escapeHtml(L("arrDownloadProgress", "Download"))} ${escapeHtml(percent.toFixed(percent >= 10 ? 0 : 1))}%</b>
         ${bits.length ? `<span>${escapeHtml(bits.join(" • "))}</span>` : ""}
       </div>
-      <div class="monwui-serr-download-track" aria-label="${escapeHtml(L("arrDownloadProgress", "İndirme"))}">
+      <div class="monwui-serr-download-track" aria-label="${escapeHtml(L("arrDownloadProgress", "Download"))}">
         <div class="monwui-serr-download-bar" style="width:${escapeHtml(String(percent))}%"></div>
       </div>
     </div>
@@ -2879,9 +2879,9 @@ function renderDownloadProgressHost(req) {
 }
 
 function arrStatusMessage(result) {
-  if (result?.service === "sonarr") return L("arrEpisodeRequestSent", "Bölüm isteği Sonarr'a gönderildi.");
-  if (result?.service === "radarr") return L("arrMovieRequestSent", "Film isteği Radarr'a gönderildi.");
-  return L("arrRequestSent", "Arr isteği gönderildi.");
+  if (result?.service === "sonarr") return L("arrEpisodeRequestSent", "Episode request sent to Sonarr.");
+  if (result?.service === "radarr") return L("arrMovieRequestSent", "Movie request sent to Radarr.");
+  return L("arrRequestSent", "Arr request sent.");
 }
 
 function notify(message, type = "info") {
@@ -2913,7 +2913,7 @@ async function approveSerrRequestWithArrFallback(id) {
   if (shouldFallbackMovieToArr(result)) {
     const request = result?.request || result?.Request || {};
     const mediaId = requestMediaId(request);
-    const title = text(request?.Title || request?.title, L("serrMovie", "Film"));
+    const title = text(request?.Title || request?.title, L("serrMovie", "Movie"));
     const arrResult = await requestMovieFromArr({ __tmdbId: mediaId, Name: title }, { tmdbId: mediaId, title, is4K: requestIs4K(request) });
     notify(arrStatusMessage(arrResult), "success");
   }
@@ -2940,19 +2940,19 @@ function mediaLabel(req) {
           Number.isFinite(seasonNumber) ? `S${String(seasonNumber).padStart(2, "0")}` : "",
           Number.isFinite(episodeNumber) ? `E${String(episodeNumber).padStart(2, "0")}` : ""
         ].filter(Boolean).join("");
-        return code || text(entry?.Name || entry?.name, L("episode", "Bölüm"));
+        return code || text(entry?.Name || entry?.name, L("episode", "Episode"));
       }).join(", ") + (episodes.length > 4 ? ` +${episodes.length - 4}` : "")
     : "";
   const seasons = req?.RequestAllSeasons || req?.requestAllSeasons
-    ? L("serrAllSeasons", "Tüm sezonlar")
+    ? L("serrAllSeasons", "All seasons")
     : (Array.isArray(req?.seasons) && req.seasons.length
-      ? req.seasons.map((n) => `${L("season", "Sezon")} ${n}`).join(", ")
+      ? req.seasons.map((n) => `${L("season", "Season")} ${n}`).join(", ")
       : "");
-  return [type === "tv" ? L("serrTv", "Dizi") : L("serrMovie", "Film"), seasons, episodeText].filter(Boolean).join(" • ");
+  return [type === "tv" ? L("serrTv", "Series") : L("serrMovie", "Movie"), seasons, episodeText].filter(Boolean).join(" • ");
 }
 
 function mediaTypeBadgeLabel(mediaType) {
-  return mediaType === "tv" ? L("serrTv", "Dizi") : L("serrMovie", "Film");
+  return mediaType === "tv" ? L("serrTv", "Series") : L("serrMovie", "Movie");
 }
 
 function renderRequestInfoChip(label, value) {
@@ -3033,7 +3033,7 @@ function renderSerrTabBadge() {
     tab.append(label, badge);
   }
 
-  label.textContent = L("serrNotificationsTab", "Seerr İstekleri");
+  label.textContent = L("serrNotificationsTab", "Seerr & Arr Requests");
   const count = getCachedSerrNotificationCount();
   const visible = count > 0;
   const value = count > 99 ? "99+" : String(count);
@@ -3137,10 +3137,10 @@ export function removeSerrNotificationsTab() {
 
 function serrToolsHtml() {
   return `
-    <button type="button" class="monwui-serr-manage-btn" data-serr-open-manager>${escapeHtml(L("serrManageRequests", "İstekleri Yönet"))}</button>
-    <button type="button" class="monwui-serr-calendar-btn" data-serr-open-calendar title="${escapeHtml(L("serrCalendarTitle", "Arr Takvimi"))}">
+    <button type="button" class="monwui-serr-manage-btn" data-serr-open-manager>${escapeHtml(L("serrManageRequests", "Manage Requests"))}</button>
+    <button type="button" class="monwui-serr-calendar-btn" data-serr-open-calendar title="${escapeHtml(L("serrCalendarTitle", "Arr Calendar"))}">
       <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-      <span>${escapeHtml(L("serrCalendarButton", "Takvim"))}</span>
+      <span>${escapeHtml(L("serrCalendarButton", "Calendar"))}</span>
     </button>
   `;
 }
@@ -3211,7 +3211,7 @@ export function renderSerrNotifications() {
   if (!host) return;
 
   if (!cachedRequests.length) {
-    host.innerHTML = `<div class="monwui-serr-empty">${escapeHtml(L("serrNoRequests", "Aktif Seerr isteği yok."))}</div>`;
+    host.innerHTML = `<div class="monwui-serr-empty">${escapeHtml(L("serrNoRequests", "No active Seerr & Arr requests."))}</div>`;
     return;
   }
 
@@ -3262,7 +3262,7 @@ function bindSerrCalendarButtons(scope = document) {
 
 function renderRequest(req, isAdmin) {
   const status = text(req?.Status || req?.status).toLowerCase();
-  const title = text(req?.Title || req?.title, L("serrUntitled", "İçerik"));
+  const title = text(req?.Title || req?.title, L("serrUntitled", "Content"));
   const requestedBy = req?.requestedBy?.userName || req?.RequestedBy?.UserName || "";
   const error = text(req?.Error || req?.error);
   const time = formatTime(req?.UpdatedAtUtc || req?.updatedAtUtc || req?.CreatedAtUtc || req?.createdAtUtc);
@@ -3281,13 +3281,13 @@ function renderRequest(req, isAdmin) {
           <div class="monwui-serr-name">${escapeHtml(title)}</div>
           <div class="monwui-serr-meta">${escapeHtml(mediaLabel(req))}</div>
           ${renderDownloadProgressHost(req)}
-          ${requestedBy ? `<div class="monwui-serr-state">${escapeHtml(L("serrRequestedBy", "İsteyen"))}: ${escapeHtml(requestedBy)}</div>` : ""}
+          ${requestedBy ? `<div class="monwui-serr-state">${escapeHtml(L("serrRequestedBy", "Requested by"))}: ${escapeHtml(requestedBy)}</div>` : ""}
           ${error ? `<div class="monwui-serr-error">${escapeHtml(error)}</div>` : ""}
         </div>
         ${canApprove ? `
           <div class="monwui-serr-notif-actions">
-            <button type="button" class="monwui-serr-mini-btn primary" data-serr-approve="${escapeHtml(req.Id || req.id)}">${escapeHtml(L("serrApprove", "Onayla"))}</button>
-            <button type="button" class="monwui-serr-mini-btn" data-serr-decline="${escapeHtml(req.Id || req.id)}">${escapeHtml(L("serrDecline", "Reddet"))}</button>
+            <button type="button" class="monwui-serr-mini-btn primary" data-serr-approve="${escapeHtml(req.Id || req.id)}">${escapeHtml(L("serrApprove", "Approve"))}</button>
+            <button type="button" class="monwui-serr-mini-btn" data-serr-decline="${escapeHtml(req.Id || req.id)}">${escapeHtml(L("serrDecline", "Decline"))}</button>
           </div>
         ` : ""}
       </div>
@@ -3308,13 +3308,13 @@ function ensureSerrRequestsModal() {
     <div class="monwui-serr-requests-backdrop" data-serr-manager-close></div>
     <div class="monwui-serr-requests-dialog" role="dialog" aria-modal="true">
       <div class="monwui-serr-requests-head">
-        <div class="monwui-serr-requests-title">${escapeHtml(L("serrRequestsModalTitle", "Seerr İstek Yönetimi"))}</div>
+        <div class="monwui-serr-requests-title">${escapeHtml(L("serrRequestsModalTitle", "Seerr & Arr Management"))}</div>
         <div class="monwui-serr-requests-actions">
-          <button type="button" class="monwui-serr-requests-switch monwui-serr-mini-btn" data-serr-manager-open-calendar title="${escapeHtml(L("serrCalendarTitle", "Arr Takvimi"))}" aria-label="${escapeHtml(L("serrCalendarTitle", "Arr Takvimi"))}">
+          <button type="button" class="monwui-serr-requests-switch monwui-serr-mini-btn" data-serr-manager-open-calendar title="${escapeHtml(L("serrCalendarTitle", "Arr Calendar"))}" aria-label="${escapeHtml(L("serrCalendarTitle", "Arr Calendar"))}">
             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-            <span>${escapeHtml(L("serrCalendarButton", "Takvim"))}</span>
+            <span>${escapeHtml(L("serrCalendarButton", "Calendar"))}</span>
           </button>
-          <button type="button" class="monwui-serr-requests-close" data-serr-manager-close aria-label="${escapeHtml(L("close", "Kapat"))}">×</button>
+          <button type="button" class="monwui-serr-requests-close" data-serr-manager-close aria-label="${escapeHtml(L("close", "Close"))}">×</button>
         </div>
       </div>
       <div class="monwui-serr-requests-body"></div>
@@ -3347,7 +3347,7 @@ async function openSerrRequestsModal() {
   modal.setAttribute("aria-hidden", "false");
   const body = modal.querySelector(".monwui-serr-requests-body");
   if (body) {
-    body.innerHTML = `<div class="monwui-serr-loading">${escapeHtml(L("loadingText", "Yükleniyor..."))}</div>`;
+    body.innerHTML = `<div class="monwui-serr-loading">${escapeHtml(L("loadingText", "Loading…"))}</div>`;
   }
   const data = await refreshSerrRequestManager({ render: false, showError: true });
   if (data) renderSerrRequestManager();
@@ -3365,7 +3365,7 @@ async function refreshSerrRequestManager({ render = false, showError = render } 
     if (render && data) renderSerrRequestManager();
     if (showError && !data) {
       const body = document.querySelector("#monwuiSerrRequestsModal .monwui-serr-requests-body");
-      if (body) body.innerHTML = `<div class="monwui-serr-error">${escapeHtml(L("serrRequestFailed", "İşlem tamamlanamadı."))}</div>`;
+      if (body) body.innerHTML = `<div class="monwui-serr-error">${escapeHtml(L("serrRequestFailed", "Unable to create the request."))}</div>`;
     }
     return data;
   }
@@ -3373,7 +3373,7 @@ async function refreshSerrRequestManager({ render = false, showError = render } 
     const modal = ensureSerrRequestsModal();
     const body = modal.querySelector(".monwui-serr-requests-body");
     if (render && body) {
-      body.innerHTML = `<div class="monwui-serr-loading">${escapeHtml(L("loadingText", "Yükleniyor..."))}</div>`;
+      body.innerHTML = `<div class="monwui-serr-loading">${escapeHtml(L("loadingText", "Loading…"))}</div>`;
     }
 
     try {
@@ -3384,7 +3384,7 @@ async function refreshSerrRequestManager({ render = false, showError = render } 
       managerRequests = [];
       managerIsAdmin = false;
       if (showError && body) {
-        body.innerHTML = `<div class="monwui-serr-error">${escapeHtml(error?.message || L("serrRequestFailed", "İşlem tamamlanamadı."))}</div>`;
+        body.innerHTML = `<div class="monwui-serr-error">${escapeHtml(error?.message || L("serrRequestFailed", "Unable to create the request."))}</div>`;
       }
       return null;
     } finally {
@@ -3454,8 +3454,8 @@ function renderManagerPagination() {
   const current = clampManagerPage(managerPage);
   const start = (current - 1) * MANAGER_REQUESTS_PAGE_SIZE + 1;
   const end = Math.min(managerRequests.length, current * MANAGER_REQUESTS_PAGE_SIZE);
-  const previousLabel = L("previous", "Önceki");
-  const nextLabel = L("next", "Sonraki");
+  const previousLabel = L("previous", "Previous");
+  const nextLabel = L("next", "Next");
   const pageLabel = L("page", "Sayfa");
   const pageButtons = managerPageNumbers(current, total).map((page) => {
     if (page === "gap") return `<span class="monwui-serr-manager-page-gap" aria-hidden="true">...</span>`;
@@ -4026,7 +4026,7 @@ function renderSerrRequestManager() {
         </div>
         ${renderManagerPagination()}
       `
-      : `<div class="monwui-serr-empty">${escapeHtml(L("serrNoRequestHistory", "Seerr istek geçmişi yok."))}</div>`}
+      : `<div class="monwui-serr-empty">${escapeHtml(L("serrNoRequestHistory", "No Seerr & Arr history."))}</div>`}
   `;
 
   bindManagerSearch(body);
@@ -4056,7 +4056,7 @@ function renderManagerRequest(req, isAdmin) {
   const mediaType = requestMediaType(req);
   const media = mediaLabel(req);
   const typeBadge = mediaTypeBadgeLabel(mediaType);
-  const title = text(req?.Title || req?.title, L("serrUntitled", "İçerik"));
+  const title = text(req?.Title || req?.title, L("serrUntitled", "Content"));
   const requestedBy = req?.requestedBy?.userName || req?.RequestedBy?.UserName || "";
   const created = formatTime(req?.CreatedAtUtc || req?.createdAtUtc);
   const updated = formatTime(req?.UpdatedAtUtc || req?.updatedAtUtc);
@@ -4074,20 +4074,20 @@ function renderManagerRequest(req, isAdmin) {
     (!isAdmin && status === "pending")
   );
   const detailsHtml = [
-    renderRequestInfoChip(L("serrRequestedBy", "İsteyen"), requestedBy),
-    renderRequestInfoChip(L("created", "Oluşturuldu"), created),
-    renderRequestInfoChip(L("updated", "Güncellendi"), updated),
-    renderRequestInfoChip(L("serrStatusCompleted", "Tamamlandı"), completed),
+    renderRequestInfoChip(L("serrRequestedBy", "Requested by"), requestedBy),
+    renderRequestInfoChip(L("created", "Created"), created),
+    renderRequestInfoChip(L("updated", "Updated"), updated),
+    renderRequestInfoChip(L("serrStatusCompleted", "Completed"), completed),
     renderRequestInfoChip("TMDB", text(req?.MediaId || req?.mediaId, "-")),
     renderRequestInfoChip("Seerr", req?.SerrRequestId || req?.serrRequestId ? `#${req?.SerrRequestId || req?.serrRequestId}` : "")
   ].filter(Boolean).join("");
   const actionsHtml = [
-    canApprove ? `<button type="button" class="monwui-serr-mini-btn primary" data-serr-manager-approve="${escapeHtml(id)}"><i class="fas fa-check" aria-hidden="true"></i><span>${escapeHtml(L("serrApprove", "Onayla"))}</span></button>` : "",
-    canDecline ? `<button type="button" class="monwui-serr-mini-btn" data-serr-manager-decline="${escapeHtml(id)}"><i class="fas fa-times" aria-hidden="true"></i><span>${escapeHtml(L("serrDecline", "Reddet"))}</span></button>` : "",
-    canUpgrade4K ? `<button type="button" class="monwui-serr-mini-btn" data-serr-manager-upgrade4k="${escapeHtml(id)}"><i class="fas fa-film" aria-hidden="true"></i><span>${escapeHtml(L("serrRequest4KButton", "4K İste"))}</span></button>` : "",
-    canWithdraw ? `<button type="button" class="monwui-serr-mini-btn" data-serr-manager-withdraw="${escapeHtml(id)}"><i class="fas fa-undo" aria-hidden="true"></i><span>${escapeHtml(L("serrWithdraw", "Geri Çek"))}</span></button>` : ""
+    canApprove ? `<button type="button" class="monwui-serr-mini-btn primary" data-serr-manager-approve="${escapeHtml(id)}"><i class="fas fa-check" aria-hidden="true"></i><span>${escapeHtml(L("serrApprove", "Approve"))}</span></button>` : "",
+    canDecline ? `<button type="button" class="monwui-serr-mini-btn" data-serr-manager-decline="${escapeHtml(id)}"><i class="fas fa-times" aria-hidden="true"></i><span>${escapeHtml(L("serrDecline", "Decline"))}</span></button>` : "",
+    canUpgrade4K ? `<button type="button" class="monwui-serr-mini-btn" data-serr-manager-upgrade4k="${escapeHtml(id)}"><i class="fas fa-film" aria-hidden="true"></i><span>${escapeHtml(L("serrRequest4KButton", "Request 4K"))}</span></button>` : "",
+    canWithdraw ? `<button type="button" class="monwui-serr-mini-btn" data-serr-manager-withdraw="${escapeHtml(id)}"><i class="fas fa-undo" aria-hidden="true"></i><span>${escapeHtml(L("serrWithdraw", "Withdraw"))}</span></button>` : ""
   ].filter(Boolean).join("");
-  const detailsLabel = L("serrRequestDetails", "İstek Detayları");
+  const detailsLabel = L("serrRequestDetails", "Request Details");
 
   return `
     <section class="monwui-serr-request-card" tabindex="-1" data-serr-request-id="${escapeHtml(id)}" data-serr-request-status="${escapeHtml(status)}" data-serr-request-media-type="${escapeHtml(mediaType)}" ${requestKey ? `data-serr-request-key="${escapeHtml(requestKey)}"` : ""}>
@@ -4104,7 +4104,7 @@ function renderManagerRequest(req, isAdmin) {
           <div class="monwui-serr-request-details-wrap">
             <button type="button" class="monwui-serr-request-details-toggle" aria-label="${escapeHtml(detailsLabel)}">
               <i class="fas fa-info-circle" aria-hidden="true"></i>
-              <span>${escapeHtml(L("serrRequestDetailsButton", L("details", "Ayrıntılar")))}</span>
+              <span>${escapeHtml(L("serrRequestDetailsButton", L("details", "Details")))}</span>
             </button>
             <div class="monwui-serr-request-details" role="group" aria-label="${escapeHtml(detailsLabel)}">
               ${detailsHtml}
@@ -4193,14 +4193,14 @@ async function runManagerAction(button, fn) {
   const old = button.innerHTML;
   try {
     button.disabled = true;
-    button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("loadingText", "Yükleniyor..."))}</span>`;
+    button.innerHTML = `<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>${escapeHtml(L("loadingText", "Loading…"))}</span>`;
     await fn();
     await refresh({ render: true });
     const data = await refreshSerrRequestManager({ render: false, showError: true });
     if (data) renderSerrRequestManager();
     try { window.dispatchEvent(new CustomEvent("monwui:serr-notification-count-changed")); } catch {}
   } catch (error) {
-    button.textContent = error?.message || L("serrRequestFailed", "İşlem tamamlanamadı.");
+    button.textContent = error?.message || L("serrRequestFailed", "Unable to create the request.");
     setTimeout(() => {
       button.innerHTML = old;
       button.disabled = false;
@@ -4213,11 +4213,11 @@ async function runAction(button, fn) {
   const old = button.textContent;
   try {
     button.disabled = true;
-    button.textContent = L("loadingText", "Yükleniyor...");
+    button.textContent = L("loadingText", "Loading…");
     await fn();
     await refresh({ render: true });
   } catch (error) {
-    button.textContent = error?.message || L("serrRequestFailed", "İşlem tamamlanamadı.");
+    button.textContent = error?.message || L("serrRequestFailed", "Unable to create the request.");
     setTimeout(() => { button.textContent = old; button.disabled = false; }, 1800);
     return;
   }

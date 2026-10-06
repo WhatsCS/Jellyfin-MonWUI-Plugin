@@ -1,4 +1,4 @@
-import { makeApiRequest, getSessionInfo, getCachedUserTopGenres } from "../../Plugins/JMSFusion/runtime/api.js";
+import { makeApiRequest, getSessionInfo, getCachedUserTopGenres } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { getConfig } from "./config.js";
 import { withServer } from "./jfUrl.js";
 import { openDetailsModal } from "./detailsModalLoader.js";
@@ -145,8 +145,8 @@ function getRuntimeWithIcons(runtime) {
   const cfg = getConfig() || {};
   if (!runtime) return '';
   return runtime
-    .replace(/(\d+)s/g, `$1${cfg.languageLabels?.sa || 'sa'}`)
-    .replace(/(\d+)d/g, `$1${cfg.languageLabels?.dk || 'dk'}`);
+    .replace(/(\d+)s/g, `$1${cfg.languageLabels?.sa || "h"}`)
+    .replace(/(\d+)d/g, `$1${cfg.languageLabels?.dk || "m"}`);
 }
 
 const PLACEHOLDER_URL = resolveSliderAssetHref(
@@ -347,16 +347,16 @@ export function openGenreExplorer(genre) {
     <div class="genre-explorer" role="dialog" aria-modal="true" aria-label="Genre Explorer">
       <div class="ge-header">
         <div class="ge-title">
-          ${escapeHtml(__genre)} • ${(getConfig()?.languageLabels?.all) || "Tümü"}
+          ${escapeHtml(__genre)} • ${(getConfig()?.languageLabels?.all) || "All"}
         </div>
         <div class="ge-actions">
-          <button class="ge-close" aria-label="${(getConfig()?.languageLabels?.close) || "Kapat"}">✕</button>
+          <button class="ge-close" aria-label="${(getConfig()?.languageLabels?.close) || "Close"}">✕</button>
         </div>
       </div>
       <div class="ge-content">
         <div class="ge-grid" role="list"></div>
         <div class="ge-empty" style="display:none">
-          ${(getConfig()?.languageLabels?.noResults) || "İçerik bulunamadı"}
+          ${(getConfig()?.languageLabels?.noResults) || "No content found"}
         </div>
         <div class="ge-sentinel"></div>
       </div>
@@ -503,16 +503,16 @@ export function openDirectorExplorer(person) {
     <div class="genre-explorer" role="dialog" aria-modal="true" aria-label="Director Explorer">
       <div class="ge-header">
         <div class="ge-title">
-          ${escapeHtml(__d_person.Name)} • ${(getConfig()?.languageLabels?.all) || "Tümü"}
+          ${escapeHtml(__d_person.Name)} • ${(getConfig()?.languageLabels?.all) || "All"}
         </div>
         <div class="ge-actions">
-          <button class="ge-close" aria-label="${(getConfig()?.languageLabels?.close) || "Kapat"}">✕</button>
+          <button class="ge-close" aria-label="${(getConfig()?.languageLabels?.close) || "Close"}">✕</button>
         </div>
       </div>
       <div class="ge-content">
         <div class="ge-grid" role="list"></div>
         <div class="ge-empty" style="display:none">
-          ${(getConfig()?.languageLabels?.noResults) || "İçerik bulunamadı"}
+          ${(getConfig()?.languageLabels?.noResults) || "No content found"}
         </div>
         <div class="ge-sentinel"></div>
       </div>
@@ -718,8 +718,8 @@ function createCardFor(item) {
   const isSeries = item.Type === "Series";
   const cfg = getConfig() || {};
   const typeLabel = isSeries
-    ? ((cfg.languageLabels && cfg.languageLabels.dizi) || "Dizi")
-    : ((cfg.languageLabels && cfg.languageLabels.film) || "Film");
+    ? ((cfg.languageLabels && cfg.languageLabels.dizi) || "Series")
+    : ((cfg.languageLabels && cfg.languageLabels.film) || "Movie");
   const typeIcon = isSeries ? 'tv' : 'film';
 
   const ageChip = formatOfficialRatingLabel(item.OfficialRating || "");
@@ -782,7 +782,7 @@ function createCardFor(item) {
     noImg.className = 'prc-noimg-label';
     noImg.textContent =
       (cfg.languageLabels && (cfg.languageLabels.noImage || cfg.languageLabels.loadingText))
-      || 'Görsel yok';
+      || 'No Image';
     noImg.style.minHeight = '220px';
     noImg.style.display = 'flex';
     noImg.style.alignItems = 'center';
@@ -973,16 +973,16 @@ export function openPersonalExplorer() {
     <div class="genre-explorer" role="dialog" aria-modal="true" aria-label="Personal Explorer">
       <div class="ge-header">
         <div class="ge-title">
-          ${(getConfig()?.languageLabels?.personalRecommendations) || "Sana Özel Öneriler"} • ${(getConfig()?.languageLabels?.all) || "Tümü"}
+          ${(getConfig()?.languageLabels?.personalRecommendations) || "Personalized Recommendations"} • ${(getConfig()?.languageLabels?.all) || "All"}
         </div>
         <div class="ge-actions">
-          <button class="ge-close" aria-label="${(getConfig()?.languageLabels?.close) || "Kapat"}">✕</button>
+          <button class="ge-close" aria-label="${(getConfig()?.languageLabels?.close) || "Close"}">✕</button>
         </div>
       </div>
       <div class="ge-content">
         <div class="ge-grid" role="list"></div>
         <div class="ge-empty" style="display:none">
-          ${(getConfig()?.languageLabels?.noResults) || "İçerik bulunamadı"}
+          ${(getConfig()?.languageLabels?.noResults) || "No content found"}
         </div>
         <div class="ge-sentinel"></div>
       </div>

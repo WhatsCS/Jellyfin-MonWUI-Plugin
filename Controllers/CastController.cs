@@ -7,11 +7,11 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Session;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/cast")]
-    [Route("Plugins/JMSFusion/cast")]
+    [Route("JMSFusionV2/cast")]
+    [Route("Plugins/JMSFusionV2/cast")]
     public class CastController : ControllerBase
     {
         private readonly IUserManager _users;
@@ -52,7 +52,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return adminCheck.Result;
             }
 
-            var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+            var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
             var cfg = plugin.Configuration;
 
             if (request?.EnableCastModule.HasValue == true)
@@ -89,7 +89,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return userCheck.Result;
             }
 
-            var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+            var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
             var cfg = plugin.Configuration;
             var isAdmin = IsAdminUser(userCheck.User);
 
@@ -149,7 +149,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
         private object BuildAccessPayload(User? user)
         {
-            var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+            var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
             var cfg = plugin.Configuration;
             var isAdmin = IsAdminUser(user);
             var moduleEnabled = cfg.EnableCastModule;
@@ -194,7 +194,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return (null, Guid.Empty, Unauthorized(new
                 {
                     ok = false,
-                    error = "X-Emby-UserId gerekli."
+                    error = "X-Emby-UserId is required."
                 }));
             }
 
@@ -204,7 +204,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return (null, Guid.Empty, Unauthorized(new
                 {
                     ok = false,
-                    error = "Kullanici bulunamadi."
+                    error = "User not found."
                 }));
             }
 

@@ -16,7 +16,7 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
     [Route("MonWUI/serr")]
@@ -142,7 +142,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 return adminCheck.Result;
             }
 
-            var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+            var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
             var cfg = plugin.Configuration;
 
             if (request?.Enabled.HasValue == true) cfg.EnableSerrIntegration = request.Enabled.Value;
@@ -401,7 +401,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 cfg = plugin.Configuration;
                 SerrRequestStore.Save(cfg);
                 NormalizeSerrRequests(cfg);
@@ -464,7 +464,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var cfg = GetConfig();
             if (SerrRequestStore.Save(cfg))
             {
-                JMSFusionPlugin.Instance.UpdateConfiguration(cfg);
+                JMSFusionV2Plugin.Instance.UpdateConfiguration(cfg);
             }
             var isAdmin = IsAdminUser(userCheck.User);
 
@@ -557,7 +557,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var warning = string.Join(" | ", warnings.Where(value => !string.IsNullOrWhiteSpace(value)));
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 SerrRequestStore.Save(cfg);
                 entry = cfg.SerrRequests.FirstOrDefault(x => Same(x.Id, id));
@@ -693,7 +693,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             {
                 lock (SyncRoot)
                 {
-                    var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                    var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                     cfg = plugin.Configuration;
                     SerrRequestStore.Save(cfg);
                     var current = cfg.SerrRequests.FirstOrDefault(x => Same(x.Id, id));
@@ -736,7 +736,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 cfg = plugin.Configuration;
                 SerrRequestStore.Save(cfg);
                 var current = cfg.SerrRequests.FirstOrDefault(x => Same(x.Id, id));
@@ -805,7 +805,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 SerrRequestStore.Save(cfg);
                 entry = cfg.SerrRequests.FirstOrDefault(x => Same(x.Id, id));
@@ -871,7 +871,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return Ok(response.Payload);
         }
 
-        private async Task<IActionResult?> ProxyTmdbMetadata(JMSFusionConfiguration cfg, string path, string? language, CancellationToken cancellationToken)
+        private async Task<IActionResult?> ProxyTmdbMetadata(JMSFusionV2Configuration cfg, string path, string? language, CancellationToken cancellationToken)
         {
             var apiKey = CleanText(cfg.TmdbApiKey, 200);
             if (string.IsNullOrWhiteSpace(apiKey) || Same(apiKey, "CHANGE_ME")) return null;
@@ -951,7 +951,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             }
         }
 
-        private async Task<object?> SearchTmdbCollections(JMSFusionConfiguration cfg, string query, int page, string? language, CancellationToken cancellationToken)
+        private async Task<object?> SearchTmdbCollections(JMSFusionV2Configuration cfg, string query, int page, string? language, CancellationToken cancellationToken)
         {
             var apiKey = CleanText(cfg.TmdbApiKey, 200);
             if (string.IsNullOrWhiteSpace(apiKey) || Same(apiKey, "CHANGE_ME")) return null;
@@ -1008,7 +1008,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             };
         }
 
-        private async Task<List<object>> SearchArrFallback(JMSFusionConfiguration cfg, string query, CancellationToken cancellationToken)
+        private async Task<List<object>> SearchArrFallback(JMSFusionV2Configuration cfg, string query, CancellationToken cancellationToken)
         {
             var output = new List<object>();
             var use4KRadarr = !IsRadarrSearchConfigured(cfg) && cfg.SerrEnable4KRequests && IsRadarr4KSearchConfigured(cfg);
@@ -1145,7 +1145,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             bool strict4KArr = false)
         {
             SerrRequestEntry? entry;
-            JMSFusionConfiguration cfg;
+            JMSFusionV2Configuration cfg;
             lock (SyncRoot)
             {
                 cfg = GetConfig();
@@ -1158,7 +1158,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var response = submission.Response;
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 cfg = plugin.Configuration;
                 var current = cfg.SerrRequests.FirstOrDefault(x => Same(x.Id, entryId));
                 if (current is null) return submission;
@@ -1192,7 +1192,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<RequestSubmissionResult> SubmitRequestBackend(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             SerrRequestEntry entry,
             Guid adminUserId,
             CancellationToken cancellationToken,
@@ -1220,7 +1220,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<RequestSubmissionResult> SubmitToArr(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             SerrRequestEntry entry,
             CancellationToken cancellationToken)
         {
@@ -1240,7 +1240,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 string.Empty);
         }
 
-        private async Task<string> WithdrawFromSerr(JMSFusionConfiguration cfg, SerrRequestEntry entry, CancellationToken cancellationToken)
+        private async Task<string> WithdrawFromSerr(JMSFusionV2Configuration cfg, SerrRequestEntry entry, CancellationToken cancellationToken)
         {
             if (entry is null || !IsSerrConnectionConfigured(cfg)) return string.Empty;
 
@@ -1275,7 +1275,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<(List<int> Ids, string Error)> FindMatchingSerrRequestIds(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             SerrRequestEntry entry,
             CancellationToken cancellationToken)
         {
@@ -1298,7 +1298,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             CancellationToken cancellationToken)
         {
             SerrRequestEntry? entry;
-            JMSFusionConfiguration cfg;
+            JMSFusionV2Configuration cfg;
             lock (SyncRoot)
             {
                 cfg = GetConfig();
@@ -1326,7 +1326,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var response = await SendSerrRequestAction(cfg, entry.SerrRequestId.Value, action, cancellationToken);
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 cfg = plugin.Configuration;
                 var current = cfg.SerrRequests.FirstOrDefault(x => Same(x.Id, entryId));
                 if (current is null) return new RequestSubmissionResult(response, "serr", string.Empty);
@@ -1360,7 +1360,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<SerrCallResult> SendSerrRequestAction(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             int requestId,
             string action,
             CancellationToken cancellationToken)
@@ -1375,7 +1375,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
         private async Task SyncExternalSerrRequests(CancellationToken cancellationToken)
         {
-            JMSFusionConfiguration cfg;
+            JMSFusionV2Configuration cfg;
             Dictionary<int, string> knownTitles;
             lock (SyncRoot)
             {
@@ -1399,7 +1399,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var usedLocalIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 cfg = plugin.Configuration;
                 SerrRequestStore.Save(cfg);
                 NormalizeSerrRequests(cfg);
@@ -1449,7 +1449,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<Dictionary<int, string>> ResolveSerrRequestTitles(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             IReadOnlyList<JsonElement> records,
             IReadOnlyDictionary<int, string> knownTitles,
             CancellationToken cancellationToken)
@@ -1488,7 +1488,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<string> ResolveSerrMetadataTitle(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             string mediaType,
             int mediaId,
             CancellationToken cancellationToken)
@@ -1650,7 +1650,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<(List<JsonElement> Records, string Error)> FetchSerrRequestRecords(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             CancellationToken cancellationToken)
         {
             var output = new List<JsonElement>();
@@ -1869,7 +1869,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return Same(title, "Seerr #" + requestId.ToString(CultureInfo.InvariantCulture));
         }
 
-        private async Task<string> WithdrawFromArr(JMSFusionConfiguration cfg, SerrRequestEntry entry, CancellationToken cancellationToken)
+        private async Task<string> WithdrawFromArr(JMSFusionV2Configuration cfg, SerrRequestEntry entry, CancellationToken cancellationToken)
         {
             if (entry is null || !ShouldCleanupArrOnWithdraw(entry)) return string.Empty;
 
@@ -1897,20 +1897,20 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         private static bool ShouldCleanupArrOnWithdraw(SerrRequestEntry entry)
             => Same(entry.Status, "approved") || Same(entry.Status, "processing");
 
-        private static IEnumerable<bool> RadarrCleanupTargets(JMSFusionConfiguration cfg, SerrRequestEntry entry)
+        private static IEnumerable<bool> RadarrCleanupTargets(JMSFusionV2Configuration cfg, SerrRequestEntry entry)
         {
             if (entry.Is4K && IsRadarr4KSearchConfigured(cfg)) yield return true;
             else if (IsRadarrSearchConfigured(cfg)) yield return false;
         }
 
-        private static IEnumerable<bool> SonarrCleanupTargets(JMSFusionConfiguration cfg, SerrRequestEntry entry)
+        private static IEnumerable<bool> SonarrCleanupTargets(JMSFusionV2Configuration cfg, SerrRequestEntry entry)
         {
             if (entry.Is4K && IsSonarr4KSearchConfigured(cfg)) yield return true;
             else if (IsSonarrSearchConfigured(cfg)) yield return false;
         }
 
         private async Task<string> WithdrawMovieFromRadarr(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             SerrRequestEntry entry,
             bool use4K,
             CancellationToken cancellationToken)
@@ -1938,7 +1938,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<string> WithdrawTvFromSonarr(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             SerrRequestEntry entry,
             bool use4K,
             CancellationToken cancellationToken)
@@ -2019,7 +2019,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             => entry.RequestAllSeasons ||
                (!IsEpisodeOnlyRequest(entry) && NormalizeSeasons(entry.Seasons).Count == 0);
 
-        private async Task<RequestSubmissionResult> SubmitMovieToRadarr(JMSFusionConfiguration cfg, SerrRequestEntry entry, CancellationToken cancellationToken)
+        private async Task<RequestSubmissionResult> SubmitMovieToRadarr(JMSFusionV2Configuration cfg, SerrRequestEntry entry, CancellationToken cancellationToken)
         {
             var use4K = ShouldUseRadarr4K(cfg, entry.Is4K);
             var movie = await FindRadarrMovie(cfg, entry, cancellationToken, use4K);
@@ -2057,7 +2057,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return ArrSubmitSuccess("radarr");
         }
 
-        private async Task<RequestSubmissionResult> SubmitSeriesToSonarr(JMSFusionConfiguration cfg, SerrRequestEntry entry, CancellationToken cancellationToken)
+        private async Task<RequestSubmissionResult> SubmitSeriesToSonarr(JMSFusionV2Configuration cfg, SerrRequestEntry entry, CancellationToken cancellationToken)
         {
             var use4K = ShouldUseSonarr4K(cfg, entry.Is4K);
             var targetSeasons = GetArrTargetSeasons(entry);
@@ -2151,7 +2151,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         private static RequestSubmissionResult ArrSubmitFailure(string service, int statusCode, string error)
             => new(SerrCallResult.Fail(statusCode, error), "arr", service);
 
-        private async Task<JsonElement> FindRadarrMovie(JMSFusionConfiguration cfg, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
+        private async Task<JsonElement> FindRadarrMovie(JMSFusionV2Configuration cfg, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
         {
             var response = await SendArrAsync(RadarrBaseUrl(cfg, use4K), RadarrApiKey(cfg, use4K), use4K ? "4K Radarr" : "Radarr", HttpMethod.Get, "/movie", null, cancellationToken);
             if (!response.Ok || response.Payload.ValueKind != JsonValueKind.Array) return default;
@@ -2170,7 +2170,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return default;
         }
 
-        private async Task<JsonElement> LookupRadarrMovie(JMSFusionConfiguration cfg, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
+        private async Task<JsonElement> LookupRadarrMovie(JMSFusionV2Configuration cfg, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
         {
             if (entry.MediaId > 0)
             {
@@ -2216,7 +2216,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return default;
         }
 
-        private async Task<ArrApiCallResult> AddRadarrMovie(JMSFusionConfiguration cfg, JsonElement lookup, CancellationToken cancellationToken, bool use4K = false)
+        private async Task<ArrApiCallResult> AddRadarrMovie(JMSFusionV2Configuration cfg, JsonElement lookup, CancellationToken cancellationToken, bool use4K = false)
         {
             var validation = await ValidateRadarrMovieRequestConfig(cfg, cancellationToken, use4K);
             if (!validation.Ok) return validation;
@@ -2231,7 +2231,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return await SendArrAsync(RadarrBaseUrl(cfg, use4K), RadarrApiKey(cfg, use4K), use4K ? "4K Radarr" : "Radarr", HttpMethod.Post, "/movie", minimal, cancellationToken);
         }
 
-        private async Task<ArrApiCallResult> ValidateRadarrMovieRequestConfig(JMSFusionConfiguration cfg, CancellationToken cancellationToken, bool use4K = false)
+        private async Task<ArrApiCallResult> ValidateRadarrMovieRequestConfig(JMSFusionV2Configuration cfg, CancellationToken cancellationToken, bool use4K = false)
         {
             var profiles = await SendArrAsync(RadarrBaseUrl(cfg, use4K), RadarrApiKey(cfg, use4K), use4K ? "4K Radarr" : "Radarr", HttpMethod.Get, "/qualityprofile", null, cancellationToken);
             if (!profiles.Ok) return profiles;
@@ -2253,7 +2253,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return ArrApiCallResult.Success(200, default);
         }
 
-        private static void PrepareRadarrAddMovieBody(Dictionary<string, object?> body, JMSFusionConfiguration cfg, bool use4K = false)
+        private static void PrepareRadarrAddMovieBody(Dictionary<string, object?> body, JMSFusionV2Configuration cfg, bool use4K = false)
         {
             foreach (var key in new[]
             {
@@ -2282,7 +2282,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             };
         }
 
-        private static Dictionary<string, object?> BuildMinimalRadarrAddMovieBody(JsonElement lookup, JMSFusionConfiguration cfg, bool use4K = false)
+        private static Dictionary<string, object?> BuildMinimalRadarrAddMovieBody(JsonElement lookup, JMSFusionV2Configuration cfg, bool use4K = false)
         {
             var body = new Dictionary<string, object?>();
             foreach (var property in new[]
@@ -2319,7 +2319,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             target[property] = value.Clone();
         }
 
-        private async Task<ArrApiCallResult> EnsureRadarrMovieMonitored(JMSFusionConfiguration cfg, JsonElement movie, CancellationToken cancellationToken, bool use4K = false)
+        private async Task<ArrApiCallResult> EnsureRadarrMovieMonitored(JMSFusionV2Configuration cfg, JsonElement movie, CancellationToken cancellationToken, bool use4K = false)
         {
             if (!TryReadInt(movie, "id", out var movieId) || movieId <= 0) return ArrApiCallResult.Fail(0, "Invalid movie id.");
             if (ReadBool(movie, "monitored")) return ArrApiCallResult.Success(200, movie);
@@ -2329,7 +2329,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return await SendArrAsync(RadarrBaseUrl(cfg, use4K), RadarrApiKey(cfg, use4K), use4K ? "4K Radarr" : "Radarr", HttpMethod.Put, "/movie/" + movieId.ToString(CultureInfo.InvariantCulture), body, cancellationToken);
         }
 
-        private async Task<JsonElement> FindSonarrSeries(JMSFusionConfiguration cfg, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
+        private async Task<JsonElement> FindSonarrSeries(JMSFusionV2Configuration cfg, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
         {
             var response = await SendArrAsync(SonarrBaseUrl(cfg, use4K), SonarrApiKey(cfg, use4K), use4K ? "4K Sonarr" : "Sonarr", HttpMethod.Get, "/series", null, cancellationToken);
             if (!response.Ok || response.Payload.ValueKind != JsonValueKind.Array) return default;
@@ -2352,7 +2352,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return default;
         }
 
-        private async Task<JsonElement> LookupSonarrSeries(JMSFusionConfiguration cfg, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
+        private async Task<JsonElement> LookupSonarrSeries(JMSFusionV2Configuration cfg, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
         {
             var terms = new List<string>();
             if (entry.TvdbId.HasValue && entry.TvdbId.Value > 0) terms.Add("tvdb:" + entry.TvdbId.Value.ToString(CultureInfo.InvariantCulture));
@@ -2380,7 +2380,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<ArrApiCallResult> AddSonarrSeries(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             JsonElement lookup,
             IReadOnlyCollection<int> targetSeasons,
             bool requestAllSeasons,
@@ -2403,7 +2403,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<ArrApiCallResult> EnsureSonarrSeriesMonitored(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             JsonElement series,
             IReadOnlyCollection<int> targetSeasons,
             bool requestAllSeasons,
@@ -2419,7 +2419,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         }
 
         private async Task<List<int>> FindRequestedSonarrEpisodeIds(
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             int seriesId,
             SerrRequestEntry entry,
             bool refreshBeforeRetry,
@@ -2439,7 +2439,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return await FindRequestedSonarrEpisodeIdsOnce(cfg, seriesId, entry, cancellationToken, use4K);
         }
 
-        private async Task<List<int>> FindRequestedSonarrEpisodeIdsOnce(JMSFusionConfiguration cfg, int seriesId, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
+        private async Task<List<int>> FindRequestedSonarrEpisodeIdsOnce(JMSFusionV2Configuration cfg, int seriesId, SerrRequestEntry entry, CancellationToken cancellationToken, bool use4K = false)
         {
             var response = await SendArrAsync(SonarrBaseUrl(cfg, use4K), SonarrApiKey(cfg, use4K), use4K ? "4K Sonarr" : "Sonarr", HttpMethod.Get, "/episode?seriesId=" + seriesId.ToString(CultureInfo.InvariantCulture), null, cancellationToken);
             if (!response.Ok || response.Payload.ValueKind != JsonValueKind.Array) return new List<int>();
@@ -2556,7 +2556,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return NormalizeSeasons(entry.Seasons);
         }
 
-        private async Task<SerrCallResult> SubmitToSeerr(JMSFusionConfiguration cfg, SerrRequestEntry entry, Guid adminUserId, CancellationToken cancellationToken)
+        private async Task<SerrCallResult> SubmitToSeerr(JMSFusionV2Configuration cfg, SerrRequestEntry entry, Guid adminUserId, CancellationToken cancellationToken)
         {
             var body = new Dictionary<string, object?>
             {
@@ -2583,7 +2583,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return await SendSerrAsync(cfg, HttpMethod.Post, "/request", body, cancellationToken);
         }
 
-        private async Task<int?> ResolveSerrUserId(JMSFusionConfiguration cfg, string jellyfinUserId, CancellationToken cancellationToken)
+        private async Task<int?> ResolveSerrUserId(JMSFusionV2Configuration cfg, string jellyfinUserId, CancellationToken cancellationToken)
         {
             var clean = (jellyfinUserId ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(clean)) return null;
@@ -2609,7 +2609,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         private async Task SyncActiveRequests(CancellationToken cancellationToken)
         {
             List<SerrRequestEntry> active;
-            JMSFusionConfiguration cfg;
+            JMSFusionV2Configuration cfg;
             lock (SyncRoot)
             {
                 cfg = GetConfig();
@@ -2639,7 +2639,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 cfg = plugin.Configuration;
                 foreach (var pair in updates)
                 {
@@ -2779,7 +2779,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return statuses.Any();
         }
 
-        private async Task<SerrCallResult> SendSerrAsync(JMSFusionConfiguration cfg, HttpMethod method, string pathAndQuery, object? body, CancellationToken cancellationToken)
+        private async Task<SerrCallResult> SendSerrAsync(JMSFusionV2Configuration cfg, HttpMethod method, string pathAndQuery, object? body, CancellationToken cancellationToken)
         {
             try
             {
@@ -2822,7 +2822,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             }
         }
 
-        private IActionResult? EnsureConfigured(JMSFusionConfiguration cfg)
+        private IActionResult? EnsureConfigured(JMSFusionV2Configuration cfg)
         {
             if (!IsSerrConnectionConfigured(cfg))
             {
@@ -2837,7 +2837,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return null;
         }
 
-        private IActionResult? EnsureRequestBackendConfigured(JMSFusionConfiguration cfg, SerrCreateRequest request)
+        private IActionResult? EnsureRequestBackendConfigured(JMSFusionV2Configuration cfg, SerrCreateRequest request)
         {
             if (IsSerrConnectionConfigured(cfg)) return null;
 
@@ -2857,74 +2857,74 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return StatusCode(412, new { ok = false, error = "No configured Seerr or Arr backend can handle this request." });
         }
 
-        private static bool IsSerrConnectionConfigured(JMSFusionConfiguration cfg)
+        private static bool IsSerrConnectionConfigured(JMSFusionV2Configuration cfg)
             => cfg.EnableSerrIntegration &&
                !string.IsNullOrWhiteSpace(cfg.SerrBaseUrl) &&
                !string.IsNullOrWhiteSpace(cfg.SerrApiKey);
 
-        private static bool IsAnyArrSearchConfigured(JMSFusionConfiguration cfg)
+        private static bool IsAnyArrSearchConfigured(JMSFusionV2Configuration cfg)
             => IsRadarrSearchConfigured(cfg) || IsSonarrSearchConfigured(cfg);
 
-        private static bool IsAnyArrRequestConfigured(JMSFusionConfiguration cfg)
+        private static bool IsAnyArrRequestConfigured(JMSFusionV2Configuration cfg)
             => IsRadarrRequestConfigured(cfg) ||
                IsSonarrRequestConfigured(cfg) ||
                (cfg.SerrEnable4KRequests && (IsRadarr4KRequestConfigured(cfg) || IsSonarr4KRequestConfigured(cfg)));
 
-        private static bool IsRadarrSearchConfigured(JMSFusionConfiguration cfg)
+        private static bool IsRadarrSearchConfigured(JMSFusionV2Configuration cfg)
             => cfg.EnableArrIntegration &&
                cfg.ArrRadarrEnabled &&
                !string.IsNullOrWhiteSpace(cfg.ArrRadarrBaseUrl) &&
                !string.IsNullOrWhiteSpace(cfg.ArrRadarrApiKey);
 
-        private static bool IsSonarrSearchConfigured(JMSFusionConfiguration cfg)
+        private static bool IsSonarrSearchConfigured(JMSFusionV2Configuration cfg)
             => cfg.EnableArrIntegration &&
                cfg.ArrSonarrEnabled &&
                !string.IsNullOrWhiteSpace(cfg.ArrSonarrBaseUrl) &&
                !string.IsNullOrWhiteSpace(cfg.ArrSonarrApiKey);
 
-        private static bool IsRadarrRequestConfigured(JMSFusionConfiguration cfg)
+        private static bool IsRadarrRequestConfigured(JMSFusionV2Configuration cfg)
             => IsRadarrSearchConfigured(cfg) &&
                !string.IsNullOrWhiteSpace(cfg.ArrRadarrRootFolderPath) &&
                cfg.ArrRadarrQualityProfileId > 0;
 
-        private static bool IsSonarrRequestConfigured(JMSFusionConfiguration cfg)
+        private static bool IsSonarrRequestConfigured(JMSFusionV2Configuration cfg)
             => IsSonarrSearchConfigured(cfg) &&
                !string.IsNullOrWhiteSpace(cfg.ArrSonarrRootFolderPath) &&
                cfg.ArrSonarrQualityProfileId > 0;
 
-        private static bool IsRadarr4KSearchConfigured(JMSFusionConfiguration cfg)
+        private static bool IsRadarr4KSearchConfigured(JMSFusionV2Configuration cfg)
             => cfg.EnableArrIntegration &&
                cfg.ArrRadarr4KEnabled &&
                !string.IsNullOrWhiteSpace(cfg.ArrRadarr4KBaseUrl) &&
                !string.IsNullOrWhiteSpace(cfg.ArrRadarr4KApiKey);
 
-        private static bool IsSonarr4KSearchConfigured(JMSFusionConfiguration cfg)
+        private static bool IsSonarr4KSearchConfigured(JMSFusionV2Configuration cfg)
             => cfg.EnableArrIntegration &&
                cfg.ArrSonarr4KEnabled &&
                !string.IsNullOrWhiteSpace(cfg.ArrSonarr4KBaseUrl) &&
                !string.IsNullOrWhiteSpace(cfg.ArrSonarr4KApiKey);
 
-        private static bool IsRadarr4KRequestConfigured(JMSFusionConfiguration cfg)
+        private static bool IsRadarr4KRequestConfigured(JMSFusionV2Configuration cfg)
             => IsRadarr4KSearchConfigured(cfg) &&
                !string.IsNullOrWhiteSpace(cfg.ArrRadarr4KRootFolderPath) &&
                cfg.ArrRadarr4KQualityProfileId > 0;
 
-        private static bool IsSonarr4KRequestConfigured(JMSFusionConfiguration cfg)
+        private static bool IsSonarr4KRequestConfigured(JMSFusionV2Configuration cfg)
             => IsSonarr4KSearchConfigured(cfg) &&
                !string.IsNullOrWhiteSpace(cfg.ArrSonarr4KRootFolderPath) &&
                cfg.ArrSonarr4KQualityProfileId > 0;
 
-        private static bool CanSubmitToArrRequest(JMSFusionConfiguration cfg, string mediaType, bool is4K)
+        private static bool CanSubmitToArrRequest(JMSFusionV2Configuration cfg, string mediaType, bool is4K)
             => (Same(mediaType, "movie") && (ShouldUseRadarr4K(cfg, is4K) || IsRadarrRequestConfigured(cfg))) ||
                (Same(mediaType, "tv") && (ShouldUseSonarr4K(cfg, is4K) || IsSonarrRequestConfigured(cfg)));
 
-        private static bool CanSubmitToArr(JMSFusionConfiguration cfg, SerrRequestEntry entry)
+        private static bool CanSubmitToArr(JMSFusionV2Configuration cfg, SerrRequestEntry entry)
             => CanSubmitToArrRequest(cfg, entry.MediaType, entry.Is4K);
 
-        private static bool CanSubmitTo4KBackend(JMSFusionConfiguration cfg, SerrRequestEntry entry)
+        private static bool CanSubmitTo4KBackend(JMSFusionV2Configuration cfg, SerrRequestEntry entry)
             => IsSerrConnectionConfigured(cfg) || CanSubmitTo4KArr(cfg, entry);
 
-        private static bool CanSubmitTo4KArr(JMSFusionConfiguration cfg, SerrRequestEntry entry)
+        private static bool CanSubmitTo4KArr(JMSFusionV2Configuration cfg, SerrRequestEntry entry)
             => entry.Is4K &&
                ((Same(entry.MediaType, "movie") && IsRadarr4KRequestConfigured(cfg)) ||
                 (Same(entry.MediaType, "tv") && IsSonarr4KRequestConfigured(cfg)));
@@ -2935,52 +2935,52 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                !Same(entry.Status, "declined") &&
                !Same(entry.Status, "withdrawn");
 
-        private static bool ShouldUseRadarr4K(JMSFusionConfiguration cfg, bool is4K)
+        private static bool ShouldUseRadarr4K(JMSFusionV2Configuration cfg, bool is4K)
             => is4K && IsRadarr4KRequestConfigured(cfg);
 
-        private static bool ShouldUseSonarr4K(JMSFusionConfiguration cfg, bool is4K)
+        private static bool ShouldUseSonarr4K(JMSFusionV2Configuration cfg, bool is4K)
             => is4K && IsSonarr4KRequestConfigured(cfg);
 
-        private static bool ShouldUseRadarr4KForDownloads(JMSFusionConfiguration cfg, SerrRequestEntry entry)
+        private static bool ShouldUseRadarr4KForDownloads(JMSFusionV2Configuration cfg, SerrRequestEntry entry)
             => entry.Is4K && IsRadarr4KSearchConfigured(cfg);
 
-        private static bool ShouldUseSonarr4KForDownloads(JMSFusionConfiguration cfg, SerrRequestEntry entry)
+        private static bool ShouldUseSonarr4KForDownloads(JMSFusionV2Configuration cfg, SerrRequestEntry entry)
             => entry.Is4K && IsSonarr4KSearchConfigured(cfg);
 
-        private static string RadarrBaseUrl(JMSFusionConfiguration cfg, bool use4K)
+        private static string RadarrBaseUrl(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrRadarr4KBaseUrl : cfg.ArrRadarrBaseUrl;
 
-        private static string RadarrApiKey(JMSFusionConfiguration cfg, bool use4K)
+        private static string RadarrApiKey(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrRadarr4KApiKey : cfg.ArrRadarrApiKey;
 
-        private static string RadarrRootFolderPath(JMSFusionConfiguration cfg, bool use4K)
+        private static string RadarrRootFolderPath(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrRadarr4KRootFolderPath : cfg.ArrRadarrRootFolderPath;
 
-        private static int RadarrQualityProfileId(JMSFusionConfiguration cfg, bool use4K)
+        private static int RadarrQualityProfileId(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrRadarr4KQualityProfileId : cfg.ArrRadarrQualityProfileId;
 
-        private static bool RadarrSearchOnRequest(JMSFusionConfiguration cfg, bool use4K)
+        private static bool RadarrSearchOnRequest(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrRadarr4KSearchOnRequest : cfg.ArrRadarrSearchOnRequest;
 
-        private static string SonarrBaseUrl(JMSFusionConfiguration cfg, bool use4K)
+        private static string SonarrBaseUrl(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrSonarr4KBaseUrl : cfg.ArrSonarrBaseUrl;
 
-        private static string SonarrApiKey(JMSFusionConfiguration cfg, bool use4K)
+        private static string SonarrApiKey(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrSonarr4KApiKey : cfg.ArrSonarrApiKey;
 
-        private static string SonarrRootFolderPath(JMSFusionConfiguration cfg, bool use4K)
+        private static string SonarrRootFolderPath(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrSonarr4KRootFolderPath : cfg.ArrSonarrRootFolderPath;
 
-        private static int SonarrQualityProfileId(JMSFusionConfiguration cfg, bool use4K)
+        private static int SonarrQualityProfileId(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrSonarr4KQualityProfileId : cfg.ArrSonarrQualityProfileId;
 
-        private static int SonarrLanguageProfileId(JMSFusionConfiguration cfg, bool use4K)
+        private static int SonarrLanguageProfileId(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrSonarr4KLanguageProfileId : cfg.ArrSonarrLanguageProfileId;
 
-        private static bool SonarrSeasonFolder(JMSFusionConfiguration cfg, bool use4K)
+        private static bool SonarrSeasonFolder(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrSonarr4KSeasonFolder : cfg.ArrSonarrSeasonFolder;
 
-        private static bool SonarrSearchOnRequest(JMSFusionConfiguration cfg, bool use4K)
+        private static bool SonarrSearchOnRequest(JMSFusionV2Configuration cfg, bool use4K)
             => use4K ? cfg.ArrSonarr4KSearchOnRequest : cfg.ArrSonarrSearchOnRequest;
 
         private IActionResult? ValidateJellyfinAvailability(SerrCreateRequest request)
@@ -3003,7 +3003,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             var changed = false;
             lock (SyncRoot)
             {
-                var plugin = JMSFusionPlugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
+                var plugin = JMSFusionV2Plugin.Instance ?? throw new InvalidOperationException("Plugin not available.");
                 var cfg = plugin.Configuration;
                 NormalizeSerrRequests(cfg);
 
@@ -3375,7 +3375,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             };
         }
 
-        private SerrRequestEntry? FindBlockingDuplicate(JMSFusionConfiguration cfg, SerrCreateRequest request)
+        private SerrRequestEntry? FindBlockingDuplicate(JMSFusionV2Configuration cfg, SerrCreateRequest request)
         {
             var mediaType = NormalizeMediaType(request.MediaType);
             var seasons = NormalizeSeasons(request.Seasons);
@@ -3452,20 +3452,20 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         private static string BuildDuplicateMessage(SerrRequestEntry entry, Guid userId)
         {
             var owner = Same(entry.JellyfinUserId, userId.ToString("D"))
-                ? "Bu istek zaten sizin tarafınızdan oluşturuldu"
-                : "Bu istek başka bir kullanıcı tarafından oluşturuldu";
-            return owner + " ve " + DuplicateStatusText(entry.Status) + ".";
+                ? "You already created this request"
+                : "Another user created this request";
+            return owner + " and its status is " + DuplicateStatusText(entry.Status) + ".";
         }
 
         private static string DuplicateStatusText(string? status)
         {
-            if (Same(status, "pending")) return "onay bekliyor";
-            if (Same(status, "processing")) return "onaylandı";
-            if (Same(status, "completed") || Same(status, "available")) return "tamamlandı";
-            if (Same(status, "declined")) return "reddedildi";
-            if (Same(status, "failed")) return "hatalı";
-            if (Same(status, "withdrawn")) return "geri çekildi";
-            return "onaylandı";
+            if (Same(status, "pending")) return "pending approval";
+            if (Same(status, "processing")) return "approved";
+            if (Same(status, "completed") || Same(status, "available")) return "completed";
+            if (Same(status, "declined")) return "declined";
+            if (Same(status, "failed")) return "failed";
+            if (Same(status, "withdrawn")) return "withdrawn";
+            return "approved";
         }
 
         private readonly record struct SerrRequestScope(bool All, HashSet<int> Seasons);
@@ -3484,7 +3484,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
         private async Task<Dictionary<string, ArrDownloadSnapshot>> ResolveArrDownloadSnapshots(
             IReadOnlyList<SerrRequestEntry> entries,
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             CancellationToken cancellationToken)
         {
             var output = new Dictionary<string, ArrDownloadSnapshot>(StringComparer.OrdinalIgnoreCase);
@@ -3526,7 +3526,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
         private async Task ResolveRadarrDownloadSnapshots(
             IReadOnlyList<SerrRequestEntry> movies,
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             bool use4K,
             IDictionary<string, ArrDownloadSnapshot> output,
             CancellationToken cancellationToken)
@@ -3558,7 +3558,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
 
         private async Task ResolveSonarrDownloadSnapshots(
             IReadOnlyList<SerrRequestEntry> tv,
-            JMSFusionConfiguration cfg,
+            JMSFusionV2Configuration cfg,
             bool use4K,
             IDictionary<string, ArrDownloadSnapshot> output,
             CancellationToken cancellationToken)
@@ -3906,7 +3906,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return Uri.TryCreate(raw.TrimEnd('/') + "/", UriKind.Absolute, out var api) ? api : null;
         }
 
-        private static object ToRequestDto(SerrRequestEntry entry, bool includeAdminFields, ArrDownloadSnapshot? download = null, JMSFusionConfiguration? cfg = null)
+        private static object ToRequestDto(SerrRequestEntry entry, bool includeAdminFields, ArrDownloadSnapshot? download = null, JMSFusionV2Configuration? cfg = null)
         {
             var status = DisplayStatus(entry.Status, download);
             var serrUrl = BuildSerrMediaWebUrl(cfg ?? GetConfig(), entry);
@@ -3989,7 +3989,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                     itemCount = download.ItemCount
                 };
 
-        private static object BuildSettingsPayload(JMSFusionConfiguration cfg, bool includeSensitive)
+        private static object BuildSettingsPayload(JMSFusionV2Configuration cfg, bool includeSensitive)
         {
             return new
             {
@@ -4006,10 +4006,10 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             };
         }
 
-        private static JMSFusionConfiguration GetConfig()
-            => JMSFusionPlugin.Instance?.Configuration ?? throw new InvalidOperationException("Config not available.");
+        private static JMSFusionV2Configuration GetConfig()
+            => JMSFusionV2Plugin.Instance?.Configuration ?? throw new InvalidOperationException("Config not available.");
 
-        private static void NormalizeSerrRequests(JMSFusionConfiguration cfg)
+        private static void NormalizeSerrRequests(JMSFusionV2Configuration cfg)
         {
             cfg.SerrRequests ??= new List<SerrRequestEntry>();
             foreach (var entry in cfg.SerrRequests)
@@ -4026,7 +4026,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             }
         }
 
-        private static void PruneRequests(JMSFusionConfiguration cfg)
+        private static void PruneRequests(JMSFusionV2Configuration cfg)
         {
             NormalizeSerrRequests(cfg);
             cfg.SerrRequests = cfg.SerrRequests
@@ -4035,7 +4035,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                 .ToList();
         }
 
-        private static void TouchSerr(JMSFusionConfiguration cfg)
+        private static void TouchSerr(JMSFusionV2Configuration cfg)
         {
             cfg.SerrRequestsRevision = NowMs();
         }
@@ -4129,7 +4129,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return Uri.TryCreate(raw.TrimEnd('/') + "/", UriKind.Absolute, out var api) ? api : null;
         }
 
-        private static string BuildSerrMediaWebUrl(JMSFusionConfiguration cfg, SerrRequestEntry entry)
+        private static string BuildSerrMediaWebUrl(JMSFusionV2Configuration cfg, SerrRequestEntry entry)
         {
             if (!cfg.EnableSerrIntegration || string.IsNullOrWhiteSpace(cfg.SerrBaseUrl) || entry.MediaId <= 0) return string.Empty;
             var webBase = BuildSerrWebBaseUrl(cfg.SerrBaseUrl);

@@ -210,7 +210,7 @@ function isCinemaTrailerRequested(trailer, state = null) {
 }
 
 function cinemaSerrButtonLabel() {
-  return serrLabel("serrRequestFromTrailer", serrLabel("serrRequestButton", "İste"));
+  return serrLabel("serrRequestFromTrailer", serrLabel("serrRequestButton", "Request"));
 }
 
 function setCinemaSerrButtonBaseState(button) {
@@ -228,7 +228,7 @@ function setCinemaSerrButtonBaseState(button) {
 
 function setCinemaSerrButtonLoading(button) {
   if (!button) return;
-  const label = serrLabel("serrRequestSending", "Gönderiliyor...");
+  const label = serrLabel("serrRequestSending", "Sending...");
   button.disabled = true;
   button.classList.add("is-loading");
   button.classList.remove("is-requested");
@@ -241,7 +241,7 @@ function setCinemaSerrButtonLoading(button) {
 
 function setCinemaSerrButtonRequested(button) {
   if (!button) return;
-  const label = serrLabel("serrStatusRequested", "İstek");
+  const label = serrLabel("serrStatusRequested", "Requested");
   button.disabled = true;
   button.classList.remove("is-loading");
   button.classList.add("is-requested");
@@ -255,15 +255,15 @@ function setCinemaSerrButtonRequested(button) {
 
 function cinemaSerrStatusLabel(status) {
   switch (normalizeSerrStatus(status)) {
-    case "pending": return serrLabel("serrStatusPending", "Onay bekliyor");
-    case "approved": return serrLabel("serrStatusApproved", "Onaylandı");
-    case "processing": return serrLabel("serrStatusProcessing", "İşleniyor");
+    case "pending": return serrLabel("serrStatusPending", "Pending approval");
+    case "approved": return serrLabel("serrStatusApproved", "Approved");
+    case "processing": return serrLabel("serrStatusProcessing", "Processing");
     case "completed":
-    case "available": return serrLabel("serrStatusCompleted", "Tamamlandı");
-    case "declined": return serrLabel("serrStatusDeclined", "Reddedildi");
-    case "failed": return serrLabel("serrStatusFailed", "Hatalı");
-    case "withdrawn": return serrLabel("serrStatusWithdrawn", "Geri çekildi");
-    default: return serrLabel("serrStatusApproved", "Onaylandı");
+    case "available": return serrLabel("serrStatusCompleted", "Completed");
+    case "declined": return serrLabel("serrStatusDeclined", "Declined");
+    case "failed": return serrLabel("serrStatusFailed", "Failed");
+    case "withdrawn": return serrLabel("serrStatusWithdrawn", "Withdrawn");
+    default: return serrLabel("serrStatusApproved", "Approved");
   }
 }
 
@@ -274,29 +274,29 @@ function cinemaSerrLowerStatusLabel(status) {
 
 function cinemaSerrStatusMessage(result) {
   if (result?.backend === "arr" || result?.service === "radarr") {
-    return serrLabel("arrMovieRequestSent", "Film isteği Radarr'a gönderildi.");
+    return serrLabel("arrMovieRequestSent", "Movie request sent to Radarr.");
   }
   if (result?.duplicate) {
     const status = cinemaSerrLowerStatusLabel(result?.duplicateStatus || result?.request?.Status || result?.request?.status);
     const own = result?.duplicateOwnedByCurrentUser === true;
     const fallback = own
-      ? "Bu istek zaten sizin tarafınızdan oluşturuldu ve {status}."
-      : "Bu istek başka bir kullanıcı tarafından oluşturuldu ve {status}.";
+      ? "You already created this request and its status is {status}."
+      : "Another user created this request and its status is {status}.";
     return serrLabel(own ? "serrDuplicateOwnRequest" : "serrDuplicateOtherRequest", fallback).replace("{status}", status);
   }
-  if (result?.pendingApproval) return serrLabel("serrRequestPendingToast", "İstek yönetici onayına gönderildi.");
+  if (result?.pendingApproval) return serrLabel("serrRequestPendingToast", "Request sent for admin approval.");
   const status = normalizeSerrStatus(result?.request?.Status || result?.request?.status);
-  if (status === "approved" || status === "processing") return serrLabel("serrRequestApprovedToast", "İstek Seerr'e gönderildi.");
-  return serrLabel("serrRequestCreatedToast", "İstek oluşturuldu.");
+  if (status === "approved" || status === "processing") return serrLabel("serrRequestApprovedToast", "Request sent.");
+  return serrLabel("serrRequestCreatedToast", "Request created.");
 }
 
 function cinemaSerrRequestErrorMessage(error) {
   const code = getText(error?.payload?.code || error?.payload?.errorCode);
   const message = getText(error?.message || error?.payload?.error);
   if (code === "serrAlreadyAvailable" || code === "already_available" || /already available in jellyfin/i.test(message)) {
-    return serrLabel("serrAlreadyAvailable", "Bu içerik Jellyfin'de zaten mevcut.");
+    return serrLabel("serrAlreadyAvailable", "This content is already available in Jellyfin.");
   }
-  return message || serrLabel("serrRequestFailed", "Seerr isteği oluşturulamadı.");
+  return message || serrLabel("serrRequestFailed", "Failed to create Seerr request.");
 }
 
 function isCurrentCinemaSerrTrailer(overlay, tmdbId) {
@@ -345,7 +345,7 @@ async function submitCinemaSerrRequest(overlay) {
     setCinemaSerrButtonLoading(button);
     const access = await getSerrAccess().catch(() => null);
     if (!access?.enabled || !accessCanRequestCinemaMovie(access)) {
-      throw new Error(serrLabel("serrDisabled", "Seerr entegrasyonu etkin değil."));
+      throw new Error(serrLabel("serrDisabled", "Seerr integration is disabled."));
     }
 
     const result = await createSerrRequest({
@@ -354,13 +354,13 @@ async function submitCinemaSerrRequest(overlay) {
       seasons: [],
       episodes: [],
       requestAllSeasons: false,
-      title: getText(trailer?.title, serrLabel("serrMovie", "Film")),
+      title: getText(trailer?.title, serrLabel("serrMovie", "Movie")),
       source: "cinema-preroll",
       jellyfinItemId: ""
     });
 
     if (result?.ok === false) {
-      const error = new Error(result?.error || serrLabel("serrRequestFailed", "Seerr isteği oluşturulamadı."));
+      const error = new Error(result?.error || serrLabel("serrRequestFailed", "Unable to create the request."));
       error.payload = result;
       throw error;
     }
@@ -992,7 +992,7 @@ function updateFullscreenButtonState(overlay) {
   const labels = getLabels();
   const isFullscreen = isDocumentFullscreenActive();
   const label = isFullscreen
-    ? getText(labels.cinemaPreRollExitFullscreen, "Tam ekrandan çık")
+    ? getText(labels.cinemaPreRollExitFullscreen, "Exit fullscreen")
     : getText(labels.cinemaPreRollFullscreen, "Tam ekran");
   const icon = button.querySelector("i");
 
@@ -1035,8 +1035,8 @@ function updatePanelToggleState(overlay) {
   const labels = getLabels();
   const hidden = fullscreenActive && overlay.classList.contains(PANEL_HIDDEN_CLASS);
   const label = hidden
-    ? getText(labels.cinemaPreRollShowPanel, "Bilgi panelini göster")
-    : getText(labels.cinemaPreRollHidePanel, "Bilgi panelini gizle");
+    ? getText(labels.cinemaPreRollShowPanel, "Show info panel")
+    : getText(labels.cinemaPreRollHidePanel, "Hide info panel");
   const icon = button.querySelector("i");
 
   button.hidden = !fullscreenActive;
@@ -1468,7 +1468,7 @@ function ensureOverlayDom({ immersive = false, sessionState = {} } = {}) {
   ensureOverlayStyle();
   const labels = getLabels();
   const fullscreenLabel = escapeAttribute(getText(labels.cinemaPreRollFullscreen, "Tam ekran"));
-  const panelToggleLabel = escapeAttribute(getText(labels.cinemaPreRollHidePanel, "Bilgi panelini gizle"));
+  const panelToggleLabel = escapeAttribute(getText(labels.cinemaPreRollHidePanel, "Hide info panel"));
 
   const overlay = document.createElement("div");
   overlay.className = "monwui-cinema-preroll";
@@ -1505,7 +1505,7 @@ function ensureOverlayDom({ immersive = false, sessionState = {} } = {}) {
             <div class="monwui-cinema-preroll__actions">
               <button type="button" class="monwui-cinema-preroll__button monwui-cinema-preroll__button--primary" data-action="next">${labels.cinemaPreRollNextTrailer || "Next Trailer"}</button>
               <button type="button" class="monwui-cinema-preroll__button monwui-cinema-preroll__button--ghost" data-action="serr-request" hidden>
-                <i class="fa-solid fa-clapperboard" aria-hidden="true"></i><span>${escapeAttribute(labels.serrRequestFromTrailer || labels.serrRequestButton || "İste")}</span>
+                <i class="fa-solid fa-clapperboard" aria-hidden="true"></i><span>${escapeAttribute(labels.serrRequestFromTrailer || labels.serrRequestButton || "Request")}</span>
               </button>
               <button type="button" class="monwui-cinema-preroll__button monwui-cinema-preroll__button--ghost" data-action="skip">${labels.cinemaPreRollSkip || "Skip Trailers"}</button>
             </div>
@@ -2126,12 +2126,12 @@ async function fetchNativePlaybackItemDetails(itemId) {
   if (!id) return null;
 
   try {
-    const api = await import("../../Plugins/JMSFusion/runtime/api.js");
+    const api = await import("../../Plugins/JMSFusionV2/runtime/api.js");
     if (typeof api?.fetchItemDetails === "function") {
       return await api.fetchItemDetails(id);
     }
   } catch (error) {
-    console.warn("[JMSFusion] Cinema pre-roll native item lookup failed:", error);
+    console.warn("[JMSFusionV2] Cinema pre-roll native item lookup failed:", error);
   }
 
   return null;
@@ -2250,7 +2250,7 @@ async function runNativePreRollBeforePlay(original, target, args, label) {
         return false;
       }
     } catch (error) {
-      console.warn(`[JMSFusion] Cinema pre-roll native hook skipped (${label || "playbackManager"}):`, error);
+      console.warn(`[JMSFusionV2] Cinema pre-roll native hook skipped (${label || "playbackManager"}):`, error);
     }
 
     markNativePreRollAttemptIds(context.itemId, itemId);
@@ -2388,7 +2388,7 @@ export async function maybePlayCinemaPreRollSession({ item } = {}) {
   const runtimeCacheKey = buildTrailerRuntimeCacheKey(locale);
   const [queueSource, ytReady] = await Promise.all([
     fetchNowPlayingTrailerPool().catch((error) => {
-      console.warn("[JMSFusion] Cinema pre-roll TMDb fetch failed:", error);
+      console.warn("[JMSFusionV2] Cinema pre-roll TMDb fetch failed:", error);
       return [];
     }),
     ensureYouTubeApi().catch(() => false)

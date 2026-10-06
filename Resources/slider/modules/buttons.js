@@ -1,5 +1,5 @@
 import { getConfig } from "./config.js";
-import { getSessionInfo, makeApiRequest, getAuthHeader, playNow, fetchItemDetails, getEmbyHeaders, jms } from "../../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, makeApiRequest, getAuthHeader, playNow, fetchItemDetails, getEmbyHeaders, jms } from "../../Plugins/JMSFusionV2/runtime/api.js";
 import { openSettings } from "./settingsLoader.js";
 import { getProviderUrl } from './utils.js';
 import { applyContainerStyles } from './positionUtils.js';
@@ -240,7 +240,7 @@ export function createButtons(slide, config, UserData, itemId, RemoteTrailers, u
             try {
                 await castToCurrentDevice(itemId);
             } catch (error) {
-                console.error("Cast işlemi başarısız:", error);
+                console.error("Casting failed:", error);
                 window.location.href = slide.dataset.detailUrl;
             }
         }
@@ -269,7 +269,7 @@ export function createButtons(slide, config, UserData, itemId, RemoteTrailers, u
               const details = await fetchItemDetails(effectiveItemId);
               isFav = Boolean(details?.UserData?.IsFavorite);
             } catch (err) {
-              console.warn("Favori durumu alınamadı, varsayılan false ile açılıyor", err);
+              console.warn("Could not fetch favorite status; defaulting to false", err);
             }
           }
 
@@ -299,7 +299,7 @@ export function createButtons(slide, config, UserData, itemId, RemoteTrailers, u
           const enrichedTrailers = pickTrailers(null, details);
           appendTrailerButton(enrichedTrailers[0]);
         } catch (err) {
-          console.warn("Fragman butonu için detay zenginleştirme başarısız:", err);
+          console.warn("Could not enrich details for the trailer button:", err);
         }
       })();
     }
@@ -372,7 +372,7 @@ export function createButtons(slide, config, UserData, itemId, RemoteTrailers, u
                     slide.dataset.played = prevDatasetPlayed;
                     slide.dataset.playbackpositionticks = prevDatasetTicks;
                 }
-                console.error("Played durumu güncellenemedi:", error);
+                console.error("Could not update played status:", error);
             }
         },
         isPlayed ? "played" : ""
@@ -408,7 +408,7 @@ if (config.showFavoriteButton) {
                 }
                 textSpan.textContent = getWatchlistButtonText(favoriteSource, nextValue);
             } catch (error) {
-                console.error("Liste butonu güncellenemedi:", error);
+                console.error("Could not update list button:", error);
             } finally {
                 buttonElement.dataset.busy = "0";
             }
@@ -452,7 +452,7 @@ async function castToCurrentDevice(itemId) {
       await castShowNotification(config.languageLabels.casthata, 'error');
     }
   } catch (error) {
-    console.error('Cast işlemi sırasında hata:', error);
+    console.error('Error while casting:', error);
     const config = getConfig();
     await castShowNotification(`${config.languageLabels.casthata}: ${error.message}`, 'error');
   }
@@ -469,15 +469,15 @@ async function startNowPlayback(itemId, sessionId) {
     });
 
     if (!response.ok) {
-      throw new Error(`${config.languageLabels.castoynatmahata}: ${response.statusText}`);
+      throw new Error(`${config.languageLabels.castplaybackerror}: ${response.statusText}`);
     }
 
     await castShowNotification(config.languageLabels.castbasarili, 'success');
     return true;
   } catch (error) {
-    console.error("Oynatma hatası:", error);
+    console.error("Playback error:", error);
     const config = getConfig();
-    await castShowNotification(`${config.languageLabels.castoynatmahata}: ${error.message}`, 'error');
+    await castShowNotification(`${config.languageLabels.castplaybackerror}: ${error.message}`, 'error');
     return false;
   }
 }
@@ -630,7 +630,7 @@ export function createProviderContainer({ config, ProviderIds, RemoteTrailers, i
           addProviderIcons(dPids);
         }
       } catch (e) {
-        console.warn("Provider/Trailer enrich başarısız:", e);
+        console.warn("Provider/trailer enrichment failed:", e);
       }
     })();
   }

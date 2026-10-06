@@ -4,10 +4,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <AssemblyName>Jellyfin.Plugin.JMSFusion</AssemblyName>
-    <RootNamespace>Jellyfin.Plugin.JMSFusion</RootNamespace>
+    <AssemblyName>Jellyfin.Plugin.JMSFusionV2</AssemblyName>
+    <RootNamespace>Jellyfin.Plugin.JMSFusionV2</RootNamespace>
 
-    <Version>3.7.0.0</Version>
+    <Version>4.0.0.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -19,10 +19,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>JMSFusion</PackageId>
-    <Authors>G-Grbz</Authors>
+    <PackageId>JMSFusionV2</PackageId>
+    <Authors>G-grbz;WhatsCS;Contributors</Authors>
     <Company>JMS</Company>
     <Description>
+      Independent WhatsCS fork of MonWUI / JMSFusion, originally developed by G-grbz and upstream contributors.
       Inject custom JS into Jellyfin web UI via in-memory transform (no file writes), with FileProvider wrapping;
       fallback to middleware and optional index.html patch. Serves /slider from external dir or embedded Resources/slider.
     </Description>
@@ -51,6 +52,26 @@
     <EmbeddedResource Include="RuntimeModules/**/*" />
   </ItemGroup>
 
+  <Target Name="EnsureJavaScriptMinifier" BeforeTargets="MinifyEmbeddedJavaScript"
+          Condition="!Exists('$(MSBuildProjectDirectory)/node_modules/terser/package.json') Or !Exists('$(MSBuildProjectDirectory)/node_modules/esbuild/package.json')">
+    <Message Text="Installing pinned JavaScript build dependencies..." Importance="high" />
+    <Exec Command="npm ci --ignore-scripts --no-audit --no-fund" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="MinifyEmbeddedJavaScript" BeforeTargets="AssignTargetPaths;_CalculateEmbeddedFilesManifestInputs" DependsOnTargets="EnsureJavaScriptMinifier">
+    <PropertyGroup>
+      <MinifiedAssetsDir>$(IntermediateOutputPath)minified-assets</MinifiedAssetsDir>
+    </PropertyGroup>
+    <Message Text="Minifying embedded JavaScript assets..." Importance="high" />
+    <Exec Command="node &quot;$(MSBuildProjectDirectory)/tools/minify-assets.mjs&quot; &quot;$(MSBuildProjectDirectory)&quot; &quot;$(MinifiedAssetsDir)&quot;" />
+    <ItemGroup>
+      <_JmsGeneratedBundle Include="$(MinifiedAssetsDir)/Resources/slider/dist/**/*.js" />
+      <EmbeddedResource Include="@(_JmsGeneratedBundle)">
+        <Link>Resources/slider/dist/%(_JmsGeneratedBundle.RecursiveDir)%(_JmsGeneratedBundle.Filename)%(_JmsGeneratedBundle.Extension)</Link>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
     <None Update="meta.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -58,7 +79,7 @@
   </ItemGroup>
 
   <Target Name="UpdateMetaJson"
-          BeforeTargets="CopyFilesToOutputDirectory;ComputeFilesToPublish">
+          BeforeTargets="GetCopyToOutputDirectoryItems;ComputeFilesToPublish">
     <Message Text="Updating meta.json (timestamp &amp; version &amp; imagePath)..." Importance="high" />
     <Exec Command="bash ./update_meta.sh &quot;$(Version)&quot;"
           WorkingDirectory="$(MSBuildProjectDirectory)" />

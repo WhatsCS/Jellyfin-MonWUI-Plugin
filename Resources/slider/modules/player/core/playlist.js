@@ -5,7 +5,7 @@ import { shuffleArray } from "../utils/domUtils.js";
 import { showNotification } from "../ui/notification.js";
 import { updateModernTrackInfo, playTrack } from "../player/playback.js";
 import { updatePlaylistModal } from "../ui/playlistModal.js";
-import { makeApiRequest } from "../../../../Plugins/JMSFusion/runtime/api.js";
+import { makeApiRequest } from "../../../../Plugins/JMSFusionV2/runtime/api.js";
 import { isRadioTrack } from "./radio.js";
 
 const config = getConfig();
@@ -56,7 +56,7 @@ export async function refreshPlaylist() {
       }
     } catch (e) {
       if (e.name === "AbortError") return;
-      console.error("Toplam parça sayısı alınırken hata:", e);
+      console.error("Error fetching total track count:", e);
     }
 
     const effectiveLimit = totalItems > 0
@@ -215,7 +215,7 @@ export async function refreshPlaylist() {
     if (err.name === "AbortError") {
       return;
     }
-    console.error("Liste yenilenirken hata:", err);
+    console.error("Error refreshing playlist:", err);
     if (musicPlayerState.modernTitleEl) musicPlayerState.modernTitleEl.textContent = config.languageLabels.errorOccurred;
     if (musicPlayerState.modernArtistEl) {
       musicPlayerState.modernArtistEl.textContent = err.message?.includes("abort")
@@ -224,7 +224,7 @@ export async function refreshPlaylist() {
     }
     showNotification(
       `<i class="fas fa-exclamation-triangle"></i> ${
-        config.languageLabels.refreshError || "Liste yenilenirken hata oluştu"
+        config.languageLabels.refreshError || "Error refreshing list:"
       }`,
       3000,
       "error"
@@ -265,7 +265,7 @@ async function addItemsToPlaylist(playlistId, itemIds, userId) {
     );
 
     if (response.status === 204) {
-      return { success: true, message: "Parçalar başarıyla eklendi" };
+      return { success: true, message: "Tracks added successfully" };
     }
 
     if (response.status === 401) {
@@ -278,7 +278,7 @@ async function addItemsToPlaylist(playlistId, itemIds, userId) {
       throw new Error(config.languageLabels.serverError.replace("{0}", response.status));
     }
   } catch (error) {
-    console.error("Çalma listesine parça eklenirken hata:", error);
+    console.error("Error adding tracks to playlist:", error);
     throw error;
   }
 }
@@ -298,8 +298,8 @@ export async function removeItemsFromPlaylist(playlistId, itemIds) {
 
   if (!res.ok) {
     const details = await res.text().catch(() => "");
-    console.error("removeItemsFromPlaylist hata detayı:", details);
-    throw new Error(`Silme işlemi başarısız: HTTP ${res.status}${details ? ` – ${details}` : ""}`);
+    console.error("removeItemsFromPlaylist error details:", details);
+    throw new Error(`Deletion failed: HTTP ${res.status}${details ? ` – ${details}` : ""}`);
   }
 
   return { success: true };
@@ -315,7 +315,7 @@ async function getPlaylistItems(playlistId) {
   });
 
   if (!response.ok) {
-    throw new Error("Çalma listesi öğeleri alınamadı");
+    throw new Error("Could not fetch playlist items");
   }
 
   const data = await response.json();
@@ -336,7 +336,7 @@ export async function saveCurrentPlaylistToJellyfin(
       3000,
       "error"
     );
-    throw new Error("API anahtarı bulunamadı");
+    throw new Error("API key not found");
   }
 
   if (!Array.isArray(tracksToSave) || tracksToSave.length === 0) {
@@ -351,7 +351,7 @@ export async function saveCurrentPlaylistToJellyfin(
   const playableTracks = tracksToSave.filter((track) => !isRadioTrack(track));
   if (!playableTracks.length) {
     showNotification(
-      `<i class="fas fa-info-circle"></i> ${config.languageLabels.radioSaveNotSupported || "Radyo istasyonlari Jellyfin oynatma listesine kaydedilemez"}`,
+      `<i class="fas fa-info-circle"></i> ${config.languageLabels.radioSaveNotSupported || "Radio stations cannot be saved to Jellyfin playlists"}`,
       2500,
       "addlist"
     );
@@ -419,7 +419,7 @@ export async function saveCurrentPlaylistToJellyfin(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          Name: playlistName || `Yeni Çalma Listesi ${new Date().toLocaleString()}`,
+          Name: playlistName || `New Playlist ${new Date().toLocaleString()}`,
           Ids: itemIds,
           UserId: userId,
           IsPublic: makePublic,
@@ -439,7 +439,7 @@ export async function saveCurrentPlaylistToJellyfin(
       return result;
     }
   } catch (err) {
-    console.error("Çalma listesi işlemi başarısız:", err);
+    console.error("Playlist operation failed:", err);
     showNotification(
       `<i class="fas fa-exclamation-triangle"></i> ${err.message} ${config.languageLabels.playlistSaveError}`,
       3000,

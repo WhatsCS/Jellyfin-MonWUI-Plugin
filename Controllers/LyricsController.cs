@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 using MediaBrowser.Controller.Library;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("JMSFusion/lyrics")]
+    [Route("JMSFusionV2/lyrics")]
     public class LyricsController : ControllerBase
     {
         private readonly IUserManager _users;
@@ -91,7 +91,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         public IActionResult Status()
         {
             var uid = ReadUserId();
-            if (uid == Guid.Empty) return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+            if (uid == Guid.Empty) return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
 
             if (_jobs.TryGetValue(uid, out var job))
             {
@@ -121,42 +121,42 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
         public IActionResult Cancel()
         {
             var uid = ReadUserId();
-            if (uid == Guid.Empty) return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+            if (uid == Guid.Empty) return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
 
             if (_jobs.TryGetValue(uid, out var job) && job.Running)
             {
                 try { job.Cts?.Cancel(); } catch { }
-                job.Log("İptal istendi.");
-                job.LastMessage = "İptal istendi";
-                return Ok(new { ok = true, message = "İptal gönderildi" });
+                job.Log("Cancellation requested.");
+                job.LastMessage = "Cancellation requested";
+                return Ok(new { ok = true, message = "Cancellation request sent" });
             }
-            return Ok(new { ok = true, message = "Koşan iş yok" });
+            return Ok(new { ok = true, message = "No job is running" });
         }
 
         [HttpPost("run")]
         public IActionResult Run([FromBody] RunRequest req, CancellationToken outerCt)
         {
-            var cfg = JMSFusionPlugin.Instance?.Configuration
+            var cfg = JMSFusionV2Plugin.Instance?.Configuration
                       ?? throw new InvalidOperationException("Plugin configuration not available.");
 
             var token = Request.Headers["X-Emby-Token"].FirstOrDefault();
             if (string.IsNullOrWhiteSpace(token))
-                return Unauthorized(new { ok = false, error = "X-Emby-Token gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-Token is required" });
 
             var uid = ReadUserId();
             if (uid == Guid.Empty)
-                return Unauthorized(new { ok = false, error = "X-Emby-UserId gerekli" });
+                return Unauthorized(new { ok = false, error = "X-Emby-UserId is required" });
 
             var user = _users.GetUserById(uid);
             if (user is null)
-                return Unauthorized(new { ok = false, error = "Kullanıcı bulunamadı" });
+                return Unauthorized(new { ok = false, error = "User not found" });
 
             if (!IsAdminUser(user))
-                return StatusCode(403, new { ok = false, error = "Sadece admin kullanıcılar çalıştırabilir." });
+                return StatusCode(403, new { ok = false, error = "Only administrators can run this." });
 
             if (_jobs.TryGetValue(uid, out var running) && running.Running)
             {
-                return StatusCode(409, new { ok = false, error = "Zaten çalışan bir iş var." });
+                return StatusCode(409, new { ok = false, error = "A job is already running." });
             }
 
             var mode = (req.mode ?? "prefer-synced").ToLowerInvariant();
@@ -175,10 +175,10 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             {
                 try
                 {
-                    job.Log("Jellyfin müzik listesi alınıyor...");
+                    job.Log("Fetching the Jellyfin music library...");
                     var items = await GetAllAudioItemsAsync(cfg.JFBase, cfg.JFApiKey, uid, job.Cts!.Token);
                     job.Total = items.Count;
-                    job.Log($"Toplam parça: {job.Total}");
+                    job.Log($"Total tracks: {job.Total}");
 
                     int i = 0;
                     foreach (var it in items)
@@ -196,7 +196,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                         job.LastMessage = job.CurrentStep;
                         if (string.IsNullOrWhiteSpace(mediaPath) || !System.IO.File.Exists(mediaPath))
                         {
-                            job.Log($"[SKIP] Yol yok: {rawArtist} - {rawTitle}");
+                            job.Log($"[SKIP] Path missing: {rawArtist} - {rawTitle}");
                             continue;
                         }
                         var (cleanArtist, cleanTitle) = CleanArtistTitle(rawArtist, rawTitle);
@@ -216,7 +216,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                         if (lyr is null)
                         {
                             job.Fail++;
-                            job.Log($"[MISS] Bulunamadı: {cleanArtist} - {cleanTitle}");
+                            job.Log($"[MISS] Not found: {cleanArtist} - {cleanTitle}");
                             continue;
                         }
 
@@ -249,7 +249,7 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                         if (toWritePath is null || toWriteText is null)
                         {
                             job.Fail++;
-                            job.Log($"[MISS] Uygun format yok: {cleanArtist} - {cleanTitle}");
+                            job.Log($"[MISS] No suitable format: {cleanArtist} - {cleanTitle}");
                             continue;
                         }
 
@@ -262,21 +262,21 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                         }
                         catch (Exception ex)
                         {
-                            job.Log($"[ERR] Yazılamadı: {toWritePath} -> {ex.Message}");
+                            job.Log($"[ERR] Could not write: {toWritePath} -> {ex.Message}");
                         }
                     }
 
                     job.Running = false;
                     job.FinishedAt = DateTimeOffset.UtcNow;
-                    job.LastMessage = "Bitti";
-                    job.Log("Bitti ✓");
+                    job.LastMessage = "Finished";
+                    job.Log("Finished ✓");
                 }
                 catch (OperationCanceledException)
                 {
                     job.Running = false;
                     job.FinishedAt = DateTimeOffset.UtcNow;
-                    job.LastMessage = "İptal edildi";
-                    job.Log("İptal edildi");
+                    job.LastMessage = "Cancelled";
+                    job.Log("Cancelled");
                 }
                 catch (Exception ex)
                 {

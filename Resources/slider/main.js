@@ -1,4 +1,4 @@
-import { saveCredentials, saveApiKey, getAuthToken } from "../Plugins/JMSFusion/runtime/auth.js";
+import { saveCredentials, saveApiKey, getAuthToken } from "../Plugins/JMSFusionV2/runtime/auth.js";
 import {
   getConfig,
   getHomeSectionsRuntimeConfig,
@@ -13,7 +13,7 @@ import { ensureProgressBarExists, resetProgressBar, pauseProgressBar, resumeProg
 import { createSlide, cleanupSlideCreatorRuntime } from "./modules/slideCreator.js";
 import { changeSlide, createDotNavigation, enablePeakNeighborActivation, getPeakDisplayOptions, initSwipeEvents, primePeakFirstPaint, syncPeakStructureNow, updatePeakClasses } from "./modules/navigation.js";
 import { attachMouseEvents } from "./modules/events.js";
-import { getSessionInfo, getAuthHeader, waitForAuthReadyStrict, isAuthReadyStrict, AUTH_PROFILE_CHANGED_EVENT, USERDATA_CHANGED_EVENT } from "../Plugins/JMSFusion/runtime/api.js";
+import { getSessionInfo, getAuthHeader, waitForAuthReadyStrict, isAuthReadyStrict, AUTH_PROFILE_CHANGED_EVENT, USERDATA_CHANGED_EVENT } from "../Plugins/JMSFusionV2/runtime/api.js";
 import { cacheGetUserDataMap, cachePatchItemUserData, cachePutUserDataItems, cachedFetchJson, createCachedItemDetailsFetcher, releaseSliderCacheMemory, startLibraryDeltaWatcher } from "./modules/sliderCache.js";
 import { forceHomeSectionsTop, forceSkinHeaderPointerEvents } from "./modules/positionOverrides.js";
 import { initAvatarSystem } from "./modules/userAvatar.js";
@@ -47,12 +47,13 @@ const CUSTOM_SPLASH_STORAGE_KEY = "enableCustomSplashScreen";
 const CUSTOM_SPLASH_TITLE_VAR = "--jms-custom-splash-title";
 const CUSTOM_SPLASH_CAPTION_VAR = "--jms-custom-splash-caption";
 const CUSTOM_SPLASH_PROGRESS_KEY = "__JMS_CUSTOM_SPLASH_PROGRESS__";
-const CUSTOM_SPLASH_PING_PATHS = ["/JMSFusion/ping", "/Plugins/JMSFusion/ping"];
+const CUSTOM_SPLASH_PING_PATHS = ["/JMSFusionV2/ping", "/Plugins/JMSFusionV2/ping"];
 const CUSTOM_SPLASH_TIMEOUT_MS = 12_000;
 const CUSTOM_SPLASH_CLEANUP_MS = 420;
 const CUSTOM_SPLASH_EXIT_SYNC_MS = 120;
 const HOME_DEBUG_STORAGE_KEY = "jms:debug:home-sections";
 const HOME_TRACE_STORAGE_KEY = "jms:trace:home-sections";
+const PERFORMANCE_TRACE_STORAGE_KEY = "jms:performance:home-sections";
 const AUTH_CONTEXT_REBOOT_DEBOUNCE_MS = 180;
 const HOME_ITEM_DETAILS_STATIC_FIELDS = [
   "ImageTags",
@@ -126,6 +127,29 @@ const __customSplashProgressState = {
   createdSlides: 0,
   poolCount: 0
 };
+
+function beginHomePerformanceMeasure(name) {
+  let enabled = false;
+  try {
+    enabled = window.localStorage?.getItem(PERFORMANCE_TRACE_STORAGE_KEY) === "1";
+  } catch {}
+  if (!enabled || !window.performance?.mark || !window.performance?.measure) return () => {};
+
+  const id = `jms:${name}:${Date.now()}:${Math.random().toString(36).slice(2)}`;
+  performance.mark(`${id}:start`);
+  return (detail = {}) => {
+    performance.mark(`${id}:end`);
+    performance.measure(id, `${id}:start`, `${id}:end`);
+    const measures = performance.getEntriesByName(id, "measure");
+    const duration = measures.length ? measures[measures.length - 1].duration : undefined;
+    performance.clearMarks(`${id}:start`);
+    performance.clearMarks(`${id}:end`);
+    performance.clearMeasures(id);
+    window.dispatchEvent(new CustomEvent("jms:home-performance", {
+      detail: { name, duration, ...detail }
+    }));
+  };
+}
 
 async function getNotificationsModule() {
   if (!__notificationsModulePromise) {
@@ -531,13 +555,13 @@ function getSliderPlaybackLabels() {
 
 function getSlideWatchButtonText({ hasPartialPlayback, labels }) {
   if (hasPartialPlayback) return labels.devamet || "Devam et";
-  return labels.izle || "İzle";
+  return labels.izle || "Watch";
 }
 
 function getDotPlayButtonText({ isPlayed, hasPartialPlayback, labels }) {
-  if (isPlayed && !hasPartialPlayback) return labels.izlendi || "İzlendi";
+  if (isPlayed && !hasPartialPlayback) return labels.izlendi || "Watched";
   if (hasPartialPlayback) return labels.devamet || "Devam et";
-  return labels.izle || "İzle";
+  return labels.izle || "Watch";
 }
 
 function buildPlaybackVisualState(item = null, userData = null) {
@@ -602,7 +626,7 @@ function ensureSlidePlaybackProgress(slide, visualState, labels) {
     0,
     Math.round((visualState.runtimeTicks - visualState.positionTicks) / 600000000)
   );
-  text.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> ${remainingMinutes} ${labels.dakika || "dakika"} ${labels.kaldi || "kaldı"}`;
+  text.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> ${remainingMinutes} ${labels.dakika || "minute"} ${labels.kaldi || "left"}`;
 }
 
 function patchSlidePlaybackUi(slide, visualState, labels) {
@@ -623,8 +647,8 @@ function patchSlidePlaybackUi(slide, visualState, labels) {
     const textSpan = playedBtn.parentElement?.querySelector(".monwui-btn-text");
     if (textSpan) {
       textSpan.textContent = visualState.isPlayed
-        ? (labels.izlendi || "İzlendi")
-        : (labels.izlenmedi || "İzlenmedi");
+        ? (labels.izlendi || "Watched")
+        : (labels.izlenmedi || "Not Watched");
     }
   }
 
@@ -697,7 +721,7 @@ function patchDotPlaybackUi(dot, visualState, labels) {
     0,
     Math.round((visualState.runtimeTicks - visualState.positionTicks) / 600000000)
   );
-  text.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> ${remainingMinutes} ${labels.dakika || "dakika"} ${labels.kaldi || "kaldı"}`;
+  text.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> ${remainingMinutes} ${labels.dakika || "minute"} ${labels.kaldi || "left"}`;
   return true;
 }
 
@@ -971,34 +995,34 @@ function syncCustomSplashProgress(patch = {}) {
 
   let progress = 0.06;
   let stage = splashLabel("customSplashStageLock", "KILIT");
-  let detail = splashLabel("customSplashDetailLock", "Kabuk katmanı sabitleniyor");
+  let detail = splashLabel("customSplashDetailLock", "Shell layer is locking in");
 
   if (document.readyState !== "loading") {
     progress = Math.max(progress, 0.12);
-    stage = splashLabel("customSplashStageStructure", "OMURGA");
-    detail = splashLabel("customSplashDetailStructure", "Arayüz omurgası senkrona girdi");
+    stage = splashLabel("customSplashStageStructure", "CORE");
+    detail = splashLabel("customSplashDetailStructure", "Interface core entered sync");
   }
 
   if (state.dataPoolReady) {
     progress = Math.max(progress, 0.38);
-    stage = splashLabel("customSplashStagePool", "HAVUZ");
+    stage = splashLabel("customSplashStagePool", "POOL");
     detail = poolCount > 0
-      ? splashLabel("customSplashDetailPool", "{count} içerik havuza alındı", { count: poolCount })
-      : splashLabel("customSplashDetailPoolEmpty", "İçerik havuzu bağlandı");
+      ? splashLabel("customSplashDetailPool", "{count} items entered the pool", { count: poolCount })
+      : splashLabel("customSplashDetailPoolEmpty", "Content pool connected");
   }
 
   if (state.selectionReady) {
     progress = Math.max(progress, 0.48);
-    stage = splashLabel("customSplashStageCompose", "KURGU");
+    stage = splashLabel("customSplashStageCompose", "COMPOSE");
     detail = totalSlides > 0
-      ? splashLabel("customSplashDetailSelection", "{count} sahne sıraya alındı", { count: totalSlides })
-      : splashLabel("customSplashDetailSelectionEmpty", "Sahne akışı hazırlandı");
+      ? splashLabel("customSplashDetailSelection", "{count} scenes queued", { count: totalSlides })
+      : splashLabel("customSplashDetailSelectionEmpty", "Scene flow prepared");
   }
 
   if (totalSlides > 0) {
     progress = Math.max(progress, 0.48 + (createdSlides / totalSlides) * 0.34);
     stage = splashLabel("customSplashStageRender", "RENDER");
-    detail = splashLabel("customSplashDetailRender", "{current}/{total} katman örülüyor", {
+    detail = splashLabel("customSplashDetailRender", "{current}/{total} layers weaving in", {
       current: createdSlides,
       total: totalSlides
     });
@@ -1006,25 +1030,25 @@ function syncCustomSplashProgress(patch = {}) {
 
   if (state.firstSlideReady) {
     progress = Math.max(progress, 0.9);
-    stage = splashLabel("customSplashStageFrame", "KADRAJ");
+    stage = splashLabel("customSplashStageFrame", "FRAME");
     detail = totalSlides > 0
-      ? splashLabel("customSplashDetailFrame", "{current}/{total} katman canlı", {
+      ? splashLabel("customSplashDetailFrame", "{current}/{total} layers live", {
         current: createdSlides,
         total: totalSlides
       })
-      : splashLabel("customSplashDetailFrameEmpty", "İlk kadraj ışığa çıktı");
+      : splashLabel("customSplashDetailFrameEmpty", "First frame is live");
   }
 
   if (state.allSlidesReady) {
     progress = Math.max(progress, 0.96);
     stage = splashLabel("customSplashStageSurface", "YUZEY");
-    detail = splashLabel("customSplashDetailSurface", "Son katmanlar hizalanıyor");
+    detail = splashLabel("customSplashDetailSurface", "Final layers aligning");
   }
 
   if (state.uiReady) {
     progress = 1;
-    stage = splashLabel("customSplashStageReady", "HAZIR");
-    detail = splashLabel("customSplashDetailReady", "MonWui çevrimiçi");
+    stage = splashLabel("customSplashStageReady", "READY");
+    detail = splashLabel("customSplashDetailReady", "MonWui online");
   }
 
   return setCustomSplashProgress(progress, {
@@ -1590,10 +1614,10 @@ function hideCustomSplash(reason = "ready") {
     return true;
   }
 
-  const readyStage = splashLabel("customSplashStageReady", "HAZIR");
+  const readyStage = splashLabel("customSplashStageReady", "READY");
   const closingDetail = reason === "timeout"
-    ? splashLabel("customSplashDetailForcedExit", "Zorunlu geçiş devreye alınıyor")
-    : splashLabel("customSplashDetailReady", "MonWui çevrimiçi");
+    ? splashLabel("customSplashDetailForcedExit", "Forced handoff engaged")
+    : splashLabel("customSplashDetailReady", "MonWui online");
 
   syncCustomSplashProgress({
     uiReady: true,
@@ -2040,7 +2064,7 @@ function scheduleHomeSectionMount(seq, fn, delayMs = 0) {
       fnName: fn?.name || "anonymous",
       stack: new Error().stack?.split("\n").slice(0, 6).join("\n") || "",
     });
-    try { fn?.(); } catch (e) { console.warn("scheduleHomeSectionMount hata:", e); }
+    try { fn?.(); } catch (e) { console.warn("scheduleHomeSectionMount error:", e); }
   }, Math.max(0, delayMs | 0));
 
   homeSectionMountTimers.add(timer);
@@ -2196,6 +2220,7 @@ async function runManagedHomeSectionRecovery({
     return true;
   }
 
+  const finishMeasure = beginHomePerformanceMeasure("managed-home-section-recovery");
   const results = await Promise.allSettled([
     shouldRenderStudioHubsUi(cfg)
       ? ensureStudioHubsMountedLazy({ eager: eagerStudioHubs })
@@ -2213,6 +2238,7 @@ async function runManagedHomeSectionRecovery({
 
   const statusAfter = getManagedHomeSectionStatus(cfg);
   const ok = !needsManagedHomeSectionRecovery(cfg);
+  finishMeasure({ ok, eagerStudioHubs });
   homeSectionLog("managedRecovery:complete", {
     seq,
     ok,
@@ -2520,7 +2546,7 @@ function scheduleSliderIdleTask(cb) {
   let handle = 0;
   handle = idle(() => {
     handles.delete(handle);
-    try { cb?.(); } catch (e) { console.warn("scheduleSliderIdleTask hata:", e); }
+    try { cb?.(); } catch (e) { console.warn("scheduleSliderIdleTask error:", e); }
   });
   handles.add(handle);
   return handle;
@@ -3297,8 +3323,28 @@ function isPlannedLastIndex(idx) {
   return Number.isFinite(idx) && idx === getPlannedLastIndex();
 }
 
+function canRebuildSliderCycle() {
+  if (document.hidden || !isHomeVisible()) return false;
+
+  // Jellyfin can scroll the document, the page, or a nested home container.
+  // Replacing the slider while browsing rows changes layout and scroll position.
+  const page = getVisibleHomePageEl();
+  const scrollTops = [
+    window.scrollY,
+    document.scrollingElement?.scrollTop,
+    document.documentElement?.scrollTop,
+    document.body?.scrollTop,
+  ];
+  let node = page?.querySelector(".homeSectionsContainer") || page;
+  while (node) {
+    scrollTops.push(node.scrollTop);
+    node = node.parentElement;
+  }
+  return scrollTops.every((top) => !(Number(top) > 24));
+}
+
 async function scheduleSliderRebuild(reason = "cycle-complete") {
-  if (!isSliderEnabled()) return;
+  if (!isSliderEnabled() || !canRebuildSliderCycle()) return;
   if (window.__rebuildingSlider) return;
   window.__rebuildingSlider = true;
   try {
@@ -3532,7 +3578,7 @@ async function startPauseOverlayOnce() {
     return true;
   } catch (e) {
     pauseBooted = false;
-    console.warn("startPauseOverlayOnce hata:", e);
+    console.warn("startPauseOverlayOnce error:", e);
     return false;
   }
 }
@@ -3561,7 +3607,7 @@ async function refreshSubtitleCustomizer() {
     return true;
   } catch (e) {
     subtitleCustomizerBooted = false;
-    console.warn("refreshSubtitleCustomizer hata:", e);
+    console.warn("refreshSubtitleCustomizer error:", e);
     return false;
   }
 }
@@ -3586,7 +3632,7 @@ async function refreshPauseOsdHeaderRatings({ force = false } = {}) {
     return true;
   } catch (e) {
     osdHeaderRatingsBooted = false;
-    console.warn("refreshPauseOsdHeaderRatings hata:", e);
+    console.warn("refreshPauseOsdHeaderRatings error:", e);
     return false;
   }
 }
@@ -4754,11 +4800,11 @@ export async function slidesInit() {
       userId = s.userId;
       accessToken = s.accessToken;
     } catch (e) {
-      console.error("Oturum bilgisi okunamadı:", e);
+      console.error("Could not read session information:", e);
       return;
     }
     if (!userId || !accessToken) {
-      console.warn("[JMS] Oturum bilgisi henüz hazır değil; ana sayfa bekletilmeden tekrar denenecek.");
+      console.warn("[JMS] Session information is not ready; retrying without delaying the home page.");
       window.setTimeout(() => {
         try {
           if (!window.__slidesInitRunning && isHomeVisible()) {
@@ -5047,7 +5093,7 @@ export async function slidesInit() {
               playingItems = fetchedItems.slice(0, playingLimit);
             }
           } catch (err) {
-            console.error("İzlenen içerikler alınırken hata:", err);
+            console.error("Error fetching watched items:", err);
           }
         }
 
@@ -5092,7 +5138,7 @@ export async function slidesInit() {
                 }
                 return seasonData;
               } catch (error) {
-                console.error("Season detay alınırken hata:", error);
+                console.error("Error fetching season details:", error);
                 return item;
               }
             }
@@ -5224,7 +5270,7 @@ export async function slidesInit() {
               const newHistory = Array.from(new Set([...historyBase, ...pickedIds])).slice(-shuffleSeedLimit);
               try {
                 saveShuffleHistory(userId, newHistory);
-                console.debug("[JMS] shuffle history kaydedildi:", userId, newHistory.length);
+                console.debug("[JMS] Shuffle history saved:", userId, newHistory.length);
               } catch (e) {
                 console.warn("[JMS] shuffle history kaydedilemedi:", e);
               }
@@ -5273,7 +5319,7 @@ export async function slidesInit() {
           .filter((x) => x);
       }
     } catch (err) {
-      console.error("Slide verisi hazırlanırken hata:", err);
+      console.error("Error preparing slide data:", err);
     }
 
     if (!isBootActive()) return;
@@ -5301,7 +5347,7 @@ export async function slidesInit() {
     setHomeSliderRuntimeItems(items);
     try { primeQualityFromItems(items); } catch {}
     if (!items.length) {
-    console.warn("Hiçbir slayt verisi elde edilemedi.");
+    console.warn("No slide data was available.");
     return;
   }
   window.__totalSlidesPlanned = items.length;
@@ -5438,17 +5484,17 @@ export async function slidesInit() {
               }
             }
           } catch (e) {
-            console.warn("Arka plan slayt oluşturma hatası:", e);
+            console.warn("Error creating background slide:", e);
           }
         }
         try {
         } catch (e) {
-          console.warn("Dot navigation yeniden kurulamadı:", e);
+          console.warn("Could not rebuild dot navigation:", e);
         }
       })();
     });
   } catch (e) {
-    console.error("slidesInit hata:", e);
+    console.error("slidesInit error:", e);
   } finally {
     if ((Number(window.__jmsSlidesInitToken) || 0) === bootToken) {
       window.__jmsSlidesInitToken = 0;
@@ -5650,13 +5696,12 @@ if (window.__totalSlidesPlanned > 0 && window.__slidesCreated >= window.__totalS
         const active = document.querySelector("#indexPage:not(.hide) .monwui-slide.active, #homePage:not(.hide) .monwui-slide.active");
         const idx = getSlideIndex(active);
 
-        if (window.__cycleExpired && isPlannedLastIndex(idx)) {
+        if (window.__cycleExpired && isPlannedLastIndex(idx) && canRebuildSliderCycle()) {
           ev.preventDefault();
-          window.__cycleExpired = false;
           scheduleSliderRebuild("cycle-expired-and-last-finished");
         }
       } catch (e) {
-        console.warn("per-slide-complete handler hata:", e);
+        console.warn("per-slide-complete handler error:", e);
       }
     };
 
@@ -5672,7 +5717,7 @@ if (window.__totalSlidesPlanned > 0 && window.__slidesCreated >= window.__totalS
       keyboardActive = false;
     });
 } catch (e) {
-    console.error("initializeSlider hata:", e);
+    console.error("initializeSlider error:", e);
   } finally {
     window.sliderResetInProgress = false;
   }
@@ -5929,7 +5974,7 @@ function queueHomeSectionsBoot({
             });
             bootStarted = true;
           } catch (e) {
-            console.warn("queueHomeSectionsBoot hata:", e);
+            console.warn("queueHomeSectionsBoot error:", e);
           }
           if (bootStarted) return;
         } else {
@@ -6033,7 +6078,7 @@ function initializeSliderOnHome({ forceManagedSectionsBoot = false } = {}) {
           try {
             bootHomeSections(cfg);
           } catch (e) {
-            console.warn("bootPersonalRecsWires onAllReady hata:", e);
+            console.warn("bootPersonalRecsWires onAllReady error:", e);
           }
         };
 
@@ -6115,7 +6160,7 @@ function initializeSliderOnHome({ forceManagedSectionsBoot = false } = {}) {
       });
     } catch (error) {
       window.__jmsHomeInitPending = false;
-      console.warn("initializeSliderOnHome hata:", error);
+      console.warn("initializeSliderOnHome error:", error);
     }
   };
 
@@ -6677,7 +6722,7 @@ function observeWhenHomeReady(cb, maxMs = 20000) {
       }
     });
   } catch (e) {
-    console.warn("robustBoot (fast) hata:", e);
+    console.warn("robustBoot (fast) error:", e);
   }
 })();
 
@@ -6709,7 +6754,7 @@ if (!window.__sliderRestoreRepairBound) {
 
 window.addEventListener("unhandledrejection", (event) => {
   if (event?.reason?.message && event.reason.message.includes("quality badge")) {
-    console.warn("Kalite badge hatası:", event.reason);
+    console.warn("Quality badge error:", event.reason);
     event.preventDefault();
   }
 });

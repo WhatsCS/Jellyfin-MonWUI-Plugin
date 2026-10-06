@@ -16,7 +16,7 @@ export function createSettingsModal() {
     closeBtn.innerHTML = '&times;';
     closeBtn.onclick = () => modal.style.display = 'none';
     const title = document.createElement('h2');
-    title.textContent = labels.ayarlarBaslik || 'GP Oynatıcı Ayarları';
+    title.textContent = labels.ayarlarBaslik || "GMMP Player Settings";
     const form = document.createElement('form');
     const languageDiv = document.createElement('div');
     languageDiv.className = 'setting-item';
@@ -27,7 +27,7 @@ export function createSettingsModal() {
     const uiPref = getStoredLanguagePreference() || 'auto';
     const effective = getDefaultLanguage();
     const languages = [
-        { value: 'auto', label: labels.optionAuto || '🌐 Otomatik (Tarayıcı dili)' },
+        { value: 'auto', label: labels.optionAuto || "🌐 Automatic (Browser language)" },
         { value: 'tur', label: '🇹🇷 Türkçe' },
         { value: 'eng', label: '🇬🇧 English' },
         { value: 'spa', label: labels.optionEspanol || '🇪🇸 Español' },
@@ -57,7 +57,7 @@ export function createSettingsModal() {
     limitDiv.className = 'setting-item';
 
     const limitLabel = document.createElement('label');
-    limitLabel.textContent = labels.muziklimit || 'Müzik Limiti:';
+    limitLabel.textContent = labels.muziklimit || "Playlist Item Count:";
 
     const limitInput = document.createElement('input');
     limitInput.type = 'number';
@@ -68,7 +68,7 @@ export function createSettingsModal() {
 
     const saveBtn = document.createElement('button');
     saveBtn.type = 'submit';
-    saveBtn.textContent = labels.kaydet || 'Kaydet';
+    saveBtn.textContent = labels.kaydet || "Save";
     form.append(languageDiv, limitDiv, saveBtn);
     form.onsubmit = (e) => {
         e.preventDefault();

@@ -17,30 +17,30 @@
 
   const jfRoot = getJfRootFromLocation();
   const langModuleUrl = `${window.location.origin}${jfRoot}/slider/language/index.js`;
-  const webSettingsModuleUrl = `${window.location.origin}${jfRoot}/Plugins/JMSFusion/assets/WebSettingsJs`;
+  const webSettingsModuleUrl = `${window.location.origin}${jfRoot}/Plugins/JMSFusionV2/assets/WebSettingsJs`;
   const sliderSettingsCssUrl = `${window.location.origin}${jfRoot}/slider/src/settings.css`;
-  const TAB_STORAGE_KEY = "jmsfusion-config-active-tab";
-  const MONWUI_SUBTAB_STORAGE_KEY = "jmsfusion-monwui-requested-subtab";
+  const TAB_STORAGE_KEY = "JMSFusionV2-config-active-tab";
+  const MONWUI_SUBTAB_STORAGE_KEY = "JMSFusionV2-monwui-requested-subtab";
 
-  const api = (p) => `${jfRoot}/Plugins/JMSFusion/${p}`;
+  const api = (p) => `${jfRoot}/Plugins/JMSFusionV2/${p}`;
   const esc = (s) => (s ?? "").toString().replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[m]));
 
   const fallbackLabels = {
     webConfig: {
       heroEyebrow: "Plugin Configuration",
-      heroTitle: "JMSFusion Control Center",
+      heroTitle: "JMSFusionV2 Control Center",
       heroBody: "Manage the <code>/slider</code> asset source, publish global settings, inspect runtime status, and review HTML snippet and web permission details from one screen.",
       heroLangLabel: "Selected Language",
       heroRootLabel: "Web UI Root",
       tabs: {
-        jmsfusion: "JMSFusion",
+        JMSFusionV2: "JMSFusionV2",
         monwuiSettings: "MonWUI Settings",
         status: "Status",
         snippet: "HTML Snippet & Web Path & Permissions"
       },
       sections: {
         configTitle: "Core Settings",
-        configBody: "Choose where JMSFusion serves slider assets from and how the player module path is resolved.",
+        configBody: "Choose where JMSFusionV2 serves slider assets from and how the player module path is resolved.",
         adminTitle: "Admin Actions",
         adminBody: "Save plugin settings or publish the current admin snapshot globally for every user profile.",
         statusTitle: "Runtime Status",
@@ -49,7 +49,7 @@
         inMemoryBody: "Checks whether index.html is being rewritten at response time without touching files on disk.",
         monwuiSettingsTitle: "MonWUI Settings",
         snippetTitle: "HTML Snippet",
-        snippetBody: "The exact snippet JMSFusion injects into Jellyfin web.",
+        snippetBody: "The exact snippet JMSFusionV2 injects into Jellyfin web.",
         envTitle: "Web Path & Permissions",
         envBody: "Detected web root, file write permissions, and suggested ACL commands for patching."
       },
@@ -105,7 +105,7 @@
         inactiveTitle: "In-memory injection was not detected.",
         inactiveHint: "Use Patch if you want to persist the snippet into index.html.",
         fallbackToggleLabel: "Enable physical index.html patch fallback",
-        fallbackToggleHint: "Disabled by default. Enable this only if runtime injection does not work or if you explicitly need disk patching. When enabled, JMSFusion will try to patch index.html during startup and configuration changes."
+        fallbackToggleHint: "Disabled by default. Enable this only if runtime injection does not work or if you explicitly need disk patching. When enabled, JMSFusionV2 will try to patch index.html during startup and configuration changes."
       },
       env: {
         runningUser: "Running user",
@@ -153,11 +153,11 @@
   }
 
   function ensureStylesheet(key, href) {
-    let link = document.querySelector(`link[data-jmsfusion-config-css="${key}"]`);
+    let link = document.querySelector(`link[data-JMSFusionV2-config-css="${key}"]`);
     if (!link) {
       link = document.createElement("link");
       link.rel = "stylesheet";
-      link.setAttribute("data-jmsfusion-config-css", key);
+      link.setAttribute("data-JMSFusionV2-config-css", key);
       document.head.appendChild(link);
     }
     if (link.href !== href) {
@@ -326,13 +326,13 @@
     view.__jms_tabs_bound = true;
 
     view.querySelectorAll(".jms-tab").forEach((tab) => {
-      tab.addEventListener("click", () => activateTab(view, tab.dataset.tab || "jmsfusion"));
+      tab.addEventListener("click", () => activateTab(view, tab.dataset.tab || "JMSFusionV2"));
     });
 
-    let active = "jmsfusion";
+    let active = "JMSFusionV2";
     try {
       const stored = localStorage.getItem(TAB_STORAGE_KEY);
-      if (stored && ["jmsfusion", "monwui-settings", "status", "snippet"].includes(stored)) {
+      if (stored && ["JMSFusionV2", "monwui-settings", "status", "snippet"].includes(stored)) {
         active = stored;
       }
     } catch {}
@@ -341,20 +341,20 @@
 
   function applyTranslations(view) {
     setText(view, "#heroEyebrow", t("webConfig.heroEyebrow", "Plugin Configuration"));
-    setText(view, "#pageTitle", t("webConfig.heroTitle", "JMSFusion Control Center"));
+    setText(view, "#pageTitle", t("webConfig.heroTitle", "JMSFusionV2 Control Center"));
     setHtml(view, "#pageIntro", t("webConfig.heroBody", fallbackLabels.webConfig.heroBody));
     setText(view, "#heroLangLabel", t("webConfig.heroLangLabel", "Selected Language"));
     setText(view, "#heroLangValue", getLanguageDisplayName(state.lang));
     setText(view, "#heroRootLabel", t("webConfig.heroRootLabel", "Web UI Root"));
     setText(view, "#heroRootValue", webRootLabel());
 
-    setText(view, "#tabJmsfusion", t("webConfig.tabs.jmsfusion", "JMSFusion"));
+    setText(view, "#tabJMSFusionV2", t("webConfig.tabs.JMSFusionV2", "JMSFusionV2"));
     setText(view, "#tabMonwuiSettings", t("webConfig.tabs.monwuiSettings", "MonWUI Settings"));
     setText(view, "#tabStatus", t("webConfig.tabs.status", "Status"));
     setText(view, "#tabSnippet", t("webConfig.tabs.snippet", "HTML Snippet & Web Path & Permissions"));
 
     setText(view, "#configCardTitle", t("webConfig.sections.configTitle", "Core Settings"));
-    setText(view, "#configCardBody", t("webConfig.sections.configBody", "Choose where JMSFusion serves slider assets from and how the player module path is resolved."));
+    setText(view, "#configCardBody", t("webConfig.sections.configBody", "Choose where JMSFusionV2 serves slider assets from and how the player module path is resolved."));
     setText(view, "#actionsCardTitle", t("webConfig.sections.adminTitle", "Admin Actions"));
     setText(view, "#actionsCardBody", t("webConfig.sections.adminBody", "Save plugin settings or publish the current admin snapshot globally for every user profile."));
     setText(view, "#monwuiSettingsCardTitle", t("webConfig.sections.monwuiSettingsTitle", "MonWUI Settings"));
@@ -363,7 +363,7 @@
     setText(view, "#inmemCardTitle", t("webConfig.sections.inMemoryTitle", "In-Memory Injection"));
     setText(view, "#inmemCardBody", t("webConfig.sections.inMemoryBody", "Checks whether index.html is being rewritten at response time without touching files on disk."));
     setText(view, "#snippetCardTitle", t("webConfig.sections.snippetTitle", "HTML Snippet"));
-    setText(view, "#snippetCardBody", t("webConfig.sections.snippetBody", "The exact snippet JMSFusion injects into Jellyfin web."));
+    setText(view, "#snippetCardBody", t("webConfig.sections.snippetBody", "The exact snippet JMSFusionV2 injects into Jellyfin web."));
     setText(view, "#envCardTitle", t("webConfig.sections.envTitle", "Web Path & Permissions"));
     setText(view, "#envCardBody", t("webConfig.sections.envBody", "Detected web root, file write permissions, and suggested ACL commands for patching."));
 
@@ -598,7 +598,7 @@
           <input id="physicalPatchFallbackToggle" type="checkbox" ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}>
           <span>${esc(t("webConfig.inMemory.fallbackToggleLabel", "Enable physical index.html patch fallback"))}</span>
         </label>
-        <div class="fieldDescription">${esc(t("webConfig.inMemory.fallbackToggleHint", "Disabled by default. Enable this only if runtime injection does not work or if you explicitly need disk patching. When enabled, JMSFusion will try to patch index.html during startup and configuration changes."))}</div>
+        <div class="fieldDescription">${esc(t("webConfig.inMemory.fallbackToggleHint", "Disabled by default. Enable this only if runtime injection does not work or if you explicitly need disk patching. When enabled, JMSFusionV2 will try to patch index.html during startup and configuration changes."))}</div>
       </div>
     `;
   }
@@ -754,7 +754,7 @@
         });
 
         if (!r.ok) throw new Error("Publish failed");
-        await fetch(`${jfRoot}/Plugins/JMSFusion/UserSettings`, { cache: "no-store" }).catch(() => null);
+        await fetch(`${jfRoot}/Plugins/JMSFusionV2/UserSettings`, { cache: "no-store" }).catch(() => null);
         showMessage(view, t("webConfig.messages.publishDone", "Global settings published successfully."), "ok");
       } catch (e) {
         showMessage(view, e.message || String(e), "err");
@@ -821,7 +821,7 @@
   }
 
   async function refreshLanguageIfNeeded() {
-    const view = document.getElementById("JMSFusionConfigPage");
+    const view = document.getElementById("JMSFusionV2ConfigPage");
     if (!view) return;
     await loadLanguagePack();
     applyTranslations(view);
@@ -829,8 +829,8 @@
 
   function handlePageEvents(e) {
     const view = e.detail?.view || e.target || null;
-    if (view && (view.id === "JMSFusionConfigPage" || view.querySelector?.("#JMSFusionConfigPage"))) {
-      const page = view.id === "JMSFusionConfigPage" ? view : view.querySelector("#JMSFusionConfigPage");
+    if (view && (view.id === "JMSFusionV2ConfigPage" || view.querySelector?.("#JMSFusionV2ConfigPage"))) {
+      const page = view.id === "JMSFusionV2ConfigPage" ? view : view.querySelector("#JMSFusionV2ConfigPage");
       if (page) setTimeout(() => initView(page), 50);
     }
   }
@@ -844,11 +844,11 @@
   document.addEventListener("viewshow", handlePageEvents);
   document.addEventListener("pageshow", handlePageEvents);
   document.addEventListener("DOMContentLoaded", function () {
-    const existingView = document.getElementById("JMSFusionConfigPage");
+    const existingView = document.getElementById("JMSFusionV2ConfigPage");
     if (existingView) setTimeout(() => initView(existingView), 50);
   });
 
-  window.addEventListener("jmsfusion:plugin-config-open-request", (event) => {
+  window.addEventListener("JMSFusionV2:plugin-config-open-request", (event) => {
     const detail = event?.detail || {};
     if (detail.pluginTab === "monwui-settings") {
       try {
@@ -859,12 +859,12 @@
       } catch {}
     }
 
-    const existingView = document.getElementById("JMSFusionConfigPage");
+    const existingView = document.getElementById("JMSFusionV2ConfigPage");
     if (existingView) {
-      activateTab(existingView, detail.pluginTab || "jmsfusion");
+      activateTab(existingView, detail.pluginTab || "JMSFusionV2");
     }
   });
 
-  const immediateCheck = document.getElementById("JMSFusionConfigPage");
+  const immediateCheck = document.getElementById("JMSFusionV2ConfigPage");
   if (immediateCheck) setTimeout(() => initView(immediateCheck), 50);
 })();

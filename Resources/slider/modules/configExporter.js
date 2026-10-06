@@ -27,10 +27,10 @@ export function uploadAndApplyConfig(file) {
     try {
       const configData = JSON.parse(e.target.result);
       applyRawConfig(configData);
-      alert(config.languageLabels.ayarlarBasariylaYuklendi || 'Ayarlar başarıyla yüklendi.');
+      alert(config.languageLabels.ayarlarBasariylaYuklendi || "Settings loaded successfully.");
     } catch (err) {
-      console.error('Yedek dosyası okunamadı:', err);
-      alert(config.languageLabels.gecersizYedekDosyasi || 'Geçersiz yedek dosyası.');
+      console.error('Could not read backup file:', err);
+      alert(config.languageLabels.gecersizYedekDosyasi || "Invalid backup file.");
     }
   };
   reader.readAsText(file);
@@ -44,12 +44,12 @@ export function createBackupRestoreButtons() {
   container.className = 'backup-container';
 
   const header = document.createElement('h3');
-  header.textContent = labels.backupRestore || 'Yedekleme ve Geri Yükleme';
+  header.textContent = labels.backupRestore || "Backup and Restore";
   container.appendChild(header);
 
   const backupBtn = document.createElement('button');
   backupBtn.className = 'backup-button';
-  backupBtn.textContent = labels.ayarlariYedekle || 'Ayarları Yedekle';
+  backupBtn.textContent = labels.backupSettings || 'Backup Settings';
   backupBtn.addEventListener('click', (e) => {
     e.preventDefault();
     downloadConfigBackup();
@@ -57,7 +57,7 @@ export function createBackupRestoreButtons() {
 
   const restoreLabel = document.createElement('label');
   restoreLabel.className = 'restore-label';
-  restoreLabel.textContent = labels.restoreDatabase || 'Yedek Dosyası Yükle:';
+  restoreLabel.textContent = labels.restoreDatabase || "Restore from Backup";
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = '.json';

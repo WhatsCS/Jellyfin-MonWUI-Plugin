@@ -157,7 +157,7 @@ export function loadUserSettings() {
       updateRepeatButtonUI();
 
     } catch (e) {
-      console.error("Ayarlar yüklenirken hata:", e);
+      console.error("Error loading settings:", e);
     }
   }
   saveUserSettings();
@@ -168,9 +168,9 @@ function updateRepeatButtonUI() {
   if (!repeatBtn) return;
 
   const titles = {
-    none: (config.languageLabels?.repeatModOff || "Tekrar kapalı"),
-    one: (config.languageLabels?.repeatModModOne || "Tek şarkı tekrarı"),
-    all: (config.languageLabels?.repeatModAll || "Tüm liste tekrarı"),
+    none: (config.languageLabels?.repeatModOff || "Off"),
+    one: (config.languageLabels?.repeatModModOne || "Repeat one track"),
+    all: (config.languageLabels?.repeatModAll || "All Tracks"),
   };
 
   const isActive = musicPlayerState.userSettings.repeatMode !== "none";
@@ -188,8 +188,8 @@ function updateShuffleButtonUI() {
   if (!shuffleBtn) return;
 
   const titles = {
-    true: (config.languageLabels?.shuffleOn || "Karıştırma açık"),
-    false: (config.languageLabels?.shuffleOff || "Karıştırma kapalı"),
+    true: (config.languageLabels?.shuffleOn || "On"),
+    false: (config.languageLabels?.shuffleOff || "Off"),
   };
 
   const on = !!musicPlayerState.userSettings.shuffle;
@@ -202,7 +202,7 @@ export function saveUserSettings() {
   try {
     localStorage.setItem("musicPlayerSettings", JSON.stringify(musicPlayerState.userSettings));
   } catch (e) {
-    console.error("Ayarlar kaydedilirken hata:", e);
+    console.error("Error saving settings:", e);
   }
 }
 

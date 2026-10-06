@@ -1,17 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.IO;
-using IOFile = System.IO.File;
 
-namespace Jellyfin.Plugin.JMSFusion.Controllers
+namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 {
     [ApiController]
-    [Route("Plugins/JMSFusion/assets")]
-    public class JMSFusionAssetsController : ControllerBase
+    [Route("Plugins/JMSFusionV2/assets")]
+    public class JMSFusionV2AssetsController : ControllerBase
     {
-        private readonly ILogger<JMSFusionAssetsController> _logger;
-        public JMSFusionAssetsController(ILogger<JMSFusionAssetsController> logger) => _logger = logger;
+        private static readonly ConcurrentDictionary<string, byte[]> EmbeddedJavascript =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        private readonly ILogger<JMSFusionV2AssetsController> _logger;
+        public JMSFusionV2AssetsController(ILogger<JMSFusionV2AssetsController> logger) => _logger = logger;
 
         [HttpGet("UiJs")]
         public IActionResult GetUiJs() => ServeEmbeddedJavascript("assets:ui-js", "ui.js", "UiJs error");
@@ -28,16 +31,21 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
                     return StatusCode(304);
                 }
 
-                var asm = typeof(JMSFusionPlugin).Assembly;
-                var ns = typeof(JMSFusionPlugin).Namespace;
-                var resName = $"{ns}.Web.{fileName}";
+                if (!EmbeddedJavascript.TryGetValue(fileName, out var payload))
+                {
+                    var asm = typeof(JMSFusionV2Plugin).Assembly;
+                    var ns = typeof(JMSFusionV2Plugin).Namespace;
+                    var resName = $"{ns}.Web.{fileName}";
 
-                using var stream = asm.GetManifestResourceStream(resName);
-                if (stream == null) return NotFound();
+                    using var stream = asm.GetManifestResourceStream(resName);
+                    if (stream == null) return NotFound();
 
-                using var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                return File(ms.ToArray(), "application/javascript; charset=utf-8");
+                    using var ms = new MemoryStream();
+                    stream.CopyTo(ms);
+                    payload = EmbeddedJavascript.GetOrAdd(fileName, ms.ToArray());
+                }
+
+                return File(payload, "application/javascript; charset=utf-8");
             }
             catch (Exception ex)
             {

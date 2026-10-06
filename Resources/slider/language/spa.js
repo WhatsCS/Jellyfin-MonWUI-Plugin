@@ -210,7 +210,7 @@ export const languageLabels = {
   cinemaPreRollOverlayHint: "Si el audio no se inicia automáticamente, toca la pantalla. Pulsa Esc para omitirlo rápidamente.",
   dbManagementTab: "Gestión de Caché",
   dbManagementDescription: "Desde aquí puedes respaldar, restaurar o eliminar los archivos de caché JSON scoped almacenados en el servidor.",
-  dbManagementBlockedHint: "Los archivos se guardan en /plugins/configurations/JMSFusion/scoped-cache/ para el servidor y usuario activos.",
+  dbManagementBlockedHint: "Los archivos se guardan en /plugins/configurations/JMSFusionV2/scoped-cache/ para el servidor y usuario activos.",
   dbManagementListTitle: "Archivos de caché gestionables",
   sliderCacheDbTitle: "Caché general del slider",
   sliderCacheDbDescription: "Aquí se almacenan los detalles generales del contenido del slider, los resultados de consultas y las entradas de caché API de corta duración.",
@@ -2374,19 +2374,19 @@ export const languageLabels = {
   },
   webConfig: {
     heroEyebrow: "Configuracion del complemento",
-    heroTitle: "Centro de control JMSFusion",
+    heroTitle: "Centro de control JMSFusionV2",
     heroBody: "Administra la fuente <code>/slider</code>, publica ajustes globales, revisa el estado de ejecucion y consulta el snippet HTML y los permisos web desde una sola pantalla.",
     heroLangLabel: "Idioma seleccionado",
     heroRootLabel: "Ruta Web UI",
     tabs: {
-      jmsfusion: "JMSFusion",
+      JMSFusionV2: "JMSFusionV2",
       monwuiSettings: "Ajustes de MonWUI",
       status: "Estado",
       snippet: "HTML Snippet, ruta web y permisos"
     },
     sections: {
       configTitle: "Ajustes principales",
-      configBody: "Elige desde donde JMSFusion sirve los recursos del slider y como se resuelve la ruta del modulo player.",
+      configBody: "Elige desde donde JMSFusionV2 sirve los recursos del slider y como se resuelve la ruta del modulo player.",
       adminTitle: "Acciones de administrador",
       adminBody: "Guarda la configuracion del complemento o publica globalmente el snapshot actual del administrador para todos los perfiles.",
       statusTitle: "Estado de ejecucion",
@@ -2395,7 +2395,7 @@ export const languageLabels = {
       inMemoryBody: "Comprueba si index.html se reescribe en tiempo de respuesta sin tocar los archivos en disco.",
       monwuiSettingsTitle: "Ajustes de MonWUI",
       snippetTitle: "HTML Snippet",
-      snippetBody: "El snippet exacto que JMSFusion inyecta en Jellyfin Web.",
+      snippetBody: "El snippet exacto que JMSFusionV2 inyecta en Jellyfin Web.",
       envTitle: "Ruta web y permisos",
       envBody: "Raiz web detectada, permisos de escritura y comandos ACL sugeridos para aplicar el patch."
     },
@@ -2451,7 +2451,7 @@ export const languageLabels = {
       inactiveTitle: "No se detecto la inyeccion en memoria.",
       inactiveHint: "Usa Patch si quieres dejar el snippet persistente dentro de index.html.",
       fallbackToggleLabel: "Habilitar fallback de patch fisico para index.html",
-      fallbackToggleHint: "Desactivado por defecto. Activalo solo si la inyeccion en tiempo de ejecucion no funciona o si necesitas expresamente un patch en disco. Cuando esta opcion esta activa, JMSFusion intentara aplicar patch a index.html durante el arranque y en los cambios de configuracion."
+      fallbackToggleHint: "Desactivado por defecto. Activalo solo si la inyeccion en tiempo de ejecucion no funciona o si necesitas expresamente un patch en disco. Cuando esta opcion esta activa, JMSFusionV2 intentara aplicar patch a index.html durante el arranque y en los cambios de configuracion."
     },
     env: {
       runningUser: "Usuario en ejecucion",
