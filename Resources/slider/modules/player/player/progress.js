@@ -63,7 +63,7 @@ function updateMediaPositionState() {
       position
     });
   } catch (e) {
-    console.warn("MediaSession konum durumu güncellemesi başarısız:", e);
+    console.warn("MediaSession position state update failed:", e);
   }
 }
 

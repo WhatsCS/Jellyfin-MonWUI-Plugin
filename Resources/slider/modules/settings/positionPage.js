@@ -29,7 +29,7 @@ export function createPositionEditor(config, labels, section) {
     input.name = configKey;
     input.id = inputId;
     input.value = config[configKey] || '';
-    input.placeholder = placeholder || config.languageLabels.placeholderText || 'Değer giriniz';
+    input.placeholder = placeholder || config.languageLabels.placeholderText || "Enter a value";
 
     const allowsNegative = ['top', 'left'].includes(cssProperty);
     const isProgressHeight = configKey === 'progressBarHeight';
@@ -44,7 +44,7 @@ export function createPositionEditor(config, labels, section) {
     }
 
     const resetBtn = document.createElement('button');
-    resetBtn.textContent = config.languageLabels.resetButton || 'Sıfırla';
+    resetBtn.textContent = config.languageLabels.resetButton || "Use CSS";
     resetBtn.type = 'button';
     resetBtn.className = 'reset-button';
     resetBtn.addEventListener('click', () => {
@@ -82,7 +82,7 @@ export function createPositionEditor(config, labels, section) {
     container.className = 'global-reset-container';
 
     const resetBtn = document.createElement('button');
-    resetBtn.textContent = config.languageLabels.resetAllButton || 'Tümünü Sıfırla';
+    resetBtn.textContent = config.languageLabels.resetAllButton || "Reset All";
     resetBtn.type = 'button';
     resetBtn.className = 'global-reset-button';
     resetBtn.addEventListener('click', resetAllSettings);
@@ -172,7 +172,7 @@ export function createPositionEditor(config, labels, section) {
   const modalInput = document.createElement('input');
   modalInput.type = 'number';
   modalInput.value = inputElement.value;
-  modalInput.placeholder = placeholder || config.languageLabels.placeholderText || 'Değer giriniz';
+  modalInput.placeholder = placeholder || config.languageLabels.placeholderText || "Enter a value";
   modalInput.className = 'position-modal-input';
 
   const isProgressHeight = configKey === 'progressBarHeight';
@@ -253,7 +253,7 @@ export function createPositionEditor(config, labels, section) {
 
     const emptyOption = document.createElement('option');
     emptyOption.value = '';
-    emptyOption.textContent = config.languageLabels.selectDefault || 'Varsayılan';
+    emptyOption.textContent = config.languageLabels.selectDefault || "Default";
     select.appendChild(emptyOption);
 
     options.forEach(option => {
@@ -267,7 +267,7 @@ export function createPositionEditor(config, labels, section) {
     });
 
     const resetBtn = document.createElement('button');
-    resetBtn.textContent = config.languageLabels.resetButton || 'Sıfırla';
+    resetBtn.textContent = config.languageLabels.resetButton || "Use CSS";
     resetBtn.type = 'button';
     resetBtn.className = 'reset-button';
     resetBtn.addEventListener('click', () => {
@@ -428,11 +428,11 @@ export function createPositionEditor(config, labels, section) {
   function render() {
     section.appendChild(createGlobalResetButton());
     const homeSectionsHeader = document.createElement('h3');
-    homeSectionsHeader.textContent = config.languageLabels.homeSectionsPosition || 'Ana Bölüm Pozisyonu';
+    homeSectionsHeader.textContent = config.languageLabels.homeSectionsPosition || "Home Sections Position";
     section.appendChild(homeSectionsHeader);
 
     const homeSectionsHeaderNote = document.createElement('h5');
-    homeSectionsHeaderNote.textContent = config.languageLabels.homeSectionsPositionNote || '(Eksi (-) değerler, konumlandırmayı ters yönde değiştirir.)';
+    homeSectionsHeaderNote.textContent = config.languageLabels.homeSectionsPositionNote || "(Negative (-) values move in the opposite direction.)";
     section.appendChild(homeSectionsHeaderNote);
 
     section.appendChild(
@@ -467,7 +467,7 @@ export function createPositionEditor(config, labels, section) {
     );
     section.appendChild(
       createSettingItem(
-        config.languageLabels.containerWidth ?? 'Genişlik (%):',
+        config.languageLabels.containerWidth ?? "Width (%)",
         'slideWidth',
         'width',
         config.languageLabels.placeholderText
@@ -475,7 +475,7 @@ export function createPositionEditor(config, labels, section) {
     );
     section.appendChild(
       createSettingItem(
-        config.languageLabels.containerHeight ?? 'Yükseklik (%):',
+        config.languageLabels.containerHeight ?? "Height (%)",
         'slideHeight',
         'height',
         config.languageLabels.placeholderText
@@ -485,16 +485,16 @@ export function createPositionEditor(config, labels, section) {
     const containers = [
       { type: 'logo', label: config.languageLabels.logoContainer || 'Logo Konteyneri', flexSettings: false, positionSettings: true },
       { type: 'meta', label: config.languageLabels.metaContainer || 'Meta Konteyneri', flexSettings: true, positionSettings: true },
-      { type: 'status', label: config.languageLabels.statusContainer || 'Durum Pozisyonu', flexSettings: true, positionSettings: true },
-      { type: 'rating', label: config.languageLabels.ratingContainer || 'Oylama Pozisyonu', flexSettings: true, positionSettings: true },
+      { type: 'status', label: config.languageLabels.statusContainer || "Status Position", flexSettings: true, positionSettings: true },
+      { type: 'rating', label: config.languageLabels.ratingContainer || "Rating Position", flexSettings: true, positionSettings: true },
       { type: 'plot', label: config.languageLabels.plotContainer || 'Plot Konteyneri', flexSettings: true, positionSettings: true },
       { type: 'title', label: config.languageLabels.titleContainer || 'Title Konteyneri', flexSettings: true, positionSettings: true },
       { type: 'director', label: config.languageLabels.directorContainer || 'Director Konteyneri', flexSettings: true, positionSettings: true },
       { type: 'info', label: config.languageLabels.infoContainer || 'Bilgi Konteyneri', flexSettings: true, positionSettings: true },
       { type: 'button', label: config.languageLabels.buttonContainer || 'Buton Konteyneri', flexSettings: true, positionSettings: true },
       { type: 'existingDot', label: config.languageLabels.dotContainer || 'Dot Konteyneri', flexSettings: true, positionSettings: true },
-      { type: 'provider', label: config.languageLabels.providerContainer || 'Sağlayıcı Konteyneri', flexSettings: true, positionSettings: true },
-      { type: 'providericons', label: config.languageLabels.providericonsContainer || 'Sağlayıcı ikon Pozisyonu', flexSettings: true, positionSettings: false }
+      { type: 'provider', label: config.languageLabels.providerContainer || "Provider Position", flexSettings: true, positionSettings: true },
+      { type: 'providericons', label: config.languageLabels.providericonsContainer || "External Links Icon Position", flexSettings: true, positionSettings: false }
     ];
 
     containers.forEach(({ type, label, flexSettings, positionSettings }) => {
@@ -525,7 +525,7 @@ export function createPositionEditor(config, labels, section) {
         );
         section.appendChild(
           createSettingItem(
-            config.languageLabels.containerWidth || 'Genişlik (%):',
+            config.languageLabels.containerWidth || "Width (%)",
             `${type}ContainerWidth`,
             'width',
             config.languageLabels.placeholderText,
@@ -535,7 +535,7 @@ export function createPositionEditor(config, labels, section) {
         );
         section.appendChild(
           createSettingItem(
-            config.languageLabels.containerHeight || 'Yükseklik (%):',
+            config.languageLabels.containerHeight || "Height (%)",
             `${type}ContainerHeight`,
             'height',
             config.languageLabels.placeholderText,
@@ -548,7 +548,7 @@ export function createPositionEditor(config, labels, section) {
       if (flexSettings) {
         section.appendChild(
           createFlexSettingItem(
-            config.languageLabels.flexDisplay || 'Görüntüleme Tipi:',
+            config.languageLabels.flexDisplay || "Flex Display",
             `${type}ContainerDisplay`,
             [
               { value: 'flex', label: config.languageLabels.flex || 'Flex' },
@@ -574,7 +574,7 @@ export function createPositionEditor(config, labels, section) {
 
         section.appendChild(
           createFlexSettingItem(
-            config.languageLabels.justifyContent || 'Ana Eksen Hizası:',
+            config.languageLabels.justifyContent || "justify Content",
             `${type}ContainerJustifyContent`,
             [
               { value: 'flex-start', label: config.languageLabels.flexstart || 'Flex Start' },
@@ -590,7 +590,7 @@ export function createPositionEditor(config, labels, section) {
 
         section.appendChild(
           createFlexSettingItem(
-            config.languageLabels.alignItems || 'Çapraz Eksen Hizası:',
+            config.languageLabels.alignItems || "Align Items",
             `${type}ContainerAlignItems`,
             [
               { value: 'flex-start', label: config.languageLabels.flexstart || 'Flex Start' },
@@ -605,7 +605,7 @@ export function createPositionEditor(config, labels, section) {
 
         section.appendChild(
           createFlexSettingItem(
-            config.languageLabels.flexWrap || 'Sarma Davranışı:',
+            config.languageLabels.flexWrap || "Flex Wrap",
             `${type}ContainerFlexWrap`,
             [
               { value: 'nowrap', label: config.languageLabels.nowrap || 'No Wrap' },
@@ -644,7 +644,7 @@ export function createPositionEditor(config, labels, section) {
     );
     section.appendChild(
       createSettingItem(
-        config.languageLabels.containerWidth || 'Genişlik (%):',
+        config.languageLabels.containerWidth || "Width (%)",
         'sliderContainerWidth',
         'width',
         config.languageLabels.placeholderText,
@@ -654,7 +654,7 @@ export function createPositionEditor(config, labels, section) {
     );
     section.appendChild(
       createSettingItem(
-        config.languageLabels.containerHeight || 'Yükseklik (%):',
+        config.languageLabels.containerHeight || "Height (%)",
         'sliderContainerHeight',
         'height',
         config.languageLabels.placeholderText,
@@ -665,7 +665,7 @@ export function createPositionEditor(config, labels, section) {
 
     section.appendChild(
       createFlexSettingItem(
-        config.languageLabels.flexDisplay || 'Görüntüleme Tipi:',
+        config.languageLabels.flexDisplay || "Flex Display",
         'sliderContainerDisplay',
         [
           { value: 'flex', label: config.languageLabels.flex || 'Flex' },
@@ -677,7 +677,7 @@ export function createPositionEditor(config, labels, section) {
 
     section.appendChild(
       createFlexSettingItem(
-        config.languageLabels.flexDirection || 'Esnek Yön:',
+        config.languageLabels.flexDirection || "Flex Direction",
         'sliderContainerFlexDirection',
         [
           { value: 'row', label: config.languageLabels.row || 'Row' },
@@ -691,7 +691,7 @@ export function createPositionEditor(config, labels, section) {
 
     section.appendChild(
       createFlexSettingItem(
-        config.languageLabels.justifyContent || 'Ana Eksen Hizası:',
+        config.languageLabels.justifyContent || "justify Content",
         'sliderContainerJustifyContent',
         [
           { value: 'flex-start', label: config.languageLabels.flexstart || 'Flex Start' },
@@ -707,7 +707,7 @@ export function createPositionEditor(config, labels, section) {
 
     section.appendChild(
       createFlexSettingItem(
-        config.languageLabels.alignItems || 'Çapraz Eksen Hizası:',
+        config.languageLabels.alignItems || "Align Items",
         'sliderContainerAlignItems',
         [
           { value: 'flex-start', label: config.languageLabels.flexstart || 'Flex Start' },
@@ -722,7 +722,7 @@ export function createPositionEditor(config, labels, section) {
 
     section.appendChild(
       createFlexSettingItem(
-        config.languageLabels.flexWrap || 'Sarma Davranışı:',
+        config.languageLabels.flexWrap || "Flex Wrap",
         'sliderContainerFlexWrap',
         [
           { value: 'nowrap', label: config.languageLabels.nowrap || 'No Wrap' },
@@ -784,7 +784,7 @@ section.appendChild(
     );
     section.appendChild(
       createSettingItem(
-        config.languageLabels.containerWidth || 'Genişlik (%):',
+        config.languageLabels.containerWidth || "Width (%)",
         'progressBarWidth',
         'width',
         config.languageLabels.placeholderText,
@@ -794,7 +794,7 @@ section.appendChild(
     );
     section.appendChild(
       createSettingItem(
-        config.languageLabels.containerHeight || 'Yükseklik (%):',
+        config.languageLabels.containerHeight || "Height (%)",
         'progressBarHeight',
         'height',
         config.languageLabels.placeholderText,

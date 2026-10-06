@@ -109,7 +109,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
         {
             if (!TryGetRequestUserId(out var userId))
             {
-                return ApiError(401, ApiUserHeaderRequiredCode, "X-Emby-UserId header gerekli.");
+                return ApiError(401, ApiUserHeaderRequiredCode, "X-Emby-UserId header is required.");
             }
 
             if (_jobs.TryGetValue(userId, out var job))
@@ -143,7 +143,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
         {
             if (!TryGetRequestUserId(out var userId))
             {
-                return ApiError(401, ApiUserHeaderRequiredCode, "X-Emby-UserId header gerekli.");
+                return ApiError(401, ApiUserHeaderRequiredCode, "X-Emby-UserId header is required.");
             }
 
             if (_jobs.TryGetValue(userId, out var job) && job.Running)
@@ -156,11 +156,11 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 {
                 }
 
-                SetLocalizedLastMessage(job, LastCancelRequestedCode, "İş iptal istendi.");
-                return ApiOkMessage(ApiCancelInProgressCode, "İş iptal ediliyor...");
+                SetLocalizedLastMessage(job, LastCancelRequestedCode, "Job cancellation requested.");
+                return ApiOkMessage(ApiCancelInProgressCode, "Cancelling job...");
             }
 
-            return ApiOkMessage(ApiNoRunningJobCode, "Koşan iş yok.");
+            return ApiOkMessage(ApiNoRunningJobCode, "No job is running.");
         }
 
         [HttpPost("run")]
@@ -176,34 +176,34 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                         ApiPluginConfigUnavailableCode,
                         "Plugin configuration not available.",
                         hintCode: ApiPluginConfigHintCode,
-                        hint: "Docker'da /config/plugins ve /config/plugins/configurations yazılabilir olmalı; plugin gerçekten yüklendi mi? Konteyner loglarına bakın.");
+                        hint: "In Docker, /config/plugins and /config/plugins/configurations must be writable. Verify that the plugin is installed and check the container logs.");
                 }
 
                 var token = Request.Headers["X-Emby-Token"].FirstOrDefault();
                 if (string.IsNullOrWhiteSpace(token))
                 {
-                    return ApiError(401, ApiTokenHeaderRequiredCode, "X-Emby-Token header gerekli.");
+                    return ApiError(401, ApiTokenHeaderRequiredCode, "X-Emby-Token header is required.");
                 }
 
                 if (!TryGetRequestUserId(out var userId))
                 {
-                    return ApiError(401, ApiUserHeaderRequiredCode, "X-Emby-UserId header gerekli.");
+                    return ApiError(401, ApiUserHeaderRequiredCode, "X-Emby-UserId header is required.");
                 }
 
                 var user = _users.GetUserById(userId);
                 if (user is null)
                 {
-                    return ApiError(401, ApiUserNotFoundCode, "Kullanıcı bulunamadı.");
+                    return ApiError(401, ApiUserNotFoundCode, "User not found.");
                 }
 
                 if (!IsAdminUser(user))
                 {
-                    return ApiError(403, ApiAdminRequiredCode, "Sadece admin kullanıcılar çalıştırabilir.");
+                    return ApiError(403, ApiAdminRequiredCode, "Only administrators can run this.");
                 }
 
                 if (!cfg.AllowScriptExecution)
                 {
-                    return ApiError(403, ApiScriptExecutionDisabledCode, "Script çalıştırma kapalı (AllowScriptExecution=false).");
+                    return ApiError(403, ApiScriptExecutionDisabledCode, "Script execution is disabled (AllowScriptExecution=false).");
                 }
 
                 var steps = new List<string>();
@@ -219,13 +219,13 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 
                 if (steps.Count == 0)
                 {
-                    return ApiError(400, ApiNoTaskEnabledCode, "Hiçbir görev etkin değil.");
+                    return ApiError(400, ApiNoTaskEnabledCode, "No tasks are enabled.");
                 }
 
                 if (_jobs.TryGetValue(userId, out var existing) && existing.Running)
                 {
                     var payload = CreatePayload(ok: false);
-                    AddLocalizedField(payload, "error", ApiAlreadyRunningCode, "Zaten çalışan bir iş var.");
+                    AddLocalizedField(payload, "error", ApiAlreadyRunningCode, "A job is already running.");
                     payload["running"] = true;
                     payload["startedAt"] = existing.StartedAt;
                     payload["progress01"] = Math.Round(existing.Progress01, 4);
@@ -286,7 +286,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                         SetLocalizedLastMessage(
                             job,
                             LastStepStartingCode,
-                            $"{step} başlıyor...",
+                            $"Starting {step}...",
                             CreateArgs(("step", step)));
                         job.CurrentStepTotal = 0;
                         job.CurrentStepDone = 0;
@@ -360,14 +360,14 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
 
                     if (job.Cts!.IsCancellationRequested)
                     {
-                        SetLocalizedLastMessage(job, LastCancelledCode, "İş iptal edildi.");
+                        SetLocalizedLastMessage(job, LastCancelledCode, "Job cancelled.");
                     }
                     else
                     {
                         SetLocalizedLastMessage(
                             job,
                             LastFinishedCode,
-                            $"Bitti ✓ ({elapsedSeconds} sn)",
+                            $"Finished ✓ ({elapsedSeconds} s)",
                             CreateArgs(("seconds", elapsedSeconds)));
                     }
                 });
@@ -383,7 +383,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
             catch (Exception ex)
             {
                 var payload = CreatePayload(ok: false);
-                AddLocalizedField(payload, "error", ApiUnexpectedErrorCode, "Beklenmeyen hata oluştu.");
+                AddLocalizedField(payload, "error", ApiUnexpectedErrorCode, "An unexpected error occurred.");
                 payload["detail"] = ex.Message;
                 payload["stack"] = ex.ToString();
                 return StatusCode(500, payload);

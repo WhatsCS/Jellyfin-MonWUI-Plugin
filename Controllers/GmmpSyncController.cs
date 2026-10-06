@@ -133,7 +133,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 return BadRequest(new
                 {
                     ok = false,
-                    error = "SessionId veya DeviceId gerekli."
+                    error = "SessionId or DeviceId is required."
                 });
             }
 
@@ -261,7 +261,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 return BadRequest(new
                 {
                     ok = false,
-                    error = "SessionId/DeviceId ve Name gerekli."
+                    error = "SessionId/DeviceId and Name are required."
                 });
             }
 
@@ -319,7 +319,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 return BadRequest(new
                 {
                     ok = false,
-                    error = "SessionId veya DeviceId gerekli."
+                    error = "SessionId or DeviceId is required."
                 });
             }
 
@@ -333,7 +333,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 return StatusCode(403, new
                 {
                     ok = false,
-                    error = "Bu GMMP oturumu icin erisim yok."
+                    error = "Access denied for this GMMP session."
                 });
             }
 
@@ -536,7 +536,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 return (null, Guid.Empty, Unauthorized(new
                 {
                     ok = false,
-                    error = "X-Emby-UserId gerekli."
+                    error = "X-Emby-UserId is required."
                 }));
             }
 
@@ -546,7 +546,7 @@ namespace Jellyfin.Plugin.JMSFusionV2.Controllers
                 return (null, Guid.Empty, Unauthorized(new
                 {
                     ok = false,
-                    error = "Kullanici bulunamadi."
+                    error = "User not found."
                 }));
             }
 

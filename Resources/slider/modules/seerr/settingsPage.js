@@ -209,7 +209,7 @@ function applySonarrOptions(panel, options = {}, labels = {}, fieldNames = SONAR
   setSelectOptions(
     panel.querySelector(`[name="${names.quality}"]`),
     [
-      { value: "", label: L(labels, "arrSelectQualityProfile", "Kalite profili seç") },
+      { value: "", label: L(labels, "arrSelectQualityProfile", "Test the connection to choose a quality profile") },
       ...qualityProfiles
         .filter((profile) => Number(profile?.id) > 0)
         .map((profile) => ({ value: String(profile.id), label: text(profile.name, `#${profile.id}`) }))
@@ -220,7 +220,7 @@ function applySonarrOptions(panel, options = {}, labels = {}, fieldNames = SONAR
   setSelectOptions(
     panel.querySelector(`[name="${names.root}"]`),
     [
-      { value: "", label: L(labels, "arrSelectRootFolder", "Dizin seç") },
+      { value: "", label: L(labels, "arrSelectRootFolder", "Test the connection to choose a folder") },
       ...rootFolders
         .filter((folder) => text(folder?.path))
         .map((folder) => {
@@ -237,7 +237,7 @@ function applySonarrOptions(panel, options = {}, labels = {}, fieldNames = SONAR
   setSelectOptions(
     panel.querySelector(`[name="${names.language}"]`),
     [
-      { value: "", label: L(labels, "arrLanguageProfileNone", "Yok / Sonarr v4") },
+      { value: "", label: L(labels, "arrLanguageProfileNone", "None / Sonarr v4") },
       ...languageProfiles
         .filter((profile) => Number(profile?.id) > 0)
         .map((profile) => ({ value: String(profile.id), label: text(profile.name, `#${profile.id}`) }))
@@ -260,7 +260,7 @@ function applyRadarrOptions(panel, options = {}, labels = {}, fieldNames = RADAR
   setSelectOptions(
     panel.querySelector(`[name="${names.quality}"]`),
     [
-      { value: "", label: L(labels, "arrSelectQualityProfile", "Kalite profili seç") },
+      { value: "", label: L(labels, "arrSelectQualityProfile", "Test the connection to choose a quality profile") },
       ...qualityProfiles
         .filter((profile) => Number(profile?.id) > 0)
         .map((profile) => ({ value: String(profile.id), label: text(profile.name, `#${profile.id}`) }))
@@ -271,7 +271,7 @@ function applyRadarrOptions(panel, options = {}, labels = {}, fieldNames = RADAR
   setSelectOptions(
     panel.querySelector(`[name="${names.root}"]`),
     [
-      { value: "", label: L(labels, "arrSelectRootFolder", "Dizin seç") },
+      { value: "", label: L(labels, "arrSelectRootFolder", "Test the connection to choose a folder") },
       ...rootFolders
         .filter((folder) => text(folder?.path))
         .map((folder) => {
@@ -387,31 +387,31 @@ export function createSerrPanel(config, labels) {
   panel.id = "serr-panel";
   panel.className = "settings-panel";
 
-  const section = createSection(L(labels, "serrSettingsTab", "Seerr & Arr Entegrasyonu"));
+  const section = createSection(L(labels, "serrSettingsTab", "Seerr & Arr Integration"));
 
   section.appendChild(createCheckbox(
     "serrEnabled",
-    L(labels, "serrEnabled", "Seerr entegrasyonunu etkinleştir"),
+    L(labels, "serrEnabled", "Enable Seerr integration"),
     false
   ));
   section.appendChild(createCheckbox(
     "arrRadarrEnabled",
-    L(labels, "arrRadarrEnabled", "Radarr'ı etkinleştir"),
+    L(labels, "arrRadarrEnabled", "Enable Radarr"),
     false
   ));
   section.appendChild(createCheckbox(
     "arrSonarrEnabled",
-    L(labels, "arrSonarrEnabled", "Sonarr'ı etkinleştir"),
+    L(labels, "arrSonarrEnabled", "Enable Sonarr"),
     false
   ));
   section.appendChild(createCheckbox(
     "serrEnable4KRequests",
-    L(labels, "serrEnable4KRequests", "4K istekleri etkinleştir"),
+    L(labels, "serrEnable4KRequests", "Enable 4K requests"),
     false
   ));
   section.appendChild(createCheckbox(
     "serrConfirmRequests",
-    L(labels, "serrConfirmRequests", "İstek göndermeden önce onay modalı göster"),
+    L(labels, "serrConfirmRequests", "Show confirmation modal before sending requests"),
     true
   ));
   section.appendChild(createInput(
@@ -422,29 +422,29 @@ export function createSerrPanel(config, labels) {
   ));
   section.appendChild(createInput(
     "serrApiKey",
-    L(labels, "serrApiKey", "Seerr API anahtarı"),
+    L(labels, "serrApiKey", "Seerr API key"),
     "",
-    { type: "password", placeholder: L(labels, "serrApiKeyPlaceholder", "Seerr ayarlarındaki API anahtarı") }
+    { type: "password", placeholder: L(labels, "serrApiKeyPlaceholder", "API key from Seerr settings") }
   ));
   section.appendChild(createInput(
     "serrDefaultLanguage",
-    L(labels, "serrDefaultLanguage", "Seerr arama dili"),
+    L(labels, "serrDefaultLanguage", "Seerr search language"),
     "tr",
     { placeholder: "tr, en, en-US" }
   ));
   section.appendChild(createCheckbox(
     "serrRequestAsJellyfinUser",
-    L(labels, "serrRequestAsJellyfinUser", "Seerr kullanıcısını Jellyfin kullanıcı ID'si ile eşleştirmeyi dene"),
+    L(labels, "serrRequestAsJellyfinUser", "Try to match Seerr users by Jellyfin user ID"),
     true
   ));
   section.appendChild(createCheckbox(
     "serrShowMissingSearchButton",
-    L(labels, "serrShowMissingSearchButton", "Jellyfin aramasında Seerr butonunu göster"),
+    L(labels, "serrShowMissingSearchButton", "Show the Seerr button in Jellyfin search"),
     true
   ));
   section.appendChild(createCheckbox(
     "serrEnableNotifications",
-    L(labels, "serrEnableNotifications", "Seerr isteklerini bildirim panelinde göster"),
+    L(labels, "serrEnableNotifications", "Show Seerr & Arr requests in the notification panel"),
     true
   ));
 
@@ -453,7 +453,7 @@ export function createSerrPanel(config, labels) {
   hint.textContent = L(
     labels,
     "serrSettingsHint",
-    "Admin kullanıcıların istekleri doğrudan Seerr'e gönderilir. Diğer kullanıcıların istekleri önce MonWUI bildirimlerinde admin onayına düşer."
+    "Admin requests are sent directly to Seerr. Other users' requests first appear in MonWUI notifications for admin approval."
   );
   section.appendChild(hint);
 
@@ -462,22 +462,22 @@ export function createSerrPanel(config, labels) {
   const testBtn = document.createElement("button");
   testBtn.type = "button";
   testBtn.className = "monwui-serr-test-btn";
-  testBtn.textContent = L(labels, "serrTestConnection", "Bağlantıyı Test Et");
+  testBtn.textContent = L(labels, "serrTestConnection", "Test Connection");
   testBtn.addEventListener("click", async () => {
     const old = testBtn.textContent;
     try {
       setBusy(panel, true);
       await saveSerrSettings(readValues(panel));
-      testBtn.textContent = L(labels, "serrTesting", "Test ediliyor...");
+      testBtn.textContent = L(labels, "serrTesting", "Testing...");
       await testSerrConnection();
       showNotification(
-        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "serrConnectionOk", "Seerr bağlantısı başarılı.")}`,
+        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "serrConnectionOk", "Seerr connection successful.")}`,
         2800,
         "success"
       );
     } catch (error) {
       showNotification(
-        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "serrConnectionFailed", "Seerr bağlantısı başarısız.")}`,
+        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "serrConnectionFailed", "Seerr connection failed.")}`,
         4200,
         "error"
       );
@@ -505,33 +505,33 @@ export function createSerrPanel(config, labels) {
   ));
   arrSection.appendChild(createInput(
     "arrSonarrApiKey",
-    L(labels, "arrSonarrApiKey", "Sonarr API anahtarı"),
+    L(labels, "arrSonarrApiKey", "Sonarr API key"),
     "",
-    { type: "password", placeholder: L(labels, "arrApiKeyPlaceholder", "Sonarr ayarlarındaki API anahtarı") }
+    { type: "password", placeholder: L(labels, "arrApiKeyPlaceholder", "API key from Sonarr settings") }
   ));
   arrSection.appendChild(createSelect(
     "arrSonarrRootFolderPath",
     L(labels, "arrSonarrRootFolderPath", "Sonarr root folder path"),
-    [{ value: "", label: L(labels, "arrSelectRootFolder", "Dizin seçmek için bağlantıyı test et") }]
+    [{ value: "", label: L(labels, "arrSelectRootFolder", "Test the connection to choose a folder") }]
   ));
   arrSection.appendChild(createSelect(
     "arrSonarrQualityProfileId",
     L(labels, "arrSonarrQualityProfileId", "Sonarr quality profile ID"),
-    [{ value: "", label: L(labels, "arrSelectQualityProfile", "Kalite seçmek için bağlantıyı test et") }]
+    [{ value: "", label: L(labels, "arrSelectQualityProfile", "Test the connection to choose a quality profile") }]
   ));
   arrSection.appendChild(createSelect(
     "arrSonarrLanguageProfileId",
     L(labels, "arrSonarrLanguageProfileId", "Sonarr language profile ID"),
-    [{ value: "", label: L(labels, "arrLanguageProfileNone", "Yok / Sonarr v4") }]
+    [{ value: "", label: L(labels, "arrLanguageProfileNone", "None / Sonarr v4") }]
   ));
   arrSection.appendChild(createCheckbox(
     "arrSonarrSeasonFolder",
-    L(labels, "arrSonarrSeasonFolder", "Sonarr'da season folder kullan"),
+    L(labels, "arrSonarrSeasonFolder", "Use season folders in Sonarr"),
     true
   ));
   arrSection.appendChild(createCheckbox(
     "arrSonarrSearchOnRequest",
-    L(labels, "arrSonarrSearchOnRequest", "Fallback isteğinde bölümü hemen ara"),
+    L(labels, "arrSonarrSearchOnRequest", "Search the episode immediately on fallback"),
     true
   ));
 
@@ -540,23 +540,23 @@ export function createSerrPanel(config, labels) {
   const arrTestBtn = document.createElement("button");
   arrTestBtn.type = "button";
   arrTestBtn.className = "monwui-arr-test-btn";
-  arrTestBtn.textContent = L(labels, "arrTestConnection", "Sonarr Bağlantısını Test Et");
+  arrTestBtn.textContent = L(labels, "arrTestConnection", "Test Sonarr Connection");
   arrTestBtn.addEventListener("click", async () => {
     const old = arrTestBtn.textContent;
     try {
       setBusy(panel, true);
       await saveArrSettings(readArrValues(panel));
-      arrTestBtn.textContent = L(labels, "serrTesting", "Test ediliyor...");
+      arrTestBtn.textContent = L(labels, "serrTesting", "Testing...");
       const data = await testSonarrConnection();
       applySonarrOptions(panel, data?.options || {}, labels);
       showNotification(
-        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "arrConnectionOk", "Sonarr bağlantısı başarılı.")}`,
+        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "arrConnectionOk", "Sonarr connection successful.")}`,
         2800,
         "success"
       );
     } catch (error) {
       showNotification(
-        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "arrConnectionFailed", "Sonarr bağlantısı başarısız.")}`,
+        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "arrConnectionFailed", "Sonarr connection failed.")}`,
         4200,
         "error"
       );
@@ -581,23 +581,23 @@ export function createSerrPanel(config, labels) {
   ));
   arrSection.appendChild(createInput(
     "arrRadarrApiKey",
-    L(labels, "arrRadarrApiKey", "Radarr API anahtarı"),
+    L(labels, "arrRadarrApiKey", "Radarr API key"),
     "",
-    { type: "password", placeholder: L(labels, "arrRadarrApiKeyPlaceholder", "Radarr ayarlarındaki API anahtarı") }
+    { type: "password", placeholder: L(labels, "arrRadarrApiKeyPlaceholder", "API key from Radarr settings") }
   ));
   arrSection.appendChild(createSelect(
     "arrRadarrRootFolderPath",
     L(labels, "arrRadarrRootFolderPath", "Radarr root folder path"),
-    [{ value: "", label: L(labels, "arrSelectRootFolder", "Dizin seçmek için bağlantıyı test et") }]
+    [{ value: "", label: L(labels, "arrSelectRootFolder", "Test the connection to choose a folder") }]
   ));
   arrSection.appendChild(createSelect(
     "arrRadarrQualityProfileId",
     L(labels, "arrRadarrQualityProfileId", "Radarr quality profile ID"),
-    [{ value: "", label: L(labels, "arrSelectQualityProfile", "Kalite seçmek için bağlantıyı test et") }]
+    [{ value: "", label: L(labels, "arrSelectQualityProfile", "Test the connection to choose a quality profile") }]
   ));
   arrSection.appendChild(createCheckbox(
     "arrRadarrSearchOnRequest",
-    L(labels, "arrRadarrSearchOnRequest", "Fallback isteğinde filmi hemen ara"),
+    L(labels, "arrRadarrSearchOnRequest", "Search the movie immediately on fallback"),
     true
   ));
 
@@ -606,23 +606,23 @@ export function createSerrPanel(config, labels) {
   const radarrTestBtn = document.createElement("button");
   radarrTestBtn.type = "button";
   radarrTestBtn.className = "monwui-arr-radarr-test-btn";
-  radarrTestBtn.textContent = L(labels, "arrRadarrTestConnection", "Radarr Bağlantısını Test Et");
+  radarrTestBtn.textContent = L(labels, "arrRadarrTestConnection", "Test Radarr Connection");
   radarrTestBtn.addEventListener("click", async () => {
     const old = radarrTestBtn.textContent;
     try {
       setBusy(panel, true);
       await saveArrSettings(readArrValues(panel));
-      radarrTestBtn.textContent = L(labels, "serrTesting", "Test ediliyor...");
+      radarrTestBtn.textContent = L(labels, "serrTesting", "Testing...");
       const data = await testRadarrConnection();
       applyRadarrOptions(panel, data?.options || {}, labels);
       showNotification(
-        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "arrRadarrConnectionOk", "Radarr bağlantısı başarılı.")}`,
+        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "arrRadarrConnectionOk", "Radarr connection successful.")}`,
         2800,
         "success"
       );
     } catch (error) {
       showNotification(
-        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "arrRadarrConnectionFailed", "Radarr bağlantısı başarısız.")}`,
+        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "arrRadarrConnectionFailed", "Radarr connection failed.")}`,
         4200,
         "error"
       );
@@ -645,7 +645,7 @@ export function createSerrPanel(config, labels) {
   arrSection.appendChild(mark4KField(sonarr4KHeading));
   arrSection.appendChild(mark4KField(createCheckbox(
     "arrSonarr4KEnabled",
-    L(labels, "arrSonarr4KEnabled", "4K Sonarr'ı etkinleştir"),
+    L(labels, "arrSonarr4KEnabled", "Enable 4K Sonarr"),
     false
   )));
   arrSection.appendChild(mark4KField(createInput(
@@ -656,33 +656,33 @@ export function createSerrPanel(config, labels) {
   )));
   arrSection.appendChild(mark4KField(createInput(
     "arrSonarr4KApiKey",
-    L(labels, "arrSonarr4KApiKey", "4K Sonarr API anahtarı"),
+    L(labels, "arrSonarr4KApiKey", "4K Sonarr API key"),
     "",
-    { type: "password", placeholder: L(labels, "arrApiKeyPlaceholder", "Sonarr ayarlarındaki API anahtarı") }
+    { type: "password", placeholder: L(labels, "arrApiKeyPlaceholder", "API key from Sonarr settings") }
   )));
   arrSection.appendChild(mark4KField(createSelect(
     "arrSonarr4KRootFolderPath",
     L(labels, "arrSonarr4KRootFolderPath", "4K Sonarr root folder path"),
-    [{ value: "", label: L(labels, "arrSelectRootFolder", "Dizin seçmek için bağlantıyı test et") }]
+    [{ value: "", label: L(labels, "arrSelectRootFolder", "Test the connection to choose a folder") }]
   )));
   arrSection.appendChild(mark4KField(createSelect(
     "arrSonarr4KQualityProfileId",
     L(labels, "arrSonarr4KQualityProfileId", "4K Sonarr quality profile ID"),
-    [{ value: "", label: L(labels, "arrSelectQualityProfile", "Kalite seçmek için bağlantıyı test et") }]
+    [{ value: "", label: L(labels, "arrSelectQualityProfile", "Test the connection to choose a quality profile") }]
   )));
   arrSection.appendChild(mark4KField(createSelect(
     "arrSonarr4KLanguageProfileId",
     L(labels, "arrSonarr4KLanguageProfileId", "4K Sonarr language profile ID"),
-    [{ value: "", label: L(labels, "arrLanguageProfileNone", "Yok / Sonarr v4") }]
+    [{ value: "", label: L(labels, "arrLanguageProfileNone", "None / Sonarr v4") }]
   )));
   arrSection.appendChild(mark4KField(createCheckbox(
     "arrSonarr4KSeasonFolder",
-    L(labels, "arrSonarr4KSeasonFolder", "4K Sonarr'da season folder kullan"),
+    L(labels, "arrSonarr4KSeasonFolder", "Use season folders in 4K Sonarr"),
     true
   )));
   arrSection.appendChild(mark4KField(createCheckbox(
     "arrSonarr4KSearchOnRequest",
-    L(labels, "arrSonarr4KSearchOnRequest", "4K fallback isteğinde bölümü hemen ara"),
+    L(labels, "arrSonarr4KSearchOnRequest", "Search the episode immediately on 4K fallback"),
     true
   )));
 
@@ -693,23 +693,23 @@ export function createSerrPanel(config, labels) {
   sonarr4KTestBtn.type = "button";
   sonarr4KTestBtn.className = "monwui-arr-4k-test-btn";
   sonarr4KTestBtn.setAttribute("data-arr-4k-action", "1");
-  sonarr4KTestBtn.textContent = L(labels, "arrSonarr4KTestConnection", "4K Sonarr Bağlantısını Test Et");
+  sonarr4KTestBtn.textContent = L(labels, "arrSonarr4KTestConnection", "Test 4K Sonarr Connection");
   sonarr4KTestBtn.addEventListener("click", async () => {
     const old = sonarr4KTestBtn.textContent;
     try {
       setBusy(panel, true);
       await saveArrSettings(readArrValues(panel));
-      sonarr4KTestBtn.textContent = L(labels, "serrTesting", "Test ediliyor...");
+      sonarr4KTestBtn.textContent = L(labels, "serrTesting", "Testing...");
       const data = await testSonarr4KConnection();
       applySonarrOptions(panel, data?.options || {}, labels, SONARR_4K_FIELDS);
       showNotification(
-        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "arrSonarr4KConnectionOk", "4K Sonarr bağlantısı başarılı.")}`,
+        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "arrSonarr4KConnectionOk", "4K Sonarr connection successful.")}`,
         2800,
         "success"
       );
     } catch (error) {
       showNotification(
-        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "arrSonarr4KConnectionFailed", "4K Sonarr bağlantısı başarısız.")}`,
+        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "arrSonarr4KConnectionFailed", "4K Sonarr connection failed.")}`,
         4200,
         "error"
       );
@@ -727,7 +727,7 @@ export function createSerrPanel(config, labels) {
   arrSection.appendChild(mark4KField(radarr4KHeading));
   arrSection.appendChild(mark4KField(createCheckbox(
     "arrRadarr4KEnabled",
-    L(labels, "arrRadarr4KEnabled", "4K Radarr'ı etkinleştir"),
+    L(labels, "arrRadarr4KEnabled", "Enable 4K Radarr"),
     false
   )));
   arrSection.appendChild(mark4KField(createInput(
@@ -738,23 +738,23 @@ export function createSerrPanel(config, labels) {
   )));
   arrSection.appendChild(mark4KField(createInput(
     "arrRadarr4KApiKey",
-    L(labels, "arrRadarr4KApiKey", "4K Radarr API anahtarı"),
+    L(labels, "arrRadarr4KApiKey", "4K Radarr API key"),
     "",
-    { type: "password", placeholder: L(labels, "arrRadarrApiKeyPlaceholder", "Radarr ayarlarındaki API anahtarı") }
+    { type: "password", placeholder: L(labels, "arrRadarrApiKeyPlaceholder", "API key from Radarr settings") }
   )));
   arrSection.appendChild(mark4KField(createSelect(
     "arrRadarr4KRootFolderPath",
     L(labels, "arrRadarr4KRootFolderPath", "4K Radarr root folder path"),
-    [{ value: "", label: L(labels, "arrSelectRootFolder", "Dizin seçmek için bağlantıyı test et") }]
+    [{ value: "", label: L(labels, "arrSelectRootFolder", "Test the connection to choose a folder") }]
   )));
   arrSection.appendChild(mark4KField(createSelect(
     "arrRadarr4KQualityProfileId",
     L(labels, "arrRadarr4KQualityProfileId", "4K Radarr quality profile ID"),
-    [{ value: "", label: L(labels, "arrSelectQualityProfile", "Kalite seçmek için bağlantıyı test et") }]
+    [{ value: "", label: L(labels, "arrSelectQualityProfile", "Test the connection to choose a quality profile") }]
   )));
   arrSection.appendChild(mark4KField(createCheckbox(
     "arrRadarr4KSearchOnRequest",
-    L(labels, "arrRadarr4KSearchOnRequest", "4K fallback isteğinde filmi hemen ara"),
+    L(labels, "arrRadarr4KSearchOnRequest", "Search the movie immediately on 4K fallback"),
     true
   )));
 
@@ -765,23 +765,23 @@ export function createSerrPanel(config, labels) {
   radarr4KTestBtn.type = "button";
   radarr4KTestBtn.className = "monwui-arr-radarr-4k-test-btn";
   radarr4KTestBtn.setAttribute("data-arr-4k-action", "1");
-  radarr4KTestBtn.textContent = L(labels, "arrRadarr4KTestConnection", "4K Radarr Bağlantısını Test Et");
+  radarr4KTestBtn.textContent = L(labels, "arrRadarr4KTestConnection", "Test 4K Radarr Connection");
   radarr4KTestBtn.addEventListener("click", async () => {
     const old = radarr4KTestBtn.textContent;
     try {
       setBusy(panel, true);
       await saveArrSettings(readArrValues(panel));
-      radarr4KTestBtn.textContent = L(labels, "serrTesting", "Test ediliyor...");
+      radarr4KTestBtn.textContent = L(labels, "serrTesting", "Testing...");
       const data = await testRadarr4KConnection();
       applyRadarrOptions(panel, data?.options || {}, labels, RADARR_4K_FIELDS);
       showNotification(
-        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "arrRadarr4KConnectionOk", "4K Radarr bağlantısı başarılı.")}`,
+        `<i class="fas fa-check" style="margin-right:8px;"></i>${L(labels, "arrRadarr4KConnectionOk", "4K Radarr connection successful.")}`,
         2800,
         "success"
       );
     } catch (error) {
       showNotification(
-        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "arrRadarr4KConnectionFailed", "4K Radarr bağlantısı başarısız.")}`,
+        `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i>${error?.message || L(labels, "arrRadarr4KConnectionFailed", "4K Radarr connection failed.")}`,
         4200,
         "error"
       );
@@ -798,7 +798,7 @@ export function createSerrPanel(config, labels) {
   arrHint.textContent = L(
     labels,
     "arrSettingsHint",
-    "Tek bölüm Seerr tarafından talep edilemezse Sonarr'a, film Seerr'de mevcut görünüp Jellyfin'de yoksa Radarr'a gönderilir."
+    "If Seerr cannot request a single episode, MonWUI sends it to Sonarr; if a movie appears available in Seerr but is missing in Jellyfin, it sends it to Radarr."
   );
   arrSection.appendChild(arrHint);
   panel.appendChild(arrSection);

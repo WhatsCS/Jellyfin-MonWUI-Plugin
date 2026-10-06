@@ -203,7 +203,7 @@ export async function updateHeaderUserAvatar() {
     setupAvatarProtection(headerButton, user);
     return { status: 'custom' };
   } catch (err) {
-    console.error("Avatar güncelleme hatası:", err);
+    console.error("Error updating avatar:", err);
     return { status: 'error', error: err };
     } finally {
     _updatingAvatar = false;
@@ -316,7 +316,7 @@ async function createDicebearAvatar(user, options = {}) {
     }
     return svgElement;
   } catch (error) {
-    console.error('DiceBear avatar oluşturma hatası, baş harflerle avatar oluşturuluyor:', error);
+    console.error('Error creating DiceBear avatar; using initials instead:', error);
     return createInitialsAvatar(user, options);
   }
 }
@@ -678,7 +678,7 @@ function startAvatarRotation(interval = 60000) {
       clearAvatarCache();
       await updateHeaderUserAvatar();
     } catch (error) {
-      console.error('Otomatik avatar rotasyonu hatası:', error);
+      console.error('Automatic avatar rotation error:', error);
     }
   }, interval);
 }

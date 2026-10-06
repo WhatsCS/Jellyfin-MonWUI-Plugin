@@ -458,7 +458,7 @@ function getPersonFacts(item) {
   const lines = [];
 
   if (birthStr) {
-    const birthLabel = labels.dogumEtiketi || "Doğum:";
+    const birthLabel = labels.dogumEtiketi || "Born:";
     lines.push(`🎂 ${birthLabel} ${birthStr}${age != null && !deathStr ? ` (${age})` : ""}`);
   }
 
@@ -468,7 +468,7 @@ function getPersonFacts(item) {
   }
 
   if (deathStr) {
-    const deathLabel = labels.olumEtiketi || "Ölüm:";
+    const deathLabel = labels.olumEtiketi || "Died:";
     lines.push(`🕯️ ${deathLabel} ${deathStr}${age != null ? ` (${age})` : ""}`);
   }
 

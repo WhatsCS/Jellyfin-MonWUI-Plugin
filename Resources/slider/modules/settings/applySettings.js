@@ -1093,7 +1093,7 @@ const USER_ONLY_KEYS = [
           } catch (error) {
             console.warn("Cinema pre-roll cache force refresh failed:", error);
             showNotification(
-              cfgGuard?.languageLabels?.cinemaPreRollCacheRefreshFailed || "Ön gösterim cache'i yenilenemedi.",
+              cfgGuard?.languageLabels?.cinemaPreRollCacheRefreshFailed || "The pre-show cache could not be refreshed.",
               3200,
               "warning"
             );
@@ -1121,7 +1121,7 @@ const USER_ONLY_KEYS = [
 
     if (cfgGuard?.forceGlobalUserSettings && !isAdmin) {
       showNotification(
-        `<i class="fas fa-user" style="margin-right:8px;"></i> ${cfgGuard?.languageLabels?.settingsSavedModal || "Avatar/tema ayarların kullanıcıya özel kaydedildi."}`,
+        `<i class="fas fa-user" style="margin-right:8px;"></i> ${cfgGuard?.languageLabels?.settingsSavedModal || "Settings saved. Refresh the slider page for changes to take effect."}`,
         2500,
         "info"
       );
@@ -1140,7 +1140,7 @@ const USER_ONLY_KEYS = [
         config.avatarGradient !== updatedConfig.avatarGradient;
 
     if (avatarSettingsChanged) {
-        console.log("Avatar ayarları değişti, hemen güncelleniyor...");
+        console.log("Avatar settings changed; updating now...");
         clearAvatarCache();
         updateHeaderUserAvatar();
     } else {
@@ -1173,7 +1173,7 @@ const USER_ONLY_KEYS = [
     if (forcedAdminPublish && publishResult?.attempted && !publishResult.ok) {
       const failText =
         cfgGuard?.languageLabels?.forceGlobalPublishFailed ||
-        "Global kullanıcı ayarları publish edilemedi. Sayfa yenilenmedi.";
+        "Global user settings could not be published.";
       showNotification(
         `<i class="fas fa-triangle-exclamation" style="margin-right:8px;"></i> ${failText}`,
         4200,
@@ -1211,7 +1211,7 @@ export function applyRawConfig(config) {
         localStorage.setItem(key, String(value));
       }
     } catch (e) {
-      console.warn(`'${key}' değeri ayarlanamadı:`, e);
+      console.warn(`Could not set the value of '${key}':`, e);
     }
   });
 

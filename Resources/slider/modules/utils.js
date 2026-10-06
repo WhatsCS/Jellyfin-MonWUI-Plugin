@@ -522,7 +522,7 @@ export function ensureJmsDetailsOverlay({
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "jms-details-btn";
-  btn.setAttribute("aria-label", "Ayrıntılar");
+  btn.setAttribute("aria-label", "Details");
 
   const arrowIcon = document.createElement("span");
   arrowIcon.className = "jms-details-arrow";
@@ -574,7 +574,7 @@ export function ensureJmsDetailsOverlay({
     const playBtn = document.createElement("button");
     playBtn.type = "button";
     playBtn.className = "jms-play-btn";
-    playBtn.setAttribute("aria-label", "Şimdi Oynat");
+    playBtn.setAttribute("aria-label", "Play Now");
     playBtn.innerHTML = `
       <span class="jms-play-icon" style="display:flex;align-items:center;justify-content:center;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -714,7 +714,7 @@ export function createTrailerIframe({
         } catch (err) {
           console.error("PlayNow click error:", err);
           if (typeof window.showMessage === "function") {
-            window.showMessage("PlayNow çalıştırılırken hata oluştu", "error");
+            window.showMessage("An error occurred while running PlayNow", "error");
           }
         }
       },
@@ -789,7 +789,7 @@ export function createTrailerIframe({
     <div class="jms-audio-preview-overlay__panel">
       <div class="jms-audio-preview-overlay__eyebrow">
         <i class="fa-solid fa-wave-square"></i>
-        <span>${config?.languageLabels?.track || "Parça"}</span>
+        <span>${config?.languageLabels?.track || "Song"}</span>
       </div>
       <div class="jms-audio-preview-overlay__title"></div>
       <div class="jms-audio-preview-overlay__subtitle"></div>
@@ -1040,8 +1040,8 @@ function clearPreviewPlaybackFlag() {
     autoToggleButton = document.createElement("button");
     autoToggleButton.type = "button";
     autoToggleButton.className = "monwui-auto-trailer-toggle";
-    autoToggleButton.setAttribute("aria-label", labels.sliderAutoTrailerPause || "Fragmanı duraklat");
-    autoToggleButton.title = labels.sliderAutoTrailerPause || "Fragmanı duraklat";
+    autoToggleButton.setAttribute("aria-label", labels.sliderAutoTrailerPause || "Pause trailer");
+    autoToggleButton.title = labels.sliderAutoTrailerPause || "Pause trailer";
     autoToggleButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
     autoToggleButton.addEventListener("click", (event) => {
       event.preventDefault();
@@ -1064,8 +1064,8 @@ function clearPreviewPlaybackFlag() {
       ? '<i class="fa-solid fa-play"></i>'
       : '<i class="fa-solid fa-pause"></i>';
     const title = autoTrailerPaused
-      ? (labels.sliderAutoTrailerResume || "Fragmanı devam ettir")
-      : (labels.sliderAutoTrailerPause || "Fragmanı duraklat");
+      ? (labels.sliderAutoTrailerResume || "Resume trailer")
+      : (labels.sliderAutoTrailerPause || "Pause trailer");
     autoToggleButton.title = title;
     autoToggleButton.setAttribute("aria-label", title);
   }
@@ -1079,8 +1079,8 @@ function clearPreviewPlaybackFlag() {
     previewVolumeButton = document.createElement("button");
     previewVolumeButton.type = "button";
     previewVolumeButton.className = "monwui-preview-volume-toggle";
-    previewVolumeButton.setAttribute("aria-label", labels.previewTrailerVolumeToggle || "Fragman sesini aç/kapat");
-    previewVolumeButton.title = labels.previewTrailerVolumeToggle || "Fragman sesini aç/kapat";
+    previewVolumeButton.setAttribute("aria-label", labels.previewTrailerVolumeToggle || "Toggle trailer sound");
+    previewVolumeButton.title = labels.previewTrailerVolumeToggle || "Toggle trailer sound";
     previewVolumeButton.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
     previewVolumeButton.addEventListener("click", (event) => {
       event.preventDefault();
@@ -1097,7 +1097,7 @@ function clearPreviewPlaybackFlag() {
     previewVolumeRange.max = "100";
     previewVolumeRange.step = "1";
     previewVolumeRange.value = String(Math.round(runtimePreviewVolumePercent));
-    previewVolumeRange.setAttribute("aria-label", labels.previewTrailerVolumePercent || "Fragman başlangıç ses seviyesi (%)");
+    previewVolumeRange.setAttribute("aria-label", labels.previewTrailerVolumePercent || "Trailer starting volume (%)");
     previewVolumeRange.addEventListener("input", (event) => {
       event.stopPropagation();
       setPreviewVolumePercent(Number(event.target.value), { unmute: true });
@@ -2408,7 +2408,7 @@ async function getImageSizeInBytes(url, { signal } = {}) {
       signal,
     });
     const size = res.headers.get("Content-Length") || res.headers.get("content-length");
-    if (!size) throw new Error("Content-Length yok");
+    if (!size) throw new Error("Content-Length missing");
     const n = parseInt(size, 10);
     if (!Number.isFinite(n)) throw new Error("Content-Length parse edilemedi");
     return n;

@@ -90,7 +90,7 @@ export async function readID3Tags(trackId) {
     }
 
     if (id3ReadQueue.length >= MAX_QUEUE_LENGTH) {
-      console.warn(`ID3 kuyruğu dolu (>=${MAX_QUEUE_LENGTH}), atlanıyor: ${trackId}`);
+      console.warn(`ID3 queue is full (>=${MAX_QUEUE_LENGTH}), skipping: ${trackId}`);
       resolve(null);
       return;
     }
@@ -131,7 +131,7 @@ function loadJSMediaTagsOnce() {
     const existing = document.querySelector('script[data-jsmediatags]');
     if (existing) {
       existing.addEventListener('load', () => resolve(), { once: true });
-      existing.addEventListener('error', () => reject(new Error("jsmediatags yüklenemedi")), { once: true });
+      existing.addEventListener('error', () => reject(new Error("Could not load jsmediatags")), { once: true });
       return;
     }
     const script = document.createElement("script");
@@ -140,7 +140,7 @@ function loadJSMediaTagsOnce() {
     script.defer = true;
     script.dataset.jsmediatags = "1";
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("jsmediatags yüklenemedi"));
+    script.onerror = () => reject(new Error("Could not load jsmediatags"));
     document.head.appendChild(script);
   });
 
@@ -188,7 +188,7 @@ async function processSingle(trackId, generation = id3RuntimeGeneration) {
   }
 
   if (!resp?.ok && resp?.status !== 206) {
-    throw new Error("Kısmi müzik verisi alınamadı");
+    throw new Error("Could not fetch partial music data");
   }
 
   try {
@@ -213,7 +213,7 @@ async function processSingle(trackId, generation = id3RuntimeGeneration) {
           pictureUri = URL.createObjectURL(pictureBlob);
         }
       } catch (e) {
-        console.error("Resim dönüştürme hatası:", e);
+        console.error("Image conversion error:", e);
       }
 
       tags.pictureUri = pictureUri || null;
@@ -248,7 +248,7 @@ function readTagsWithFallback(blob, trackId, fullFetch) {
     };
 
     const timeout = setTimeout(() => {
-      console.error("ID3 okuma zaman aşımı");
+      console.error("ID3 read timed out");
       finish(null);
     }, TAG_READ_TIMEOUT_MS);
 
@@ -297,11 +297,11 @@ function readTagsWithFallback(blob, trackId, fullFetch) {
             return;
           }
         } catch (e) {
-          console.error("Fallback tam indirme başarısız:", e);
+          console.error("Fallback full download failed:", e);
         }
       }
 
-      console.error("ID3 okuma hatası:", error);
+      console.error("ID3 read error:", error);
       clearTimeout(timeout);
       finish(null);
     };
@@ -310,7 +310,7 @@ function readTagsWithFallback(blob, trackId, fullFetch) {
       window.jsmediatags.read(blob, { onSuccess, onError });
     } catch (e) {
       clearTimeout(timeout);
-      console.error("jsmediatags çağrısı hatası:", e);
+      console.error("jsmediatags call error:", e);
       finish(null);
     }
   });

@@ -172,7 +172,7 @@ export function saveCredentials(credentials) {
     if (chosen.id) {
       sessionStorage.setItem("serverId", chosen.id);
       localStorage.setItem("serverId", chosen.id);
-      console.log("✅ serverId seçildi:", chosen.id, "| kaynak:", chosen.why);
+      console.log("✅ Selected serverId:", chosen.id, "| source:", chosen.why);
       const active = findActiveServerEntry(credentials, chosen.id);
       const activeUserId = active?.UserId ? String(active.UserId) : "";
       const activeToken  = active?.AccessToken ? String(active.AccessToken) : "";
@@ -197,12 +197,12 @@ export function saveCredentials(credentials) {
       } catch {}
 
     } else {
-      console.warn("⚠️ serverId seçilemedi:", chosen.why, credentials);
+      console.warn("⚠️ Could not select serverId:", chosen.why, credentials);
     }
-    console.log("Kimlik bilgileri kaydedildi.");
+    console.log("Credentials saved.");
     return true;
   } catch (err) {
-    console.error("Kimlik bilgileri kaydedilirken hata:", err);
+    console.error("Error saving credentials:", err);
     return false;
   }
 }
@@ -274,7 +274,7 @@ export function saveApiKey(apiKey) {
       if (chosen?.id) {
         sessionStorage.setItem("serverId", chosen.id);
         localStorage.setItem("serverId", chosen.id);
-        console.log("✅ serverId (saveApiKey) seçildi:", chosen.id, "| kaynak:", chosen.why);
+        console.log("✅ Selected serverId (saveApiKey):", chosen.id, "| source:", chosen.why);
       } else {
         const ac = window.ApiClient || window.apiClient || null;
         const apiId = ac?._serverInfo?.SystemId || ac?._serverInfo?.Id || null;
@@ -287,10 +287,10 @@ export function saveApiKey(apiKey) {
     } catch (e) {
       console.warn("⚠️ saveApiKey serverId set edilemedi:", e);
     }
-    console.log("API anahtarı kaydedildi.");
+    console.log("API key saved.");
     return true;
   } catch (err) {
-    console.error("API anahtarı kaydedilirken hata:", err);
+    console.error("Error saving API key:", err);
     return false;
   }
 }
@@ -316,7 +316,7 @@ function clearCredentials() {
     }
   } catch {}
 
-  console.log("Tüm kimlik bilgileri (storage + ApiClient) temizlendi.");
+  console.log("All credentials (storage + ApiClient) cleared.");
 }
 
 export function getAuthToken() {

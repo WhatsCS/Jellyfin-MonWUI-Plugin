@@ -1384,7 +1384,7 @@ async function fetchRadioBrowser(path, options = {}) {
     }
   }
 
-  throw lastError || new Error("Radio Browser istegi basarisiz");
+  throw lastError || new Error("Radio Browser request failed");
 }
 
 function buildSearchPath({
@@ -1472,7 +1472,7 @@ export async function getAutoDiscoveredStations({ limit = 18 } = {}) {
 export async function resolveRadioStream(track) {
   const station = normalizeRadioStation(track, { source: track?.Source || "radio" });
   if (!station) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   if (station.stationuuid) {
@@ -1495,7 +1495,7 @@ export async function resolveRadioStream(track) {
 
   const fallback = await unwrapRadioPlaylistUrl(station.url_resolved || station.url);
   if (!fallback?.url) {
-    throw new Error(getConfig()?.languageLabels?.radioStreamNotFound || "Yayin adresi bulunamadi");
+    throw new Error(getConfig()?.languageLabels?.radioStreamNotFound || "Stream URL not found");
   }
 
   const matchedStation =
@@ -1678,7 +1678,7 @@ export async function fetchSharedRadioStations() {
 export async function saveSharedRadioStation(rawStation) {
   const station = withContributorMetadata(normalizeRadioStation(rawStation, { source: "shared" }));
   if (!station) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   const configData = await fetchJmsConfig().catch(() => ({}));
@@ -1701,12 +1701,12 @@ export async function removeSharedRadioStation(rawStation) {
     source: text(rawStation?.source || rawStation?.Source, "shared")
   });
   if (!station) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   const targetKey = stationKey(station);
   if (!targetKey) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   const configData = await fetchJmsConfig().catch(() => ({}));
@@ -1727,7 +1727,7 @@ export async function removeSharedRadioStation(rawStation) {
 export async function submitStationToDirectory(rawStation) {
   const station = normalizeRadioStation(rawStation);
   if (!station) {
-    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Gecersiz radyo istasyonu");
+    throw new Error(getConfig()?.languageLabels?.radioInvalidStation || "Invalid radio station");
   }
 
   const payload = {
@@ -1777,7 +1777,7 @@ export function cleanupAttachedRadioStream(audio) {
 }
 
 export async function attachRadioStream(audio, url, options = {}) {
-  if (!audio) throw new Error("Audio elementi bulunamadi");
+  if (!audio) throw new Error("Audio element not found");
 
   const onMetadata = typeof options.onMetadata === "function"
     ? options.onMetadata
@@ -1786,7 +1786,7 @@ export async function attachRadioStream(audio, url, options = {}) {
 
   const streamUrl = normalizeUrl(url);
   if (!streamUrl) {
-    throw new Error(getConfig()?.languageLabels?.radioStreamNotFound || "Yayin adresi bulunamadi");
+    throw new Error(getConfig()?.languageLabels?.radioStreamNotFound || "Stream URL not found");
   }
 
   cleanupAttachedRadioStream(audio);

@@ -13,14 +13,14 @@ export function createAvatarPanel(config, labels) {
   const initialIsRandom = config.randomDicebearAvatar !== false;
   const initialIsDicebear = config.avatarStyle === 'dicebear';
 
-  const section = createSection(labels.avatarCreateInput || 'Avatar Ayarları');
-  const avatarCheckbox = createCheckbox('createAvatar', labels.createAvatar || 'Avatar Oluşturmayı Etkinleştir', config.createAvatar);
+  const section = createSection(labels.avatarCreateInput || "Avatar Settings");
+  const avatarCheckbox = createCheckbox('createAvatar', labels.createAvatar || "Enable Avatar Creation", config.createAvatar);
   section.appendChild(avatarCheckbox);
   const avatarStyleSelect = createSelect(
     'avatarStyle',
-    labels.avatarStyle || 'Avatar Stili',
+    labels.avatarStyle || "Avatar Style",
     [
-      { value: 'initials', text: labels.avatarStyleInitials || 'Baş Harfler' },
+      { value: 'initials', text: labels.avatarStyleInitials || "Create with Initials" },
       { value: 'dicebear', text: labels.avatarStyleDicebear || 'Dicebear Avatar' }
     ],
     config.avatarStyle || 'dicebear'
@@ -32,14 +32,14 @@ export function createAvatarPanel(config, labels) {
   const initialsElements = [];
   const randomAvatarCheckbox = createCheckbox(
     'randomDicebearAvatar',
-    labels.randomDicebearAvatar || 'Rastgele Avatar Oluştur',
+    labels.randomDicebearAvatar || "Generate Random",
     config.randomDicebearAvatar !== false
   );
   dicebearElements.push(randomAvatarCheckbox);
   section.appendChild(randomAvatarCheckbox);
   const dicebearStyleSelect = createSelect(
     'dicebearStyle',
-    labels.dicebearStyle || 'Dicebear Stili',
+    labels.dicebearStyle || "Dicebear Style",
     [
       { value: 'adventurer', text: labels.adventurer || 'Adventurer' },
       { value: 'adventurer-neutral', text: labels.adventurerNeutral || 'Adventurer Neutral' },
@@ -91,17 +91,17 @@ export function createAvatarPanel(config, labels) {
   section.appendChild(dicebearParamsSection);
   dicebearParamsElements.push(dicebearParamsSection);
 
-  const widthInput = createNumberInput('avatarWidth', labels.avatarWidth || 'Avatar Genişliği (px)', config.avatarWidth, 10, 50);
+  const widthInput = createNumberInput('avatarWidth', labels.avatarWidth || "Avatar Width (px)", config.avatarWidth, 10, 50);
   commonElements.push(widthInput);
   section.appendChild(widthInput);
 
-  const heightInput = createNumberInput('avatarHeight', labels.avatarHeight || 'Avatar Yüksekliği (px)', config.avatarHeight, 10, 50);
+  const heightInput = createNumberInput('avatarHeight', labels.avatarHeight || "Avatar Height (px)", config.avatarHeight, 10, 50);
   commonElements.push(heightInput);
   section.appendChild(heightInput);
 
   const dicebearRadius = createNumberInput(
     'dicebearRadius',
-    labels.dicebearRadius || 'Dicebear Yuvarlaklık (0-50)',
+    labels.dicebearRadius || "Dicebear Roundness (0-50)",
     config.dicebearRadius || 50,
     0,
     50
@@ -113,7 +113,7 @@ export function createAvatarPanel(config, labels) {
   scaleSection.className = 'avatar-item';
 
   const scaleLabel = document.createElement('label');
-  scaleLabel.textContent = labels.avatarScale || 'Avatar Büyütme Oranı';
+  scaleLabel.textContent = labels.avatarScale || "Avatar Scale";
   scaleLabel.htmlFor = 'avatarScale';
 
   const scaleInput = document.createElement('input');
@@ -147,42 +147,42 @@ export function createAvatarPanel(config, labels) {
 
   const colorMethodSelect = createSelect(
     'avatarColorMethod',
-    labels.avatarColorMethod || 'Renk Belirleme Yöntemi',
+    labels.avatarColorMethod || "Color Determination Method",
     [
-      { value: 'dynamic', text: labels.avatarColorDynamic || 'Dinamik (Kullanıcı ID\'sine göre)' },
-      { value: 'random', text: labels.avatarColorRandom || 'Rastgele (Sabit renk paleti)' },
+      { value: 'dynamic', text: labels.avatarColorDynamic || "Dynamic (based on User ID)" },
+      { value: 'random', text: labels.avatarColorRandom || "Random (fixed color palette)" },
       { value: 'solid', text: labels.avatarColorSolid || 'Sabit Renk' },
-      { value: 'gradient', text: labels.avatarColorGradient || 'Gradyan Renk' }
+      { value: 'gradient', text: labels.avatarColorGradient || "Gradient Color" }
     ],
     config.avatarColorMethod
   );
   initialsElements.push(colorMethodSelect);
   section.appendChild(colorMethodSelect);
 
-  const solidColorInput = createColorInput('avatarSolidColor', labels.avatarSolidColor || 'Sabit Renk Seçin', config.avatarSolidColor || '#FF4081');
+  const solidColorInput = createColorInput('avatarSolidColor', labels.avatarSolidColor || "Choose Color", config.avatarSolidColor || '#FF4081');
   solidColorInput.style.display = config.avatarColorMethod === 'solid' ? 'flex' : 'none';
   initialsElements.push(solidColorInput);
   section.appendChild(solidColorInput);
 
   const gradientSelect = createSelect(
     'avatarGradient',
-    labels.avatarGradient || 'Gradyan Seçimi',
+    labels.avatarGradient || "Select Gradient",
     [
-      { value: 'linear-gradient(135deg, #FF5F6D 0%, #FFC371 100%)', text: labels.gradient1 || 'Kızıl Güneş' },
-      { value: 'linear-gradient(135deg, #36D1DC 0%, #5B86E5 100%)', text: labels.gradient2 || 'Deniz Mavisi' },
-      { value: 'linear-gradient(135deg, #43E97B 0%, #38F9D7 100%)', text: labels.gradient3 || 'Tropikal Yeşil' },
-      { value: 'linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%)', text: labels.gradient4 || 'Tatlı Pembe' },
-      { value: 'linear-gradient(135deg, #FDBB2D 0%, #3A1C71 100%)', text: labels.gradient5 || 'Altın-Mor Gece' },
-      { value: 'linear-gradient(135deg, #FC6076 0%, #FF9A44 100%)', text: labels.gradient6 || 'Turuncu Şafak' },
+      { value: 'linear-gradient(135deg, #FF5F6D 0%, #FFC371 100%)', text: labels.gradient1 || "Crimson Sun" },
+      { value: 'linear-gradient(135deg, #36D1DC 0%, #5B86E5 100%)', text: labels.gradient2 || "Ocean Blue" },
+      { value: 'linear-gradient(135deg, #43E97B 0%, #38F9D7 100%)', text: labels.gradient3 || "Tropical Green" },
+      { value: 'linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%)', text: labels.gradient4 || "Sweet Pink" },
+      { value: 'linear-gradient(135deg, #FDBB2D 0%, #3A1C71 100%)', text: labels.gradient5 || "Golden-Purple Night" },
+      { value: 'linear-gradient(135deg, #FC6076 0%, #FF9A44 100%)', text: labels.gradient6 || "Orange Dawn" },
       { value: 'linear-gradient(135deg, #00C9FF 0%, #92FE9D 100%)', text: labels.gradient7 || 'Aqua-Lime' },
-      { value: 'linear-gradient(135deg, #C33764 0%, #1D2671 100%)', text: labels.gradient8 || 'Gece Yarısı Moru' },
-      { value: 'linear-gradient(135deg, #FBD3E9 0%, #BB377D 100%)', text: labels.gradient9 || 'Pembe Lila' },
-      { value: 'linear-gradient(135deg, #667EEA 0%, #764BA2 100%)', text: labels.gradient10 || 'Kraliyet Mavisi' },
-      { value: 'linear-gradient(135deg, #30E8BF 0%, #FF8235 100%)', text: labels.gradient11 || 'Yeşil-Turuncu Enerji' },
-      { value: 'linear-gradient(135deg, #FFB75E 0%, #ED8F03 100%)', text: labels.gradient12 || 'Altın Turuncu' },
-      { value: 'linear-gradient(135deg, #D38312 0%, #A83279 100%)', text: labels.gradient13 || 'Çöl Işıltısı' },
-      { value: 'linear-gradient(135deg, #3CA55C 0%, #B5AC49 100%)', text: labels.gradient14 || 'Orman Yolu' },
-      { value: 'linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%)', text: labels.gradient15 || 'Pembe-Buz Mavisi' }
+      { value: 'linear-gradient(135deg, #C33764 0%, #1D2671 100%)', text: labels.gradient8 || "Midnight Purple" },
+      { value: 'linear-gradient(135deg, #FBD3E9 0%, #BB377D 100%)', text: labels.gradient9 || "Pink Lilac" },
+      { value: 'linear-gradient(135deg, #667EEA 0%, #764BA2 100%)', text: labels.gradient10 || "Royal Blue" },
+      { value: 'linear-gradient(135deg, #30E8BF 0%, #FF8235 100%)', text: labels.gradient11 || "Green-Orange Energy" },
+      { value: 'linear-gradient(135deg, #FFB75E 0%, #ED8F03 100%)', text: labels.gradient12 || "Golden Orange" },
+      { value: 'linear-gradient(135deg, #D38312 0%, #A83279 100%)', text: labels.gradient13 || "Desert Glow" },
+      { value: 'linear-gradient(135deg, #3CA55C 0%, #B5AC49 100%)', text: labels.gradient14 || "Forest Path" },
+      { value: 'linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%)', text: labels.gradient15 || "Pink-Ice Blue" }
     ],
     config.avatarGradient
   );
@@ -192,7 +192,7 @@ export function createAvatarPanel(config, labels) {
 
   const fontFamilySelect = createSelect(
     'avatarFontFamily',
-    labels.avatarFontFamily || 'Yazı Tipi',
+    labels.avatarFontFamily || "Font Family",
     getSystemFonts(labels),
     config.avatarFontFamily
   );
@@ -200,22 +200,22 @@ export function createAvatarPanel(config, labels) {
   section.appendChild(fontFamilySelect);
 
 
-  const fontSizeInput = createNumberInput('avatarFontSize', labels.avatarFontSize || 'Yazı Boyutu (px)', config.avatarFontSize, 8, 20);
+  const fontSizeInput = createNumberInput('avatarFontSize', labels.avatarFontSize || "Font Size (px)", config.avatarFontSize, 8, 20);
   initialsElements.push(fontSizeInput);
   section.appendChild(fontSizeInput);
 
-  const textShadowInput = createTextInput('avatarTextShadow', labels.avatarTextShadow || 'Yazı Gölgesi', config.avatarTextShadow);
+  const textShadowInput = createTextInput('avatarTextShadow', labels.avatarTextShadow || "Shadow", config.avatarTextShadow);
   initialsElements.push(textShadowInput);
   section.appendChild(textShadowInput);
 
 
-  const dicebearPositionCheckbox = createCheckbox('dicebearPosition', labels.dicebearPosition || 'Avatar Dışa Çıkar', config.dicebearPosition);
+  const dicebearPositionCheckbox = createCheckbox('dicebearPosition', labels.dicebearPosition || "Avatar Extends Outside the Frame", config.dicebearPosition);
   dicebearElements.push(dicebearPositionCheckbox);
   section.appendChild(dicebearPositionCheckbox);
 
   const dicebearBgCheckbox = createCheckbox(
     'dicebearBackgroundEnabled',
-    labels.dicebearBackgroundEnabled || 'Dicebear Arkaplanı Etkinleştir',
+    labels.dicebearBackgroundEnabled || "Enable DiceBear Background",
     config.dicebearBackgroundEnabled !== false
   );
   dicebearElements.push(dicebearBgCheckbox);
@@ -223,7 +223,7 @@ export function createAvatarPanel(config, labels) {
 
   const dicebearBgColor = createColorInput(
     'dicebearBackgroundColor',
-    labels.dicebearBackgroundColor || 'Dicebear Arkaplan Rengi',
+    labels.dicebearBackgroundColor || "Dicebear Background Color",
     config.dicebearBackgroundColor || '#FF4081'
   );
   dicebearElements.push(dicebearBgColor);
@@ -240,7 +240,7 @@ export function createAvatarPanel(config, labels) {
 
   const autoRefreshCheckbox = createCheckbox(
     'autoRefreshAvatar',
-    labels.autoRefreshAvatar || 'Avatarı Otomatik Değiştir',
+    labels.autoRefreshAvatar || "Automatically Change Avatar",
     config.autoRefreshAvatar || false
   );
   dicebearElements.push(autoRefreshCheckbox);
@@ -248,7 +248,7 @@ export function createAvatarPanel(config, labels) {
 
   const refreshTimeInput = createNumberInput(
     'avatarRefreshTime',
-    labels.avatarRefreshTime || 'Değişim Duration (dakika)',
+    labels.avatarRefreshTime || "Change Interval (minutes)",
     config.avatarRefreshTime || 10,
     1,
     1440
@@ -409,7 +409,7 @@ commonElements.forEach(el => el.style.display = 'flex');
   function updateDicebearParamsSection() {
     const styleSelect = document.querySelector('#dicebearStyle');
     if (!styleSelect) {
-      console.error('Dicebear stil seçim öğesi bulunamadı');
+      console.error('DiceBear style selector not found');
       return;
     }
 
@@ -483,7 +483,7 @@ export function createColorInput(name, label, value) {
 
 function getSystemFonts(labels) {
   const systemFonts = [
-    { value: 'inherit', text: labels.fontInherit || 'Varsayılan' },
+    { value: 'inherit', text: labels.fontInherit || "Default" },
     { value: 'Arial, sans-serif', text: 'Arial' },
     { value: 'Helvetica, sans-serif', text: 'Helvetica' },
     { value: '"Times New Roman", serif', text: 'Times New Roman' },
@@ -510,18 +510,18 @@ function getSystemFonts(labels) {
     { value: '"Playfair Display", serif', text: 'Playfair Display' },
     { value: 'Righteous, cursive', text: 'Righteous' },
     { value: '"Pacifico", cursive', text: 'Pacifico' },
-    { value: '"Caveat", cursive', text: 'Caveat (El Yazısı)' },
+    { value: '"Caveat", cursive', text: 'Caveat (Handwriting)' },
     { value: '"Shadows Into Light", cursive', text: 'Shadows Into Light' },
     { value: '"Indie Flower", cursive', text: 'Indie Flower' },
-    { value: 'system-ui, sans-serif', text: labels.systemdefault || 'Sistem Varsayılanı' },
-    { value: '-apple-system, BlinkMacSystemFont', text: labels.appledefault || 'Apple Sistem Varsayılanı' },
+    { value: 'system-ui, sans-serif', text: labels.systemdefault || "System" },
+    { value: '-apple-system, BlinkMacSystemFont', text: labels.appledefault || "Apple System" },
     { value: '"Segoe UI", Roboto, Oxygen', text: 'Windows/Linux' }
   ];
 
   if (navigator.userAgent.includes('Windows')) {
     systemFonts.push(
-      { value: '"Microsoft YaHei", sans-serif', text: 'Microsoft YaHei (Çince)' },
-      { value: '"Microsoft JhengHei", sans-serif', text: 'Microsoft JhengHei (Çince-TW)' }
+      { value: '"Microsoft YaHei", sans-serif', text: 'Microsoft YaHei (Chinese)' },
+      { value: '"Microsoft JhengHei", sans-serif', text: 'Microsoft JhengHei (Chinese (Taiwan))' }
     );
   }
 
@@ -556,7 +556,7 @@ export async function applyDicebearAvatar() {
     await updateHeaderUserAvatar();
     return true;
   } catch (error) {
-    console.error('Avatar uygulanırken hata:', error);
+    console.error('Error applying avatar:', error);
     throw error;
   }
 }
@@ -567,26 +567,26 @@ function saveDicebearParams(params) {
     const paramsToSave = params || collectDicebearParams();
 
     if (!paramsToSave || typeof paramsToSave !== 'object') {
-      console.error('Geçersiz parametreler:', paramsToSave);
+      console.error('Invalid parameters:', paramsToSave);
       return false;
     }
 
     const jsonString = JSON.stringify(paramsToSave);
     if (!jsonString || jsonString === '{}') {
-      console.warn('Boş parametreler kaydedilmeye çalışılıyor');
+      console.warn('Attempting to save empty parameters');
       return false;
     }
 
     localStorage.setItem('dicebearParams', jsonString);
     const saved = localStorage.getItem('dicebearParams');
     if (saved !== jsonString) {
-      console.error('Kayıt başarısız oldu!');
+      console.error('Save failed!');
       return false;
     }
 
     return true;
   } catch (e) {
-    console.error('Dicebear parametreleri kaydedilirken hata oluştu:', e);
+    console.error('Error saving DiceBear parameters:', e);
     localStorage.removeItem('dicebearParams');
     return false;
   }
@@ -598,7 +598,7 @@ function getDicebearParams() {
     const params = localStorage.getItem('dicebearParams');
     return params ? JSON.parse(params) : {};
   } catch (e) {
-    console.error('Dicebear ayarları yüklenirken hata oluştu:', e);
+    console.error('Error loading DiceBear settings:', e);
     return {};
   }
 }
@@ -642,7 +642,7 @@ function attachDicebearParamsListeners(container) {
           console.error('Parametreler kaydedilemedi!');
         }
       } else {
-        console.error('Geçersiz parametre formatı:', params);
+        console.error('Invalid parameter format:', params);
       }
 
       clearAvatarCache();
