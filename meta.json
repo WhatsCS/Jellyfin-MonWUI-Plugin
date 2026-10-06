@@ -10,6 +10,6 @@
   "sourceUrl": "https://github.com/WhatsCS/Jellyfin-Media-Slider",
   "imagePathLinux": "/var/lib/jellyfin/plugins/JMSFusionV2_3.7.0.3/icon.png",
   "imagePathWindows": "%ProgramData%/Jellyfin/Server/plugins/JMSFusionV2_3.7.0.3/icon.png",
-  "timestamp": "2026-10-06T05:17:42.6916912Z",
+  "timestamp": "2026-10-06T05:28:30.7777522Z",
   "guid": "c0b4a5e0-2f6a-4e70-9c5f-1e7c2d0b7f12"
 }
