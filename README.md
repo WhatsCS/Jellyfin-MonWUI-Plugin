@@ -35,6 +35,7 @@
   <a href="#client-compatibility">Client Compatibility</a> •
   <a href="#highlights">Highlights</a> •
   <a href="#core-modules">Core Modules</a> •
+  <a href="docs/technical-overview.md">Technical Guide</a> •
   <a href="docs/seerr-arr-integration.md">Seerr & Arr Integration</a> •
   <a href="#uninstall">Uninstall</a> •
   <a href="#acknowledgment">Acknowledgment</a> •
