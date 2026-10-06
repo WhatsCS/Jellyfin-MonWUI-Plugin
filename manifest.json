@@ -2,8 +2,8 @@
   {
     "guid": "c0b4a5e0-2f6a-4e70-9c5f-1e7c2d0b7f12",
     "name": "JMSFusionV2",
-    "description": "Frontend enhancement plugin for Jellyfin Web and web-wrapper mobile clients; native Android TV clients are not supported.",
-    "overview": "Custom script loader for the Jellyfin web UI.",
+    "description": "Independent WhatsCS fork of MonWUI / JMSFusion, originally developed by G-grbz and upstream contributors. Frontend enhancements for Jellyfin Web and web-wrapper mobile clients; native Android TV clients are not supported.",
+    "overview": "WhatsCS fork of G-grbz's MonWUI / JMSFusion for Jellyfin Web.",
     "owner": "WhatsCS",
     "category": "General",
     "imageUrl": "https://raw.githubusercontent.com/WhatsCS/Jellyfin-MonWUI-Plugin/main/img/icon.png",

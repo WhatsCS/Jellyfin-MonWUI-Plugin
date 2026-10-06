@@ -1,6 +1,6 @@
 # How JMSFusionV2 works
 
-This guide explains the implementation in this repository, from Jellyfin startup to browser rendering and persistent storage. It is a code walkthrough, not a guarantee of compatibility with a particular installed server. The project targets .NET 9 and references Jellyfin 10.11.0 packages; the README also identifies the project as archived.
+This guide explains the implementation in the [WhatsCS fork](https://github.com/WhatsCS/Jellyfin-MonWUI-Plugin) of [G-grbz's original MonWUI / JMSFusion project](https://github.com/G-grbz/Jellyfin-MonWUI-Plugin), from Jellyfin startup to browser rendering and persistent storage. Credit for the original project remains with G-grbz and upstream contributors; this guide describes the combined codebase, not only changes made by the fork. It is a code walkthrough, not a guarantee of compatibility with a particular installed server. The project targets .NET 9 and references Jellyfin 10.11.0 packages.
 
 The names **MonWUI**, **JMSFusionV2**, and **GMMP** appear throughout the code. MonWUI names the web experience, JMSFusionV2 is the Jellyfin plugin, and GMMP is its browser music player. Older names survive in routes, settings keys, and filenames.
 
